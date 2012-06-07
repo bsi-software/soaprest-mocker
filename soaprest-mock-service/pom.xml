@@ -5,10 +5,35 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.jaceko</groupId>
 	<artifactId>soaprest-mock-service</artifactId>
-	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
 	<name>ws-mock-service</name>
+	<description>Mock service for SOAP/REST webservices to support automated tests</description>
 	<url>http://maven.apache.org</url>
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+	<licenses>
+		<license>
+			<name>GNU Library or Lesser General Public License version 3.0 (LGPLv3)</name>
+			<url>http://www.gnu.org/licenses/lgpl.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<scm>
+		<connection>scm:git:ssh://obarymski@git.code.sf.net/p/soaprest-mocker/code</connection>
+		<developerConnection>scm:git:ssh://obarymski@git.code.sf.net/p/soaprest-mocker/code</developerConnection>
+		<url>ssh://obarymski@git.code.sf.net/p/soaprest-mocker/code</url>
+	</scm>
+	<developers>
+		<developer>
+			<id>obarymski</id>
+			<name>Jacek Obarymski</name>
+			<email>jaceko@onet.eu</email>
+		</developer>
+	</developers>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -64,6 +89,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
 	<build>
 		<finalName>soaprest-mock-service</finalName>
 		<plugins>
@@ -83,6 +109,20 @@
 					</connectors>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
+
 </project>
