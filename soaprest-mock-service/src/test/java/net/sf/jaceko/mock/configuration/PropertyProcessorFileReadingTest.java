@@ -27,7 +27,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 
-public class PropertyProcessorIntegrationTest {
+public class PropertyProcessorFileReadingTest {
 	private PropertyProcessor propertyProcessor = new PropertyProcessor();
 
 	@Test
@@ -52,9 +52,9 @@ public class PropertyProcessorIntegrationTest {
 	@Test
 	public void shouldReadDefaultResponseContentsFromFile() throws IOException,
 			ParserConfigurationException, SAXException {
-		String propertyString = "SERVICE[0].NAME=ticketing\r\n"
-				+ "SERVICE[0].OPERATION[0].INPUT_MESSAGE=reserveRequest\r\n"
-				+ "SERVICE[0].OPERATION[0].DEFAULT_RESPONSE=reserve_response.xml\r\n";
+		String propertyString = "SERVICE[0].NAME=dummysoapservice\r\n"
+				+ "SERVICE[0].OPERATION[0].INPUT_MESSAGE=dummyRequest\r\n"
+				+ "SERVICE[0].OPERATION[0].DEFAULT_RESPONSE=dummy_default_soap_response.xml\r\n";
 
 		Reader reader = new StringReader(propertyString);
 		MockserviceConfiguration configuration = propertyProcessor.process(reader);
@@ -66,8 +66,8 @@ public class PropertyProcessorIntegrationTest {
 		String responseXML = operation.getDefaultResponseText();
 		Document responseDoc = XmlParser.parse(responseXML, false);
 
-		assertThat(responseDoc, hasXPath("/dummyResponse/reqId", equalTo("1123")));
-		assertThat(responseDoc, hasXPath("/dummyResponse/status", equalTo("PENDING")));
+		assertThat(responseDoc, hasXPath("/dummyResponse/reqId", equalTo("789789")));
+		assertThat(responseDoc, hasXPath("/dummyResponse/status", equalTo("OK")));
 
 	}
 
@@ -91,21 +91,21 @@ public class PropertyProcessorIntegrationTest {
 	@Test
 	public void shouldReadPropertiesFromFile() throws ParserConfigurationException, SAXException, IOException {
 
-		String mockPropertiesFileName = "test-ws-mock.properties";
+		String mockPropertiesFileName = "ws-mock-for-unit-tests.properties";
 		MockserviceConfiguration configuration = propertyProcessor.process(mockPropertiesFileName);
 		
 		Collection<WebService> services = configuration.getSoapServices();
 		assertThat(services.size(), is(2));
-		WebService soapService = configuration.getSoapService("mptu");
-		assertThat(soapService.getName(), is("mptu"));
+		WebService soapService = configuration.getSoapService("dummy_soap");
+		assertThat(soapService.getName(), is("dummy_soap"));
 		assertThat(soapService.getServiceType(), is(ServiceType.SOAP));
-		assertThat(soapService.getOperation(0).getOperationName(), is("prepayRequest"));
+		assertThat(soapService.getOperation(0).getOperationName(), is("dummySoapRequest"));
 
 		String wsdlText = soapService.getWsdlText();
 		Document wsdlDoc = XmlParser.parse(wsdlText, false);
 		assertThat(wsdlDoc, hasXPath("/wsdl", equalTo("dummyContent123")));
 		
-		WebService restService = configuration.getSoapService("ticketing_refdata");
+		WebService restService = configuration.getSoapService("dummy_rest_get");
 		assertThat(restService.getServiceType(), is(ServiceType.REST));
 		assertThat(restService.getOperation(0).getOperationName(), is(HttpMethod.GET.toString()));
 		

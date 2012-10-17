@@ -7,7 +7,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 import javax.ws.rs.core.Response;
 
-import net.sf.jaceko.mock.resource.MockSetupResource;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
 
 import org.apache.http.HttpStatus;

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- dummy response used in PropertyProcessorIntegrationTest -->
-<dummyResponse>
-   <reqId>1123</reqId>
-   <status>PENDING</status>
-</dummyResponse>

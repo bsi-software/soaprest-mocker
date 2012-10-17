@@ -16,7 +16,6 @@ import net.sf.jaceko.mock.resource.WsdlExposingResource;
 import net.sf.jaceko.mock.service.DelayService;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
 
-
 public class MockserviceApplication extends Application {
 	private static final String PROPERTY_FILE = "ws-mock.properties";
 
@@ -30,7 +29,7 @@ public class MockserviceApplication extends Application {
 			throw new RuntimeException("Problem reading property file", e);
 		}
 		DelayService delayService = new DelayService();
-		
+
 		WebserviceMockSvcLayer svcLayer = new WebserviceMockSvcLayer();
 		svcLayer.setMockserviceConfiguration(configuration);
 		svcLayer.setDelayService(delayService);
@@ -38,22 +37,22 @@ public class MockserviceApplication extends Application {
 		mockSetupResource.setWebserviceMockService(svcLayer);
 		RecordedRequestsResource recordedRequestsResource = new RecordedRequestsResource();
 		recordedRequestsResource.setWebserviceMockService(svcLayer);
-		
+
 		SoapEndpointResource mockSoapEndpointResource = new SoapEndpointResource();
 		mockSoapEndpointResource.setWebserviceMockService(svcLayer);
-		
+
 		RestEndpointResource mockRestEndpointResource = new RestEndpointResource();
 		mockRestEndpointResource.setWebserviceMockService(svcLayer);
-		
+
 		WsdlExposingResource wsdlExposingResource = new WsdlExposingResource();
 		wsdlExposingResource.setWebserviceMockService(svcLayer);
-		
+
 		singletons.add(mockSoapEndpointResource);
 		singletons.add(mockRestEndpointResource);
 		singletons.add(mockSetupResource);
 		singletons.add(recordedRequestsResource);
 		singletons.add(wsdlExposingResource);
-		
+
 	}
 
 	private Set<Object> singletons = new HashSet<Object>();
