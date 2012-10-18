@@ -23,18 +23,17 @@ public class RestMockIntegrationTest {
 	//mocked endpoints configured in ws-mock.properties
 	public static String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/endpoint/rest/dummy-rest";
 	
-	public static String REST_MOCK_ENDPOINT_SETUP = "http://localhost:8080/mock/dummy-rest/GET/setup/";
 	
-	public static String REST_MOCK_ENDPOINT_SETUP_INIT =  REST_MOCK_ENDPOINT_SETUP + "init";
-	
-	public static String REST_MOCK_ENDPOINT_SETUP_RESPONSE = REST_MOCK_ENDPOINT_SETUP + "response";
-	public static String REST_MOCK_ENDPOINT_SETUP_CONSECUTIVE_RESPONSE = REST_MOCK_ENDPOINT_SETUP + "consecutive-response/";
+	public static String REST_MOCK_GET_SETUP_INIT 						= "http://localhost:8080/mock/dummy-rest/GET/setup/init";
+	public static String REST_MOCK_GET_SETUP_RESPONSE 					= "http://localhost:8080/mock/dummy-rest/GET/setup/response";
+	public static String REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE 		= "http://localhost:8080/mock/dummy-rest/GET/setup/consecutive-response/";
+	public static String REST_MOCK_GET_VERIFY_RECORDED_REQUEST_PARAMS 	= "http://localhost:8080/mock/dummy-rest/GET/recorded/url-request-params";
 	
 	HttpRequestSender requestSender = new HttpRequestSender();
 	
 	@Before
 	public void initMock() throws UnsupportedEncodingException, ClientProtocolException, IOException {
-		requestSender.sendPostRequest(REST_MOCK_ENDPOINT_SETUP_INIT, "");
+		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_INIT, "");
 	}
 
 	@Test
@@ -53,7 +52,7 @@ public class RestMockIntegrationTest {
 	public void shouldReturnCustomRESTGetResponse() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		//setting up response on mock
 		String customResponseXML = "<custom_get_response>custom REST GET response text</custom_get_response>";
-		requestSender.sendPostRequest(REST_MOCK_ENDPOINT_SETUP_RESPONSE, customResponseXML);
+		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_RESPONSE, customResponseXML);
 		
 		//sending REST GET request 
 		String response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
@@ -70,10 +69,10 @@ public class RestMockIntegrationTest {
 	public void shouldReturnConsecutiveCustomRESTGetResponses() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		//setting up consecutive responses on mock		
 		String customResponseXML1 = "<custom_get_response>custom REST GET response text 1</custom_get_response>";
-		requestSender.sendPostRequest(REST_MOCK_ENDPOINT_SETUP_CONSECUTIVE_RESPONSE + "1", customResponseXML1);
+		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE + "1", customResponseXML1);
 
 		String customResponseXML2 = "<custom_get_response>custom REST GET response text 2</custom_get_response>";
-		requestSender.sendPostRequest(REST_MOCK_ENDPOINT_SETUP_CONSECUTIVE_RESPONSE + "2", customResponseXML2);
+		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE + "2", customResponseXML2);
 		
 		String response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
 		Document serviceResponseDoc = new DocumentImpl(response);
@@ -89,9 +88,26 @@ public class RestMockIntegrationTest {
 				serviceResponseDoc,
 				hasXPath("//custom_get_response",
 						equalTo("custom REST GET response text 2")));
+	}
+
+	@Test
+	public void shoulVerifyRequestParameters() throws ClientProtocolException, IOException, ParserConfigurationException, SAXException {
+		requestSender.sendGetRequest(REST_MOCK_ENDPOINT + "?param=paramValue1");
+		requestSender.sendGetRequest(REST_MOCK_ENDPOINT + "?param=paramValue2");
+		
+		String verifyResponse = requestSender.sendGetRequest(REST_MOCK_GET_VERIFY_RECORDED_REQUEST_PARAMS);
+		Document verifyResponseDoc = new DocumentImpl(verifyResponse);
+
+		assertThat(
+				verifyResponseDoc,
+				hasXPath("//urlRequestParams/queryString[1]",
+						equalTo("param=paramValue1")));
+		assertThat(
+				verifyResponseDoc,
+				hasXPath("//urlRequestParams/queryString[2]",
+						equalTo("param=paramValue2")));
 
 		
 	}
-
 
 }
