@@ -45,7 +45,7 @@ public class PropertyProcessorFileReadingTest {
 		WebService soapService = services.iterator().next();
 		String wsdlText = soapService.getWsdlText();
 		Document wsdlDoc = XmlParser.parse(wsdlText, false);
-		assertThat(wsdlDoc, hasXPath("/wsdl", equalTo("dummyContent123")));
+		assertThat(wsdlDoc, hasXPath("/definitions/message/@name", equalTo("SayHelloRequest")));
 
 	}
 
@@ -103,7 +103,7 @@ public class PropertyProcessorFileReadingTest {
 
 		String wsdlText = soapService.getWsdlText();
 		Document wsdlDoc = XmlParser.parse(wsdlText, false);
-		assertThat(wsdlDoc, hasXPath("/wsdl", equalTo("dummyContent123")));
+		assertThat(wsdlDoc, hasXPath("/definitions/service/documentation", equalTo("Dummy wsdl file")));
 		
 		WebService restService = configuration.getSoapService("dummy_rest_get");
 		assertThat(restService.getServiceType(), is(ServiceType.REST));
