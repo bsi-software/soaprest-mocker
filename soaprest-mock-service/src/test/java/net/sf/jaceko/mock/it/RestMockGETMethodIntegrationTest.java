@@ -18,7 +18,13 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-public class RestMockIntegrationTest {
+/**
+ * Integration tests of a REST 
+ * 
+ * @author Jacek Obarymski
+ *
+ */
+public class RestMockGETMethodIntegrationTest {
 
 	//mocked endpoints configured in ws-mock.properties
 	public static String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/endpoint/rest/dummy-rest";
