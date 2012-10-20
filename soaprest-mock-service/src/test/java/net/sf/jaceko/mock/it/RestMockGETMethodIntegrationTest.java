@@ -19,7 +19,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 /**
- * Integration tests of a REST 
+ * Integration tests of REST mock, GET method
  * 
  * @author Jacek Obarymski
  *
@@ -39,9 +39,10 @@ public class RestMockGETMethodIntegrationTest {
 	
 	@Before
 	public void initMock() throws UnsupportedEncodingException, ClientProtocolException, IOException {
+		//initalizing mock, clearing history of previous requests
 		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_INIT, "");
 	}
-
+	
 	@Test
 	public void shouldReturnDefaultRESTGetResponse()
 			throws ClientProtocolException, IOException, ParserConfigurationException, SAXException {
