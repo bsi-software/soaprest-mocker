@@ -47,7 +47,7 @@ public class WebserviceMockSvcLayer {
 	}
 
 	public String getWsdl(String serviceName) {
-		WebService soapService = configuration.getSoapService(serviceName);
+		WebService soapService = configuration.getWebService(serviceName);
 		if (soapService == null) {
 			throw new ServiceNotConfiguredException("Undefined service: " + serviceName);
 		}

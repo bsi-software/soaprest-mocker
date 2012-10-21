@@ -23,7 +23,7 @@ public class MockserviceConfiguration {
 	}
 
 	public WebserviceOperation getWebServiceOperation(String serviceName, String operationId) {
-		WebService service = getSoapService(serviceName);
+		WebService service = getWebService(serviceName);
 		if (service == null) {
 			throw new ServiceNotConfiguredException("Undefined webservice:" + serviceName);
 		}
@@ -37,7 +37,7 @@ public class MockserviceConfiguration {
 		return null;
 	}
 
-	public WebService getSoapService(String serviceName) {
+	public WebService getWebService(String serviceName) {
 		return servicesMap.get(serviceName);
 	}
 

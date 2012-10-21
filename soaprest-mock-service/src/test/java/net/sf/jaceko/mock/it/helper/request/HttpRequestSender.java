@@ -7,37 +7,53 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
-
 public class HttpRequestSender {
 
 	private HttpClient httpclient = new DefaultHttpClient();
 
-	public String sendPostRequest(String url, String request) throws UnsupportedEncodingException, IOException,
+	public String sendPostRequest(String url, String requestBody)
+			throws UnsupportedEncodingException, IOException,
 			ClientProtocolException {
-		HttpPost httpRequest = new HttpPost(url);
+		HttpEntityEnclosingRequestBase httpRequest = new HttpPost(url);
+		addRequestBody(httpRequest, requestBody);
+
+		return executeRequest(httpRequest);
+	}
+
+	public String sendPutRequest(String url, String requestBody)
+			throws UnsupportedEncodingException, IOException,
+			ClientProtocolException {
+		HttpEntityEnclosingRequestBase httpRequest = new HttpPut(url);
+		addRequestBody(httpRequest, requestBody);
+
+		return executeRequest(httpRequest);
+	}
+
+	private void addRequestBody(HttpEntityEnclosingRequestBase httpRequest,
+			String requestBody) throws UnsupportedEncodingException {
 		httpRequest.setHeader("Content-Type", "text/xml;charset=UTF-8");
-		HttpEntity requestEntity = new StringEntity(request);
+		HttpEntity requestEntity = new StringEntity(requestBody);
 
 		httpRequest.setEntity(requestEntity);
-
-		String body = executeRequest(httpRequest);
-		return body;
 	}
-	
-	public String sendGetRequest(String url) throws IOException, ClientProtocolException {
+
+	public String sendGetRequest(String url) throws IOException,
+			ClientProtocolException {
 		HttpGet httpGet = new HttpGet(url);
-		String body = executeRequest(httpGet);
-		return body;
+		return executeRequest(httpGet);
 	}
 
-	private String executeRequest(HttpRequestBase httpRequest) throws IOException, ClientProtocolException {
+	private String executeRequest(HttpRequestBase httpRequest)
+			throws IOException, ClientProtocolException {
 		HttpResponse response = httpclient.execute(httpRequest);
 		HttpEntity entity = response.getEntity();
 		String body = null;

@@ -96,7 +96,7 @@ public class PropertyProcessorFileReadingTest {
 		
 		Collection<WebService> services = configuration.getSoapServices();
 		assertThat(services.size(), is(2));
-		WebService soapService = configuration.getSoapService("dummy_soap");
+		WebService soapService = configuration.getWebService("dummy_soap");
 		assertThat(soapService.getName(), is("dummy_soap"));
 		assertThat(soapService.getServiceType(), is(ServiceType.SOAP));
 		assertThat(soapService.getOperation(0).getOperationName(), is("dummySoapRequest"));
@@ -105,7 +105,7 @@ public class PropertyProcessorFileReadingTest {
 		Document wsdlDoc = XmlParser.parse(wsdlText, false);
 		assertThat(wsdlDoc, hasXPath("/definitions/service/documentation", equalTo("Dummy wsdl file")));
 		
-		WebService restService = configuration.getSoapService("dummy_rest_get");
+		WebService restService = configuration.getWebService("dummy_rest_get");
 		assertThat(restService.getServiceType(), is(ServiceType.REST));
 		assertThat(restService.getOperation(0).getOperationName(), is(HttpMethod.GET.toString()));
 		

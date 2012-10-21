@@ -19,6 +19,8 @@ import org.mockito.Mock;
 
 public class RestEndpointResourceTest {
 
+	private static final String NOT_USED_SERVICE_NAME = "";
+
 	private RestEndpointResource resource = new RestEndpointResource();
 
 	@Mock
@@ -36,29 +38,30 @@ public class RestEndpointResourceTest {
 	@Test
 	public void shouldPerformGetRequest() {
 		String serviceName = "bms_refdata";
-		String queryString = "msg=abc";
-		when(servletContext.getQueryString()).thenReturn(queryString);
+		String urlParams = "msg=abc";
+		when(servletContext.getQueryString()).thenReturn(urlParams);
 		resource.performGetRequest(serviceName, servletContext);
-		verify(service).performRequest(serviceName, "GET", "", queryString);
+		verify(service).performRequest(serviceName, "GET", "", urlParams);
 	}
 
+	
 	@Test
 	public void shouldReturnResponseReturnedByGetRequest() {
 		String responseReturnedByServuceLayer = "someResponse";
 		when(service.performRequest(anyString(), anyString(), anyString(), anyString())).thenReturn(
 				responseReturnedByServuceLayer);
-		assertThat(resource.performGetRequest("", servletContext), is(responseReturnedByServuceLayer));
+		assertThat(resource.performGetRequest(NOT_USED_SERVICE_NAME, servletContext), is(responseReturnedByServuceLayer));
 
 	}
 	
 	@Test
 	public void shouldPerformPostRequest() {
 		String serviceName = "billdesk";
-		String queryString = "msg=abc";
+		String urlParams = "msg=abc";
 		String request = "<dummyRequest>abc</dummyRequest>";
-		when(servletContext.getQueryString()).thenReturn(queryString);
+		when(servletContext.getQueryString()).thenReturn(urlParams);
 		resource.performPostRequest(serviceName, servletContext, request);
-		verify(service).performRequest(serviceName, "POST", request, queryString);
+		verify(service).performRequest(serviceName, "POST", request, urlParams);
 	}
 	
 	@Test
@@ -66,7 +69,24 @@ public class RestEndpointResourceTest {
 		String responseReturnedByServuceLayer = "someResponse";
 		when(service.performRequest(anyString(), anyString(), anyString(), anyString())).thenReturn(
 				responseReturnedByServuceLayer);
-		assertThat(resource.performPostRequest("", servletContext, null), is(responseReturnedByServuceLayer));
+		assertThat(resource.performPostRequest(NOT_USED_SERVICE_NAME, servletContext, null), is(responseReturnedByServuceLayer));
+
+	}
+	
+	@Test
+	public void shouldPerformPutRequest() {
+		String serviceName = "dummyService";
+		String request = "<dummyRequest>def</dummyRequest>";
+		resource.performPutRequest(serviceName, request);
+		verify(service).performRequest(serviceName, "PUT", request, null);
+	}
+
+	@Test
+	public void shouldReturnResponseReturnedByPutRequest() {
+		String responseReturnedByServuceLayer = "someResponse123";
+		when(service.performRequest(anyString(), anyString(), anyString(), anyString())).thenReturn(
+				responseReturnedByServuceLayer);
+		assertThat(resource.performPutRequest(NOT_USED_SERVICE_NAME, null), is(responseReturnedByServuceLayer));
 
 	}
 

@@ -43,8 +43,8 @@ public class MockserviceConfigurationTest {
 
 		configuration.setSoapServices(asList(service1, service2));
 
-		assertThat(configuration.getSoapService(name2), is(service2));
-		assertThat(configuration.getSoapService(name1), is(service1));
+		assertThat(configuration.getWebService(name2), is(service2));
+		assertThat(configuration.getWebService(name1), is(service1));
 
 	}
 

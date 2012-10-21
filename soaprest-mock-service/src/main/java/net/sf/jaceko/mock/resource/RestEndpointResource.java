@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -41,6 +42,14 @@ public class RestEndpointResource {
 
 	}
 
+	@PUT
+	@Consumes(MediaType.TEXT_XML)
+	@Produces(MediaType.TEXT_XML)
+	public String performPutRequest(@PathParam("serviceName") String serviceName, String request) {
+		String response =  svcLayer.performRequest(serviceName, HttpMethod.PUT.toString(), request, null);
+		return response;
+		
+	}
 	public void setRestserviceMockSvcLayer(WebserviceMockSvcLayer service) {
 		this.svcLayer = service;
 	}
@@ -48,5 +57,6 @@ public class RestEndpointResource {
 	public void setWebserviceMockService(WebserviceMockSvcLayer svcLayer) {
 		this.svcLayer = svcLayer;
 	}
+
 
 }

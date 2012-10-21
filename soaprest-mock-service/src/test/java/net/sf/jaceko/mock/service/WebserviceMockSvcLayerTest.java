@@ -381,7 +381,7 @@ public class WebserviceMockSvcLayerTest {
 		String expectedWsdlText = "<dummyWsdl></dummyWsdl>";
 		WebService soapService = new WebService(serviceName, expectedWsdlText);
 
-		when(configuration.getSoapService(serviceName)).thenReturn(soapService);
+		when(configuration.getWebService(serviceName)).thenReturn(soapService);
 
 		String returnedWsdlText = serviceLayer.getWsdl(serviceName);
 		assertThat(returnedWsdlText, is(expectedWsdlText));
@@ -390,7 +390,7 @@ public class WebserviceMockSvcLayerTest {
 
 	@Test(expected = ServiceNotConfiguredException.class)
 	public void shouldReturneExceptionIfServiceDoesNotExistInConfiguraction() {
-		when(configuration.getSoapService(anyString())).thenReturn(null);
+		when(configuration.getWebService(anyString())).thenReturn(null);
 		serviceLayer.getWsdl("a");
 	}
 
