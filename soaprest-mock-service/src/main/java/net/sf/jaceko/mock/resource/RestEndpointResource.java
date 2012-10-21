@@ -34,8 +34,8 @@ public class RestEndpointResource {
 	@POST
 	@Consumes(MediaType.TEXT_XML)
 	@Produces(MediaType.TEXT_XML)
-	public String performPostRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest request) {
-		String response =  svcLayer.performRequest(serviceName, HttpMethod.POST.toString(), "", request.getQueryString());
+	public String performPostRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest httpServletRequest, String request) {
+		String response =  svcLayer.performRequest(serviceName, HttpMethod.POST.toString(), request, httpServletRequest.getQueryString());
 		LOG.debug("serviceName: " + serviceName + ", response:" + response);
 		return response;
 

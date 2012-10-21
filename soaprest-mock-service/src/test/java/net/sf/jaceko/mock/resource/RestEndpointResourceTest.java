@@ -55,9 +55,10 @@ public class RestEndpointResourceTest {
 	public void shouldPerformPostRequest() {
 		String serviceName = "billdesk";
 		String queryString = "msg=abc";
+		String request = "<dummyRequest>abc</dummyRequest>";
 		when(servletContext.getQueryString()).thenReturn(queryString);
-		resource.performPostRequest(serviceName, servletContext);
-		verify(service).performRequest(serviceName, "POST", "", queryString);
+		resource.performPostRequest(serviceName, servletContext, request);
+		verify(service).performRequest(serviceName, "POST", request, queryString);
 	}
 	
 	@Test
@@ -65,7 +66,7 @@ public class RestEndpointResourceTest {
 		String responseReturnedByServuceLayer = "someResponse";
 		when(service.performRequest(anyString(), anyString(), anyString(), anyString())).thenReturn(
 				responseReturnedByServuceLayer);
-		assertThat(resource.performPostRequest("", servletContext), is(responseReturnedByServuceLayer));
+		assertThat(resource.performPostRequest("", servletContext, null), is(responseReturnedByServuceLayer));
 
 	}
 

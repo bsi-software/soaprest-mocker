@@ -98,15 +98,19 @@ public class RestMockPOSTMethodIntegrationTest {
 
 	@Test
 	public void shoulVerifyRecordedRequests() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
-		requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "<dummyReq>dummyReqText1<dummyReq>");
-		requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "<dummyReq>dummyReqText2<dummyReq>");
+		requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "<dummyReq>dummyReqText1</dummyReq>");
+		requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "<dummyReq>dummyReqText2</dummyReq>");
 
 		String recordedRequests = requestSender.sendGetRequest(REST_MOCK_POST_VERIFY_RECORDED_REQUESTS);
 		Document requestUrlParamsDoc = new DocumentImpl(recordedRequests);
 
 		assertThat(
 				requestUrlParamsDoc,
-				hasXPath("//requests/dummyReq[1]", equalTo("param=dummyReqText1")));
+				hasXPath("//requests/dummyReq[1]", equalTo("dummyReqText1")));
+		assertThat(
+				requestUrlParamsDoc,
+				hasXPath("//requests/dummyReq[2]", equalTo("dummyReqText2")));
+
 
 	}
 	

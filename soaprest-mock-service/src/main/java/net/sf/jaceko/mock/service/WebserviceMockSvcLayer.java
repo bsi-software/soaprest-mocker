@@ -21,6 +21,7 @@ public class WebserviceMockSvcLayer {
 	private DelayService delayService;
 
 	public String performRequest(String serviceName, String operationId, String request, String queryString) {
+		System.out.println(serviceName+", "+operationId+", "+request);
 		WebserviceOperation serviceOperation = getWebserviceOperation(serviceName, operationId);
 		int invocationNumber = serviceOperation.getNextInvocationNumber();
 		String response = serviceOperation.getResponseText(invocationNumber);
