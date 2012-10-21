@@ -33,6 +33,7 @@ public class RestMockGETMethodIntegrationTest {
 	public static String REST_MOCK_GET_SETUP_INIT 						= "http://localhost:8080/mock/dummy-rest/GET/setup/init";
 	public static String REST_MOCK_GET_SETUP_RESPONSE 					= "http://localhost:8080/mock/dummy-rest/GET/setup/response";
 	public static String REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE 		= "http://localhost:8080/mock/dummy-rest/GET/setup/consecutive-response/";
+	public static String REST_MOCK_GET_VERIFY_RECORDED_RESOURCE_IDS 	= "http://localhost:8080/mock/dummy-rest/GET/recorded/resource-ids";
 	public static String REST_MOCK_GET_VERIFY_RECORDED_REQUEST_PARAMS 	= "http://localhost:8080/mock/dummy-rest/GET/recorded/url-request-params";
 	
 	HttpRequestSender requestSender = new HttpRequestSender();
@@ -115,6 +116,25 @@ public class RestMockGETMethodIntegrationTest {
 						equalTo("param=paramValue2")));
 
 		
+	}
+	
+	@Test
+	public void shoulVerifyResourceIds() throws ClientProtocolException, IOException, ParserConfigurationException, SAXException {
+		requestSender.sendGetRequest(REST_MOCK_ENDPOINT + "/id123");
+		requestSender.sendGetRequest(REST_MOCK_ENDPOINT + "/id567");
+		
+		String verifyResponse = requestSender.sendGetRequest(REST_MOCK_GET_VERIFY_RECORDED_RESOURCE_IDS);
+		Document verifyResponseDoc = new DocumentImpl(verifyResponse);
+
+		assertThat(
+				verifyResponseDoc,
+				hasXPath("//resourceIds/resourceId[1]",
+						equalTo("id123")));
+		assertThat(
+				verifyResponseDoc,
+				hasXPath("//resourceIds/resourceId[2]",
+						equalTo("id567")));
+
 	}
 
 }
