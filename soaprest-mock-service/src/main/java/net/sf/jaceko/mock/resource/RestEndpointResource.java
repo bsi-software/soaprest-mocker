@@ -26,17 +26,27 @@ public class RestEndpointResource {
 	@GET
 	@Produces(MediaType.TEXT_XML)
 	public String performGetRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest request) {
-		String response =  svcLayer.performRequest(serviceName, HttpMethod.GET.toString(), "", request.getQueryString());
+		String response =  svcLayer.performRequest(serviceName, HttpMethod.GET.toString(), "", request.getQueryString(), null);
 		LOG.debug("serviceName: " + serviceName + ", response:" + response);
 		return response;
 
 	}
 	
+	@GET
+	@Path("/{resourceId}")
+	@Produces(MediaType.TEXT_XML)
+	public String performGetRequest(@PathParam("serviceName") String serviceName,
+			@Context HttpServletRequest request, @PathParam("resourceId") String resourceId) {
+		String response =  svcLayer.performRequest(serviceName, HttpMethod.GET.toString(), "", request.getQueryString(), resourceId);
+		LOG.debug("serviceName: " + serviceName + ", response:" + response);
+		return response;
+	}
+
 	@POST
 	@Consumes(MediaType.TEXT_XML)
 	@Produces(MediaType.TEXT_XML)
 	public String performPostRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest httpServletRequest, String request) {
-		String response =  svcLayer.performRequest(serviceName, HttpMethod.POST.toString(), request, httpServletRequest.getQueryString());
+		String response =  svcLayer.performRequest(serviceName, HttpMethod.POST.toString(), request, httpServletRequest.getQueryString(), null);
 		LOG.debug("serviceName: " + serviceName + ", response:" + response);
 		return response;
 
@@ -46,7 +56,7 @@ public class RestEndpointResource {
 	@Consumes(MediaType.TEXT_XML)
 	@Produces(MediaType.TEXT_XML)
 	public String performPutRequest(@PathParam("serviceName") String serviceName, String request) {
-		String response =  svcLayer.performRequest(serviceName, HttpMethod.PUT.toString(), request, null);
+		String response =  svcLayer.performRequest(serviceName, HttpMethod.PUT.toString(), request, null, null);
 		return response;
 		
 	}
@@ -57,6 +67,7 @@ public class RestEndpointResource {
 	public void setWebserviceMockService(WebserviceMockSvcLayer svcLayer) {
 		this.svcLayer = svcLayer;
 	}
+
 
 
 }

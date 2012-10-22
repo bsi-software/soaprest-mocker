@@ -24,7 +24,12 @@ import org.mockito.Mock;
 
 
 public class WebserviceMockSvcLayerTest {
+	
+	private static String NOT_USED_RESOURCE_ID = null;
+	private static String NOT_USED_REQUEST_PARAM = null;
+	private static String NOT_USED_REQUEST_BODY = null;
 
+	
 	@Mock
 	private MockserviceConfiguration configuration;
 
@@ -52,7 +57,7 @@ public class WebserviceMockSvcLayerTest {
 
 		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 
-		String response = serviceLayer.performRequest(serviceName, operationId, null, null);
+		String response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 		assertThat(response, is(defaultResponse));
 
 	}
@@ -62,7 +67,7 @@ public class WebserviceMockSvcLayerTest {
 
 		when(configuration.getWebServiceOperation(anyString(), anyString())).thenReturn(null);
 
-		serviceLayer.performRequest("", "", "", null);
+		serviceLayer.performRequest("", "", "", NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 
 	}
 
@@ -127,7 +132,7 @@ public class WebserviceMockSvcLayerTest {
 
 		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 
-		String response = serviceLayer.performRequest(serviceName, operationId, null, null);
+		String response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 		assertThat(response, is(expectedCustomResponse));
 
 	}
@@ -146,9 +151,9 @@ public class WebserviceMockSvcLayerTest {
 
 		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 
-		String response = serviceLayer.performRequest(serviceName, operationId, null, null);
+		String response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 
-		response = serviceLayer.performRequest(serviceName, operationId, null, null);
+		response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 		assertThat(response, is(defaultResponse));
 
 	}
@@ -168,9 +173,9 @@ public class WebserviceMockSvcLayerTest {
 
 		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 
-		String response = serviceLayer.performRequest(serviceName, operationId, null, null);
+		String response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 
-		response = serviceLayer.performRequest(serviceName, operationId, null, null);
+		response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 		assertThat(response, is(expectedCustomResponse2));
 
 	}
@@ -190,7 +195,7 @@ public class WebserviceMockSvcLayerTest {
 
 		serviceLayer.initMock(serviceName, operationId);
 
-		String response = serviceLayer.performRequest(serviceName, operationId, null, null);
+		String response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 		assertThat(response, is(defaultResponse));
 
 	}
@@ -203,7 +208,7 @@ public class WebserviceMockSvcLayerTest {
 		String operationId = "prepayRequest";
 		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(
 				new WebserviceOperation());
-		serviceLayer.performRequest(serviceName, operationId, request1, null);
+		serviceLayer.performRequest(serviceName, operationId, request1, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 		Collection<String> recordedRequests = serviceLayer.getRecordedRequestBodies(serviceName, operationId);
 
 		assertThat(recordedRequests.size(), is(1));
@@ -220,8 +225,8 @@ public class WebserviceMockSvcLayerTest {
 
 		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(
 				new WebserviceOperation());
-		serviceLayer.performRequest(serviceName, operationId, request1, null);
-		serviceLayer.performRequest(serviceName, operationId, request2, null);
+		serviceLayer.performRequest(serviceName, operationId, request1, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		serviceLayer.performRequest(serviceName, operationId, request2, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 
 		Collection<String> recordedRequests = serviceLayer.getRecordedRequestBodies(serviceName, operationId);
 
@@ -238,7 +243,7 @@ public class WebserviceMockSvcLayerTest {
 		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(
 				new WebserviceOperation());
 		String queryString = "msg=ABC123&ccno=dummy";
-		serviceLayer.performRequest(serviceName, operationId, null, queryString);
+		serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, queryString, null);
 
 		Collection<String> recordedRequestParams = serviceLayer
 				.getRecordedUrlParams(serviceName, operationId);
@@ -257,8 +262,8 @@ public class WebserviceMockSvcLayerTest {
 				new WebserviceOperation());
 		String queryString1 = "msg=ABC123&ccno=dummy";
 		String queryString2 = "msg=DEF123&ccno=dummy2&xid=something";
-		serviceLayer.performRequest(serviceName, operationId, null, queryString1);
-		serviceLayer.performRequest(serviceName, operationId, null, queryString2);
+		serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, queryString1, NOT_USED_RESOURCE_ID);
+		serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, queryString2, NOT_USED_RESOURCE_ID);
 
 		Collection<String> recordedRequestParams = serviceLayer
 				.getRecordedUrlParams(serviceName, operationId);
@@ -266,6 +271,26 @@ public class WebserviceMockSvcLayerTest {
 		assertThat(recordedRequestParams.size(), is(2));
 		assertThat(recordedRequestParams, hasItem(queryString1));
 		assertThat(recordedRequestParams, hasItem(queryString2));
+
+	}
+	
+	@Test
+	public void shouldGetRecordedResourceIds() {
+		String serviceName = "dummyRestService";
+		String operationId = "GET";
+		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(
+				new WebserviceOperation());
+		String resourceId1 = "id1";
+		String resourceId2 = "id2";
+		serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, resourceId1);
+		serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, resourceId2);
+
+		Collection<String> recordedResourceIds = serviceLayer
+				.getRecordedResourceIds(serviceName, operationId);
+
+		assertThat(recordedResourceIds.size(), is(2));
+		assertThat(recordedResourceIds, hasItem(resourceId1));
+		assertThat(recordedResourceIds, hasItem(resourceId2));
 
 	}
 
@@ -289,9 +314,9 @@ public class WebserviceMockSvcLayerTest {
 		when(configuration.getWebServiceOperation(serviceName2, operationId3)).thenReturn(
 				new WebserviceOperation());
 
-		serviceLayer.performRequest(serviceName, operationId, request1, null);
-		serviceLayer.performRequest(serviceName2, operationId2, request2, null);
-		serviceLayer.performRequest(serviceName2, operationId3, request3, null);
+		serviceLayer.performRequest(serviceName, operationId, request1, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		serviceLayer.performRequest(serviceName2, operationId2, request2, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		serviceLayer.performRequest(serviceName2, operationId3, request3, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 
 		Collection<String> recordedPrepayRequests = serviceLayer.getRecordedRequestBodies(serviceName,
 				operationId);
@@ -319,7 +344,7 @@ public class WebserviceMockSvcLayerTest {
 
 		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(
 				new WebserviceOperation());
-		serviceLayer.performRequest(serviceName, operationId, request1, null);
+		serviceLayer.performRequest(serviceName, operationId, request1, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 
 		Collection<String> recordedPrepayRequests = serviceLayer.getRecordedRequestBodies(serviceName,
 				operationId);
@@ -398,7 +423,7 @@ public class WebserviceMockSvcLayerTest {
 	public void shouldDelayByZeroSecByDefault() {
 		when(configuration.getWebServiceOperation(anyString(), anyString())).thenReturn(
 				new WebserviceOperation());
-		serviceLayer.performRequest("", "", "", null);
+		serviceLayer.performRequest("", "", "", NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 
 		verify(delayService).delaySec(0);
 	}
@@ -410,7 +435,7 @@ public class WebserviceMockSvcLayerTest {
 		operation.setCustomDelaySec(delaySec);
 
 		when(configuration.getWebServiceOperation(anyString(), anyString())).thenReturn(operation);
-		serviceLayer.performRequest("", "", "", null);
+		serviceLayer.performRequest("", "", "", NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 
 		verify(delayService).delaySec(delaySec);
 	}
@@ -424,10 +449,10 @@ public class WebserviceMockSvcLayerTest {
 		String operationId = "prepayRequest";
 
 		when(configuration.getWebServiceOperation(anyString(), anyString())).thenReturn(operation);
-		serviceLayer.performRequest(serviceName, operationId, "", null);
+		serviceLayer.performRequest(serviceName, operationId, "", NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 		verify(delayService).delaySec(delaySec);
 		serviceLayer.initMock(serviceName, operationId);
-		serviceLayer.performRequest(serviceName, operationId, "", null);
+		serviceLayer.performRequest(serviceName, operationId, "", NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 		verify(delayService).delaySec(0);
 
 	}
@@ -435,7 +460,7 @@ public class WebserviceMockSvcLayerTest {
 	@Test(expected = ServiceNotConfiguredException.class)
 	public void shouldThrowExceptionPerforingRequestIfWebserviceOperationNotFound() {
 		when(configuration.getWebServiceOperation(anyString(), anyString())).thenReturn(null);
-		serviceLayer.performRequest("", "", "", null);
+		serviceLayer.performRequest("", "", "", NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 	}
 	
 	@Test(expected = ServiceNotConfiguredException.class)

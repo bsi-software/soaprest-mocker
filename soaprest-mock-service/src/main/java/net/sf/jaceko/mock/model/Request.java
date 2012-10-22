@@ -2,18 +2,25 @@ package net.sf.jaceko.mock.model;
 
 public class Request {
 	
-	public Request(String body, String queryString) {
+	private String resourceId;
+	private String body;
+	private String queryString;
+
+	public Request(String body, String queryString, String resourceId) {
 		super();
 		this.body = body;
 		this.queryString = queryString;
+		this.resourceId = resourceId;
 	}
-	private String body;
-	private String queryString;
 
 	public String getBody() {
 		return body;
 	}
 	
+	public String getResourceId() {
+		return resourceId;
+	}
+
 	public String getQueryString() {
 		return queryString;
 	}

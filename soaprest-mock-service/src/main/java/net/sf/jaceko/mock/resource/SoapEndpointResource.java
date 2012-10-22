@@ -33,7 +33,7 @@ public class SoapEndpointResource {
 	public String performRequest(@PathParam("serviceName") String serviceName, String request) {
 		LOG.debug("serviceName: " + serviceName + ", request:" + request);
 		String requestMessgageName = extractRequestMessageName(request);
-		String response = service.performRequest(serviceName, requestMessgageName, request, null);
+		String response = service.performRequest(serviceName, requestMessgageName, request, null, null);
 		LOG.debug("serviceName: " + serviceName + ", response:" + response);
 		return response;
 	}

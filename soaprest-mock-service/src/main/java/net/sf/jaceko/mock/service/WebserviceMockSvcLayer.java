@@ -20,13 +20,13 @@ public class WebserviceMockSvcLayer {
 
 	private DelayService delayService;
 
-	public String performRequest(String serviceName, String operationId, String request, String queryString) {
+	public String performRequest(String serviceName, String operationId, String request, String queryString, String resourceId) {
 		System.out.println(serviceName+", "+operationId+", "+request);
 		WebserviceOperation serviceOperation = getWebserviceOperation(serviceName, operationId);
 		int invocationNumber = serviceOperation.getNextInvocationNumber();
 		String response = serviceOperation.getResponseText(invocationNumber);
 		int delaySec = serviceOperation.getCustomDelaySec();
-		recordRequest(serviceName, operationId, request, queryString);
+		recordRequest(serviceName, operationId, request, queryString, resourceId);
 		delayService.delaySec(delaySec);
 		return response;
 
@@ -67,7 +67,7 @@ public class WebserviceMockSvcLayer {
 		return serviceOperation;
 	}
 
-	private void recordRequest(String serviceName, String operationId, String requestBody, String queryString) {
+	private void recordRequest(String serviceName, String operationId, String requestBody, String queryString, String resourceId) {
 		Map<String, Collection<Request>> requestsPerOperationMap = recordedRequestsMap.get(serviceName);
 		if (requestsPerOperationMap == null) {
 			requestsPerOperationMap = new HashMap<String, Collection<Request>>();
@@ -80,7 +80,7 @@ public class WebserviceMockSvcLayer {
 			requestsPerOperationMap.put(operationId, recordedRequests);
 		}
 
-		Request request = new Request(requestBody, queryString);
+		Request request = new Request(requestBody, queryString, resourceId);
 		recordedRequests.add(request);
 	}
 
@@ -117,6 +117,17 @@ public class WebserviceMockSvcLayer {
 		}
 		return recordedRequests;
 	}
+	
+	public Collection<String> getRecordedResourceIds(String serviceName, String operationId) {
+		Collection<Request> recordedRequests = getRecordedRequests(serviceName, operationId);
+
+		Collection<String> recordedResourceIds = new ArrayList<String>();
+		for (Request request : recordedRequests) {
+			recordedResourceIds.add(request.getResourceId());
+		}
+		return recordedResourceIds;
+	}
+
 
 	public void setDelayService(DelayService delayService) {
 		this.delayService = delayService;
@@ -135,5 +146,6 @@ public class WebserviceMockSvcLayer {
 	private void clearRecordedRequests(String serviceName, String operationId) {
 		getRecordedRequests(serviceName, operationId).clear();
 	}
+
 
 }

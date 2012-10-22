@@ -7,10 +7,14 @@ import static org.hamcrest.xml.HasXPath.hasXPath;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import net.sf.jaceko.mock.helper.XmlParser;
+import net.sf.jaceko.mock.it.helper.dom.DocumentImpl;
 import net.sf.jaceko.mock.resource.RecordedRequestsResource;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
 
@@ -18,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 
 
@@ -85,13 +90,33 @@ public class RecordedRequestsResourceTest {
 				recordedRequests);
 
 		String requestParamsXml = resource.getRecordedUrlParams(serviceName, operationId);
-		System.out.println(requestParamsXml);
 
-		Document requestsDoc = XmlParser.parse(requestParamsXml, false);
+		Document requestsDoc = new DocumentImpl(requestParamsXml);
 
 		assertThat(requestsDoc, hasXPath("count(/urlRequestParams/queryString)", equalTo("2")));
 		assertThat(requestsDoc, hasXPath("/urlRequestParams/queryString[1]", equalTo(reqParams1)));
 		assertThat(requestsDoc, hasXPath("/urlRequestParams/queryString[2]", equalTo(reqParams2)));
+	}
+	
+	@Test
+	public void shouldGetRecordedResourcesIds() throws ParserConfigurationException, SAXException, IOException {
+		String serviceName = "someRESRService";
+		String operationId = "GET";
+
+		String resourceId1 = "id1";
+		String resourceId2 = "id2";
+
+		List<String> recordedResourceIds = asList(resourceId1, resourceId2);
+
+		when(service.getRecordedResourceIds(serviceName, operationId)).thenReturn(
+				recordedResourceIds);
+		String requestParamsXml = resource.getRecordedResourceIds(serviceName, operationId);
+		Document requestsDoc = new DocumentImpl(requestParamsXml);
+
+		assertThat(requestsDoc, hasXPath("count(/resourceIds/resourceId)", equalTo("2")));
+		assertThat(requestsDoc, hasXPath("/resourceIds/resourceId[1]", equalTo(resourceId1)));
+		assertThat(requestsDoc, hasXPath("/resourceIds/resourceId[2]", equalTo(resourceId2)));
+		
 	}
 
 

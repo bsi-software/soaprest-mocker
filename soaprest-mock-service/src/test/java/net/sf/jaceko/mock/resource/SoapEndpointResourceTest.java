@@ -41,7 +41,7 @@ public class SoapEndpointResourceTest {
 
 		resource.performRequest(serviceName, request);
 
-		verify(service).performRequest(serviceName, inputMessageName, request, null);
+		verify(service).performRequest(serviceName, inputMessageName, request, null, null);
 
 	}
 	
@@ -63,7 +63,7 @@ public class SoapEndpointResourceTest {
 
 		resource.performRequest(serviceName, request);
 
-		verify(service).performRequest(serviceName, "objExecute", request, null);
+		verify(service).performRequest(serviceName, "objExecute", request, null, null);
 
 	}
 
@@ -123,7 +123,7 @@ public class SoapEndpointResourceTest {
 
 		String serviceResponse = "<dummyResponse/>";
 
-		when(service.performRequest(anyString(), anyString(), anyString(), anyString())).thenReturn(
+		when(service.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
 				serviceResponse);
 		String response = resource.performRequest(serviceName, request);
 		assertThat(response, is(serviceResponse));
