@@ -73,6 +73,7 @@ public class RestEndpointResourceTest {
 		String responseReturnedByServuceLayer = "someResponse";
 		when(service.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
 				responseReturnedByServuceLayer);
+		assertThat(resource.performGetRequest(NOT_USED_SERVICE_NAME, servletContext), is(responseReturnedByServuceLayer));
 		assertThat(resource.performGetRequest(NOT_USED_SERVICE_NAME, servletContext, NOT_USED_RESOURCE_ID), is(responseReturnedByServuceLayer));
 
 	}
@@ -103,6 +104,17 @@ public class RestEndpointResourceTest {
 		resource.performPutRequest(serviceName, request);
 		verify(service).performRequest(serviceName, "PUT", request, null, null);
 	}
+	
+	@Test
+	public void shouldPerformPutRequestPassingResourceId() {
+		String serviceName = "restServiceName";
+		String resourceId = "resId34";
+		String request = "<dummyRequest>dummyText</dummyRequest>";
+		resource.performPutRequest(serviceName, request, resourceId);
+		verify(service).performRequest(serviceName, "PUT", request, null, resourceId);
+
+	}
+
 
 	@Test
 	public void shouldReturnResponseReturnedByPutRequest() {
@@ -110,7 +122,7 @@ public class RestEndpointResourceTest {
 		when(service.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
 				responseReturnedByServuceLayer);
 		assertThat(resource.performPutRequest(NOT_USED_SERVICE_NAME, null), is(responseReturnedByServuceLayer));
-
+		assertThat(resource.performPutRequest(NOT_USED_SERVICE_NAME, null, NOT_USED_RESOURCE_ID), is(responseReturnedByServuceLayer));
 	}
 
 }

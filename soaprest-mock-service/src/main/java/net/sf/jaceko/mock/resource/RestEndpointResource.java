@@ -11,10 +11,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
-
 import net.sf.jaceko.mock.application.enums.HttpMethod;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
+
+import org.apache.log4j.Logger;
 
 
 @Path("/endpoint/rest/{serviceName}")
@@ -26,9 +26,7 @@ public class RestEndpointResource {
 	@GET
 	@Produces(MediaType.TEXT_XML)
 	public String performGetRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest request) {
-		String response =  svcLayer.performRequest(serviceName, HttpMethod.GET.toString(), "", request.getQueryString(), null);
-		LOG.debug("serviceName: " + serviceName + ", response:" + response);
-		return response;
+		return performGetRequest(serviceName, request, null);
 
 	}
 	
@@ -51,12 +49,22 @@ public class RestEndpointResource {
 		return response;
 
 	}
-
+	
 	@PUT
 	@Consumes(MediaType.TEXT_XML)
 	@Produces(MediaType.TEXT_XML)
 	public String performPutRequest(@PathParam("serviceName") String serviceName, String request) {
-		String response =  svcLayer.performRequest(serviceName, HttpMethod.PUT.toString(), request, null, null);
+		return performPutRequest(serviceName, request, null);
+		
+	}
+
+	@PUT
+	@Path("/{resourceId}")
+	@Consumes(MediaType.TEXT_XML)
+	@Produces(MediaType.TEXT_XML)
+	public String performPutRequest(@PathParam("serviceName") String serviceName, String request, @PathParam("resourceId") String resourceId) {
+		String response =  svcLayer.performRequest(serviceName, HttpMethod.PUT.toString(), request, null, resourceId);
+		LOG.debug("serviceName: " + serviceName + ", response:" + response);
 		return response;
 		
 	}
@@ -67,6 +75,7 @@ public class RestEndpointResource {
 	public void setWebserviceMockService(WebserviceMockSvcLayer svcLayer) {
 		this.svcLayer = svcLayer;
 	}
+
 
 
 

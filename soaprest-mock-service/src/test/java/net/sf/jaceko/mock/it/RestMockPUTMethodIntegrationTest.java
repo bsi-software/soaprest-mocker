@@ -26,15 +26,18 @@ import org.xml.sax.SAXException;
  */
 public class RestMockPUTMethodIntegrationTest {
 
+
+
 	//mocked endpoints configured in ws-mock.properties
 	public static String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/endpoint/rest/dummy-rest";
 	
 	
-	public static String REST_MOCK_PUT_SETUP_INIT 						= "http://localhost:8080/mock/dummy-rest/PUT/setup/init";
-	public static String REST_MOCK_PUT_SETUP_RESPONSE 					= "http://localhost:8080/mock/dummy-rest/PUT/setup/response";
-	public static String REST_MOCK_PUT_SETUP_CONSECUTIVE_RESPONSE 		= "http://localhost:8080/mock/dummy-rest/PUT/setup/consecutive-response/";
-	public static String REST_MOCK_PUT_VERIFY_RECORDED_REQUESTS	 	= "http://localhost:8080/mock/dummy-rest/PUT/recorded/requests";
-	public static String REST_MOCK_PUT_VERIFY_RECORDED_REQUEST_PARAMS 	= "http://localhost:8080/mock/dummy-rest/PUT/recorded/url-request-params";
+	public static String REST_MOCK_PUT_SETUP_INIT 							= "http://localhost:8080/mock/dummy-rest/PUT/setup/init";
+	public static String REST_MOCK_PUT_SETUP_RESPONSE 						= "http://localhost:8080/mock/dummy-rest/PUT/setup/response";
+	public static String REST_MOCK_PUT_SETUP_CONSECUTIVE_RESPONSE 			= "http://localhost:8080/mock/dummy-rest/PUT/setup/consecutive-response/";
+	public static String REST_MOCK_PUT_VERIFY_RECORDED_REQUESTS	 			= "http://localhost:8080/mock/dummy-rest/PUT/recorded/requests";
+	private static final String REST_MOCK_PUT_VERIFY_RECORDED_RESOURCE_IDS 	= "http://localhost:8080/mock/dummy-rest/PUT/recorded/resource-ids";
+	public static String REST_MOCK_PUT_VERIFY_RECORDED_REQUEST_PARAMS 		= "http://localhost:8080/mock/dummy-rest/PUT/recorded/url-request-params";
 	
 	HttpRequestSender requestSender = new HttpRequestSender();
 	
@@ -111,6 +114,25 @@ public class RestMockPUTMethodIntegrationTest {
 				requestUrlParamsDoc,
 				hasXPath("//requests/dummyReq[2]", equalTo("dummyReqText2")));
 
+
+	}
+	
+	@Test
+	public void shoulVerifyResourceIds() throws ClientProtocolException, IOException, ParserConfigurationException, SAXException {
+		requestSender.sendPutRequest(REST_MOCK_ENDPOINT + "/id12", "");
+		requestSender.sendPutRequest(REST_MOCK_ENDPOINT + "/id56", "");
+		
+		String verifyResponse = requestSender.sendGetRequest(REST_MOCK_PUT_VERIFY_RECORDED_RESOURCE_IDS);
+		Document verifyResponseDoc = new DocumentImpl(verifyResponse);
+
+		assertThat(
+				verifyResponseDoc,
+				hasXPath("//resourceIds/resourceId[1]",
+						equalTo("id12")));
+		assertThat(
+				verifyResponseDoc,
+				hasXPath("//resourceIds/resourceId[2]",
+						equalTo("id56")));
 
 	}
 	
