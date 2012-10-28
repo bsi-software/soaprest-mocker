@@ -10,21 +10,21 @@ import net.sf.jaceko.mock.configuration.MockserviceConfiguration;
 import net.sf.jaceko.mock.configuration.WebService;
 import net.sf.jaceko.mock.configuration.WebserviceOperation;
 import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
-import net.sf.jaceko.mock.model.Request;
+import net.sf.jaceko.mock.model.MockResponse;
+import net.sf.jaceko.mock.model.MockRequest;
 
 
 public class WebserviceMockSvcLayer {
 	private MockserviceConfiguration configuration;
 
-	private Map<String, Map<String, Collection<Request>>> recordedRequestsMap = new HashMap<String, Map<String, Collection<Request>>>();
+	private Map<String, Map<String, Collection<MockRequest>>> recordedRequestsMap = new HashMap<String, Map<String, Collection<MockRequest>>>();
 
 	private DelayService delayService;
 
-	public String performRequest(String serviceName, String operationId, String request, String queryString, String resourceId) {
-		System.out.println(serviceName+", "+operationId+", "+request);
+	public MockResponse performRequest(String serviceName, String operationId, String request, String queryString, String resourceId) {
 		WebserviceOperation serviceOperation = getWebserviceOperation(serviceName, operationId);
 		int invocationNumber = serviceOperation.getNextInvocationNumber();
-		String response = serviceOperation.getResponseText(invocationNumber);
+		MockResponse response = serviceOperation.getResponse(invocationNumber);
 		int delaySec = serviceOperation.getCustomDelaySec();
 		recordRequest(serviceName, operationId, request, queryString, resourceId);
 		delayService.delaySec(delaySec);
@@ -33,9 +33,9 @@ public class WebserviceMockSvcLayer {
 	}
 
 	public void setCustomResponse(String serviceName, String operationId, int requestInOrder,
-			String customResponse) {
+			MockResponse expectedResponse) {
 		WebserviceOperation serviceOperation = getWebserviceOperation(serviceName, operationId);
-		serviceOperation.setCustomResponseText(customResponse, requestInOrder);
+		serviceOperation.setCustomResponse(expectedResponse, requestInOrder);
 		serviceOperation.resetInvocationNumber();
 
 	}
@@ -68,27 +68,27 @@ public class WebserviceMockSvcLayer {
 	}
 
 	private void recordRequest(String serviceName, String operationId, String requestBody, String queryString, String resourceId) {
-		Map<String, Collection<Request>> requestsPerOperationMap = recordedRequestsMap.get(serviceName);
+		Map<String, Collection<MockRequest>> requestsPerOperationMap = recordedRequestsMap.get(serviceName);
 		if (requestsPerOperationMap == null) {
-			requestsPerOperationMap = new HashMap<String, Collection<Request>>();
+			requestsPerOperationMap = new HashMap<String, Collection<MockRequest>>();
 			recordedRequestsMap.put(serviceName, requestsPerOperationMap);
 		}
 
-		Collection<Request> recordedRequests = requestsPerOperationMap.get(operationId);
+		Collection<MockRequest> recordedRequests = requestsPerOperationMap.get(operationId);
 		if (recordedRequests == null) {
-			recordedRequests = new ArrayList<Request>();
+			recordedRequests = new ArrayList<MockRequest>();
 			requestsPerOperationMap.put(operationId, recordedRequests);
 		}
 
-		Request request = new Request(requestBody, queryString, resourceId);
+		MockRequest request = new MockRequest(requestBody, queryString, resourceId);
 		recordedRequests.add(request);
 	}
 
 	public Collection<String> getRecordedRequestBodies(String serviceName, String operationId) {
-		Collection<Request> recordedRequests = getRecordedRequests(serviceName, operationId);
+		Collection<MockRequest> recordedRequests = getRecordedRequests(serviceName, operationId);
 
 		Collection<String> recordedRequestBodies = new ArrayList<String>();
-		for (Request request : recordedRequests) {
+		for (MockRequest request : recordedRequests) {
 			recordedRequestBodies.add(request.getBody());
 		}
 		return recordedRequestBodies;
@@ -96,22 +96,22 @@ public class WebserviceMockSvcLayer {
 	}
 
 	public Collection<String> getRecordedUrlParams(String serviceName, String operationId) {
-		Collection<Request> recordedRequests = getRecordedRequests(serviceName, operationId);
+		Collection<MockRequest> recordedRequests = getRecordedRequests(serviceName, operationId);
 
 		Collection<String> recordedRequestParams = new ArrayList<String>();
-		for (Request request : recordedRequests) {
+		for (MockRequest request : recordedRequests) {
 			recordedRequestParams.add(request.getQueryString());
 		}
 		return recordedRequestParams;
 	}
 
-	private Collection<Request> getRecordedRequests(String serviceName, String operationId) {
+	private Collection<MockRequest> getRecordedRequests(String serviceName, String operationId) {
 		getWebserviceOperation(serviceName, operationId);
-		Map<String, Collection<Request>> requestsPerOperationMap = recordedRequestsMap.get(serviceName);
+		Map<String, Collection<MockRequest>> requestsPerOperationMap = recordedRequestsMap.get(serviceName);
 		if (requestsPerOperationMap == null) {
 			return Collections.emptyList();
 		}
-		Collection<Request> recordedRequests = requestsPerOperationMap.get(operationId);
+		Collection<MockRequest> recordedRequests = requestsPerOperationMap.get(operationId);
 		if (recordedRequests == null) {
 			return Collections.emptyList();
 		}
@@ -119,10 +119,10 @@ public class WebserviceMockSvcLayer {
 	}
 	
 	public Collection<String> getRecordedResourceIds(String serviceName, String operationId) {
-		Collection<Request> recordedRequests = getRecordedRequests(serviceName, operationId);
+		Collection<MockRequest> recordedRequests = getRecordedRequests(serviceName, operationId);
 
 		Collection<String> recordedResourceIds = new ArrayList<String>();
-		for (Request request : recordedRequests) {
+		for (MockRequest request : recordedRequests) {
 			recordedResourceIds.add(request.getResourceId());
 		}
 		return recordedResourceIds;

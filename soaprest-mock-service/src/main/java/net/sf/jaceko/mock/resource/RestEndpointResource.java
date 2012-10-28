@@ -10,10 +10,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
 import net.sf.jaceko.mock.application.enums.HttpMethod;
+import net.sf.jaceko.mock.model.MockResponse;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
 
 
@@ -25,10 +27,10 @@ public class RestEndpointResource {
 
 	@GET
 	@Produces(MediaType.TEXT_XML)
-	public String performGetRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest request) {
-		String response =  svcLayer.performRequest(serviceName, HttpMethod.GET.toString(), "", request.getQueryString(), null);
+	public Response performGetRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest request) {
+		MockResponse response =  svcLayer.performRequest(serviceName, HttpMethod.GET.toString(), "", request.getQueryString(), null);
 		LOG.debug("serviceName: " + serviceName + ", response:" + response);
-		return response;
+		return Response.status(response.getCode()).entity(response.getBody()).build();
 
 	}
 	
@@ -37,7 +39,7 @@ public class RestEndpointResource {
 	@Produces(MediaType.TEXT_XML)
 	public String performGetRequest(@PathParam("serviceName") String serviceName,
 			@Context HttpServletRequest request, @PathParam("resourceId") String resourceId) {
-		String response =  svcLayer.performRequest(serviceName, HttpMethod.GET.toString(), "", request.getQueryString(), resourceId);
+		String response =  svcLayer.performRequest(serviceName, HttpMethod.GET.toString(), "", request.getQueryString(), resourceId).getBody();
 		LOG.debug("serviceName: " + serviceName + ", response:" + response);
 		return response;
 	}
@@ -46,7 +48,7 @@ public class RestEndpointResource {
 	@Consumes(MediaType.TEXT_XML)
 	@Produces(MediaType.TEXT_XML)
 	public String performPostRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest httpServletRequest, String request) {
-		String response =  svcLayer.performRequest(serviceName, HttpMethod.POST.toString(), request, httpServletRequest.getQueryString(), null);
+		String response =  svcLayer.performRequest(serviceName, HttpMethod.POST.toString(), request, httpServletRequest.getQueryString(), null).getBody();
 		LOG.debug("serviceName: " + serviceName + ", response:" + response);
 		return response;
 
@@ -56,7 +58,7 @@ public class RestEndpointResource {
 	@Consumes(MediaType.TEXT_XML)
 	@Produces(MediaType.TEXT_XML)
 	public String performPutRequest(@PathParam("serviceName") String serviceName, String request) {
-		String response =  svcLayer.performRequest(serviceName, HttpMethod.PUT.toString(), request, null, null);
+		String response =  svcLayer.performRequest(serviceName, HttpMethod.PUT.toString(), request, null, null).getBody();
 		return response;
 		
 	}

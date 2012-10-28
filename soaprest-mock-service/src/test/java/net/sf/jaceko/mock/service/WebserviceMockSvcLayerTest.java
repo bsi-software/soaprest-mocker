@@ -15,6 +15,7 @@ import net.sf.jaceko.mock.configuration.MockserviceConfiguration;
 import net.sf.jaceko.mock.configuration.WebService;
 import net.sf.jaceko.mock.configuration.WebserviceOperation;
 import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
+import net.sf.jaceko.mock.model.MockResponse;
 import net.sf.jaceko.mock.service.DelayService;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
 
@@ -47,21 +48,36 @@ public class WebserviceMockSvcLayerTest {
 	}
 
 	@Test
-	public void shouldReturnDefaultResponse() {
+	public void shouldReturnDefaultResponse_OK() {
 
 		String serviceName = "mptu";
 		String operationId = "prepayRequest";
 		String defaultResponse = "<defaultResp>abc</defaultResp>";
-
-		WebserviceOperation operation = new WebserviceOperation(null, null, defaultResponse);
+		int defaultResponseCode = 200;
+		WebserviceOperation operation = new WebserviceOperation(null, null, defaultResponse, defaultResponseCode);
 
 		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 
-		String response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
-		assertThat(response, is(defaultResponse));
-
+		MockResponse response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		assertThat(response.getBody(), is(defaultResponse));
+		assertThat(response.getCode(), is(defaultResponseCode));
 	}
 
+	@Test
+	public void shouldReturnDefaultResponse_NOT_AUTHORIZED() {
+
+		String serviceName = "mptu";
+		String operationId = "prepayRequest";
+		int defaultResponseCode = 403;
+		WebserviceOperation operation = new WebserviceOperation(null, null, null, defaultResponseCode);
+
+		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
+
+		MockResponse response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		assertThat(response.getCode(), is(defaultResponseCode));
+	}
+
+	
 	@Test(expected = ServiceNotConfiguredException.class)
 	public void performRequestShouldThrowExceptionIfOperationNotFound() {
 
@@ -80,9 +96,9 @@ public class WebserviceMockSvcLayerTest {
 		int requestInOrder = 2;
 
 		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
-		serviceLayer.setCustomResponse(serviceName, operationId, requestInOrder, expectedCustomResponse);
-		String customResponse = operation.getResponseText(requestInOrder);
-		assertThat(customResponse, is(expectedCustomResponse));
+		serviceLayer.setCustomResponse(serviceName, operationId, requestInOrder, new MockResponse(expectedCustomResponse));
+		MockResponse customResponse = operation.getResponse(requestInOrder);
+		assertThat(customResponse.getBody(), is(expectedCustomResponse));
 
 	}
 	
@@ -98,11 +114,11 @@ public class WebserviceMockSvcLayerTest {
 		int requestInOrder = 2;
 
 		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
-		serviceLayer.setCustomResponse(serviceName, operationId, requestInOrder, "<dummyResp/>");
+		serviceLayer.setCustomResponse(serviceName, operationId, requestInOrder, new MockResponse("<dummyResp/>"));
 		assertThat(operation.getNextInvocationNumber(), is(1));
 		assertThat(operation.getNextInvocationNumber(), is(2));
 		
-		serviceLayer.setCustomResponse(serviceName, operationId, requestInOrder, "<dummyResp2/>");
+		serviceLayer.setCustomResponse(serviceName, operationId, requestInOrder, new MockResponse("<dummyResp2/>"));
 		assertThat(operation.getNextInvocationNumber(), is(1));
 
 	}
@@ -115,7 +131,7 @@ public class WebserviceMockSvcLayerTest {
 
 		when(configuration.getWebServiceOperation(anyString(), anyString())).thenReturn(null);
 
-		serviceLayer.setCustomResponse("", "", 0, "");
+		serviceLayer.setCustomResponse("", "", 0, new MockResponse(null));
 
 	}
 
@@ -125,14 +141,14 @@ public class WebserviceMockSvcLayerTest {
 		String serviceName = "mptu";
 		String operationId = "prepayRequest";
 		String defaultResponse = "<defaultResp>abc</defaultResp>";
-		String expectedCustomResponse = "<dummyResp/>";
+		MockResponse expectedCustomResponse = new MockResponse("<dummyResp/>");
 
-		WebserviceOperation operation = new WebserviceOperation(null, null, defaultResponse);
-		operation.setCustomResponseText(expectedCustomResponse, 1);
+		WebserviceOperation operation = new WebserviceOperation(null, null, defaultResponse, 0);
+		operation.setCustomResponse(expectedCustomResponse, 1);
 
 		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 
-		String response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		MockResponse response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 		assertThat(response, is(expectedCustomResponse));
 
 	}
@@ -143,18 +159,18 @@ public class WebserviceMockSvcLayerTest {
 		String serviceName = "mptu";
 		String operationId = "prepayRequest";
 		String defaultResponse = "<defaultResp>abc</defaultResp>";
-		String expectedCustomResponse = "<dummyResp/>";
+		MockResponse expectedCustomResponse = new MockResponse("<dummyResp/>");
 
-		WebserviceOperation operation = new WebserviceOperation(null, null, defaultResponse);
-		operation.setCustomResponseText(expectedCustomResponse, 1);
-		operation.setCustomResponseText(expectedCustomResponse, 1);
+		WebserviceOperation operation = new WebserviceOperation(null, null, defaultResponse, 0);
+		operation.setCustomResponse(expectedCustomResponse, 1);
+		operation.setCustomResponse(expectedCustomResponse, 1);
 
 		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 
-		String response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 
-		response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
-		assertThat(response, is(defaultResponse));
+		MockResponse response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		assertThat(response.getBody(), is(defaultResponse));
 
 	}
 
@@ -164,18 +180,18 @@ public class WebserviceMockSvcLayerTest {
 		String serviceName = "mptu";
 		String operationId = "prepayRequest";
 		String defaultResponse = "<defaultResp>abc</defaultResp>";
-		String expectedCustomResponse1 = "<dummyResp/>";
-		String expectedCustomResponse2 = "<dummyResp2/>";
+		MockResponse expectedCustomResponse1 = new MockResponse("<dummyResp/>");
+		MockResponse expectedCustomResponse2 = new MockResponse("<dummyResp2/>");
 
-		WebserviceOperation operation = new WebserviceOperation(null, null, defaultResponse);
-		operation.setCustomResponseText(expectedCustomResponse1, 1);
-		operation.setCustomResponseText(expectedCustomResponse2, 2);
+		WebserviceOperation operation = new WebserviceOperation(null, null, defaultResponse, 0);
+		operation.setCustomResponse(expectedCustomResponse1, 1);
+		operation.setCustomResponse(expectedCustomResponse2, 2);
 
 		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 
-		String response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 
-		response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		MockResponse response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 		assertThat(response, is(expectedCustomResponse2));
 
 	}
@@ -187,16 +203,16 @@ public class WebserviceMockSvcLayerTest {
 		String operationId = "prepayRequest";
 
 		String defaultResponse = "<defaultResp>abc</defaultResp>";
-		WebserviceOperation operation = new WebserviceOperation(null, null, defaultResponse);
-		operation.setCustomResponseText("<dummyResp/>", 1);
-		operation.setCustomResponseText("<dummyResp2/>", 2);
+		WebserviceOperation operation = new WebserviceOperation(null, null, defaultResponse, 0);
+		operation.setCustomResponse(new MockResponse("<dummyResp/>"), 1);
+		operation.setCustomResponse(new MockResponse("<dummyResp2/>"), 2);
 
 		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 
 		serviceLayer.initMock(serviceName, operationId);
 
-		String response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
-		assertThat(response, is(defaultResponse));
+		MockResponse response = serviceLayer.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		assertThat(response.getBody(), is(defaultResponse));
 
 	}
 
@@ -364,7 +380,7 @@ public class WebserviceMockSvcLayerTest {
 		String defaultResponse = "<defaultResp>abc</defaultResp>";
 		int delaySec = 5;
 
-		WebserviceOperation operation = new WebserviceOperation(null, null, defaultResponse);
+		WebserviceOperation operation = new WebserviceOperation(null, null, defaultResponse, 0);
 
 		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 
@@ -378,7 +394,7 @@ public class WebserviceMockSvcLayerTest {
 	public void shouldResetInvocationNumberWhileSettingUpDelay() {
 		String serviceName = "mptu";
 		String operationId = "prepayRequest";
-		WebserviceOperation operation = new WebserviceOperation(null, null, "");
+		WebserviceOperation operation = new WebserviceOperation(null, null, "", 0);
 
 		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 

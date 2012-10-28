@@ -108,7 +108,7 @@ public class PropertyProcessorFileReadingTest {
 		WebService restService = configuration.getWebService("dummy_rest_get");
 		assertThat(restService.getServiceType(), is(ServiceType.REST));
 		assertThat(restService.getOperation(0).getOperationName(), is(HttpMethod.GET.toString()));
-		
+		assertThat(restService.getOperation(0).getDefaultResponseCode(), is(200));
 
 	}
 	

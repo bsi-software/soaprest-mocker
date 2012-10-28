@@ -3,6 +3,8 @@ package net.sf.jaceko.mock.it.helper.request;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import net.sf.jaceko.mock.model.MockResponse;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -26,7 +28,7 @@ public class HttpRequestSender {
 		HttpEntityEnclosingRequestBase httpRequest = new HttpPost(url);
 		addRequestBody(httpRequest, requestBody);
 
-		return executeRequest(httpRequest);
+		return executeRequest(httpRequest).getBody();
 	}
 
 	public String sendPutRequest(String url, String requestBody)
@@ -35,7 +37,7 @@ public class HttpRequestSender {
 		HttpEntityEnclosingRequestBase httpRequest = new HttpPut(url);
 		addRequestBody(httpRequest, requestBody);
 
-		return executeRequest(httpRequest);
+		return executeRequest(httpRequest).getBody();
 	}
 
 	private void addRequestBody(HttpEntityEnclosingRequestBase httpRequest,
@@ -46,13 +48,13 @@ public class HttpRequestSender {
 		httpRequest.setEntity(requestEntity);
 	}
 
-	public String sendGetRequest(String url) throws IOException,
+	public MockResponse sendGetRequest(String url) throws IOException,
 			ClientProtocolException {
 		HttpGet httpGet = new HttpGet(url);
 		return executeRequest(httpGet);
 	}
 
-	private String executeRequest(HttpRequestBase httpRequest)
+	private MockResponse executeRequest(HttpRequestBase httpRequest)
 			throws IOException, ClientProtocolException {
 		HttpResponse response = httpclient.execute(httpRequest);
 		HttpEntity entity = response.getEntity();
@@ -61,7 +63,7 @@ public class HttpRequestSender {
 			body = EntityUtils.toString(entity);
 			entity.getContent().close();
 		}
-		return body;
+		return new MockResponse(body, response.getStatusLine().getStatusCode());
 	}
 
 	public void setHttpclient(HttpClient httpclient) {

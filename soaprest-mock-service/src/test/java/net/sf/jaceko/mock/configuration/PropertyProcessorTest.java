@@ -38,7 +38,7 @@ public class PropertyProcessorTest {
 		String serviceName = "somerestservice";
 		String propertyString = "SERVICE[0].NAME=" + serviceName + "\r\n"
 				+ "SERVICE[0].TYPE=REST\r\n";
-		Collection<WebService> webServices = processPropertiesAndreturnSoapServices(propertyString);
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
 
 		assertThat(webServices.size(), is(1));
 		assertThat(webServices, hasItem(new ServiceHavingNameEqualTo(serviceName)));
@@ -52,13 +52,13 @@ public class PropertyProcessorTest {
 
 		String propertyString = "SERVICE[0].NAME=" + serviceName + "\r\n"
 				+ "SERVICE[0].TYPE=SOAP\r\n";
-		Collection<WebService> webServices = processPropertiesAndreturnSoapServices(propertyString);
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
 		assertThat(webServices, hasItem(new ServiceHavingNameEqualTo(serviceName)));
 		assertThat(webServices, hasItem(new SoapService()));
 
 	}
 
-	private Collection<WebService> processPropertiesAndreturnSoapServices(String propertyString)
+	private Collection<WebService> processPropertiesAndReturnWebServices(String propertyString)
 			throws IOException {
 		Reader reader = new StringReader(propertyString);
 		MockserviceConfiguration configuration = propertyProcessor.process(reader);
@@ -71,7 +71,7 @@ public class PropertyProcessorTest {
 		String serviceName2 = "mptu";
 		String propertyString = "SERVICE[0].NAME=" + serviceName1 + "\r\n" + "SERVICE[1].NAME="
 				+ serviceName2 + "\r\n";
-		Collection<WebService> webServices = processPropertiesAndreturnSoapServices(propertyString);
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
 		assertThat(webServices.size(), is(2));
 		assertThat(webServices, hasItem(new ServiceHavingNameEqualTo(serviceName1)));
 		assertThat(webServices, hasItem(new ServiceHavingNameEqualTo(serviceName2)));
@@ -84,7 +84,7 @@ public class PropertyProcessorTest {
 		String serviceName = "ticketing";
 		String propertyString = "SERVICE_MaLformed[0].NAME=" + serviceName + "\r\n";
 
-		Collection<WebService> webServices = processPropertiesAndreturnSoapServices(propertyString);
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
 
 		assertThat(webServices.size(), is(0));
 
@@ -183,7 +183,7 @@ public class PropertyProcessorTest {
 
 		String propertyString = "SERVICE[0].NAME=ticketing\r\n" + "SERVICE[0].WSDL=" + wsdlName;
 
-		Collection<WebService> webServices = processPropertiesAndreturnSoapServices(propertyString);
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
 		assertThat(webServices.size(), is(1));
 		assertThat(webServices, hasItem(new ServiceHavingWsdlNameEqualTo(wsdlName)));
 
@@ -196,7 +196,7 @@ public class PropertyProcessorTest {
 		String propertyString = "SERVICE[0].NAME=ticketing\r\n" + "SERVICE[0].WSDL=" + wsdlName1
 				+ "\r\n" + "SERVICE[1].NAME=prepay\r\n" + "SERVICE[0].WSDL=" + wsdlName2;
 
-		Collection<WebService> webServices = processPropertiesAndreturnSoapServices(propertyString);
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
 		assertThat(webServices.size(), is(2));
 		assertThat(webServices, hasItem(new ServiceHavingWsdlNameEqualTo(wsdlName1)));
 		assertThat(webServices, hasItem(new ServiceHavingWsdlNameEqualTo(wsdlName2)));
@@ -209,7 +209,7 @@ public class PropertyProcessorTest {
 		String propertyString = "SERVICE[0].NAME=ticketing\r\n"
 				+ "SERVICE[0].WSDL=ticketing.wsdl\r\n" + "SERVICE[0].OPERATION[0].INPUT_MESSAGE="
 				+ expectedInputMessageName + "\r\n";
-		Collection<WebService> webServices = processPropertiesAndreturnSoapServices(propertyString);
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
 
 		WebService service = webServices.iterator().next();
 		Collection<WebserviceOperation> operations = service.getOperations();
@@ -225,7 +225,7 @@ public class PropertyProcessorTest {
 				+ "SERVICE[0].WSDL=ticketing.wsdl\r\n" + "SERVICE[0].OPERATION[0].INPUT_MESSAGE="
 				+ expectedInputMessageName + "\r\n";
 
-		Collection<WebService> webServices = processPropertiesAndreturnSoapServices(propertyString);
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
 
 		WebService service = webServices.iterator().next();
 		Collection<WebserviceOperation> operations = service.getOperations();
@@ -239,7 +239,7 @@ public class PropertyProcessorTest {
 		String expectedHttpMethod = "GET";
 		String propertyString = "SERVICE[0].NAME=service1\r\n"
 				+ "SERVICE[0].OPERATION[0].HTTP_METHOD=" + expectedHttpMethod + "\r\n";
-		Collection<WebService> webServices = processPropertiesAndreturnSoapServices(propertyString);
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
 
 		WebService service = webServices.iterator().next();
 		Collection<WebserviceOperation> operations = service.getOperations();
@@ -253,7 +253,7 @@ public class PropertyProcessorTest {
 		String badHttpMethod = "GOT";
 		String propertyString = "SERVICE[0].NAME=service1\r\n"
 				+ "SERVICE[0].OPERATION[0].HTTP_METHOD=" + badHttpMethod + "\r\n";
-		processPropertiesAndreturnSoapServices(propertyString);
+		processPropertiesAndReturnWebServices(propertyString);
 
 	}
 
@@ -266,7 +266,7 @@ public class PropertyProcessorTest {
 				+ expectedInputMessageName + "\r\n"
 				+ "SERVICE[0].UNKNOWN_Property=unknow_prop_vaue\r\n";
 
-		Collection<WebService> webServices = processPropertiesAndreturnSoapServices(propertyString);
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
 
 		WebService service = webServices.iterator().next();
 		Collection<WebserviceOperation> operations = service.getOperations();
@@ -284,7 +284,7 @@ public class PropertyProcessorTest {
 				+ "SERVICE[0].WSDL=ticketing.wsdl\r\n" + "SERVICE[0].OPERATION[0].INPUT_MESSAGE="
 				+ expectedInputMessageName + "\r\n" + "SERVICE[0].OPERATION[1].INPUT_MESSAGE="
 				+ expectedInputMessageName2 + "\r\n";
-		Collection<WebService> webServices = processPropertiesAndreturnSoapServices(propertyString);
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
 
 		WebService service = webServices.iterator().next();
 		Collection<WebserviceOperation> operations = service.getOperations();
@@ -310,7 +310,7 @@ public class PropertyProcessorTest {
 				+ "SERVICE[0].OPERATION[1].UNKNOWN_PROP123=unknown_prop_value\r\n"
 				+ "SERVICE[0].OPERATION[0].UNKNOWN_PROP543=unknown_prop_value5634\r\n";
 
-		Collection<WebService> webServices = processPropertiesAndreturnSoapServices(propertyString);
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
 
 		WebService service = webServices.iterator().next();
 		Collection<WebserviceOperation> operations = service.getOperations();
@@ -327,22 +327,53 @@ public class PropertyProcessorTest {
 	}
 
 	@Test
-	public void shouldReturnServiceHavingTwoOperationsHavingDefRespSet() throws IOException {
+	public void shouldReturnServiceHavingTwoOperationsHavingDefaultResponses() throws IOException {
 		String expectedResponseFile = "confirmRequestResponse.xml";
 		String expectedResponseFile2 = "reserveRequestResponse.xml";
 		String propertyString = "SERVICE[0].NAME=ticketing\r\n"
 				+ "SERVICE[0].WSDL=ticketing.wsdl\r\n"
-				+ "SERVICE[0].OPERATION[0].DEFAULT_RESPONSE=" + expectedResponseFile + "\r\n"
+				+ "SERVICE[0].OPERATION[0].DEFAULT_RESPONSE=" + expectedResponseFile + "    \r\n"
 				+ "SERVICE[0].OPERATION[1].DEFAULT_RESPONSE=" + expectedResponseFile2 + "\r\n";
 
-		Collection<WebService> webServices = processPropertiesAndreturnSoapServices(propertyString);
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
 		WebService service = webServices.iterator().next();
 		Collection<WebserviceOperation> operations = service.getOperations();
 		assertThat(operations.size(), is(2));
 		assertThat(operations, hasItem(new OperationHavingDefaultResponseEqualTo(
-				expectedResponseFile2)));
+				expectedResponseFile)));
 		assertThat(operations, hasItem(new OperationHavingDefaultResponseEqualTo(
 				expectedResponseFile2)));
+
+	}
+
+	@Test
+	public void shouldReturnServiceHavingDefaultResponseCode() throws IOException {
+		String propertyString = "SERVICE[0].NAME=some_service\r\n"
+				+ "SERVICE[0].OPERATION[0].DEFAULT_RESPONSE_CODE=204\r\n";
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
+
+		WebService service = webServices.iterator().next();
+		Collection<WebserviceOperation> operations = service.getOperations();
+		assertThat(operations.size(), is(1));
+		assertThat(operations, hasItem(new OperationHavingDefaultResponseCodeEqualTo(
+				204)));
+
+	}
+	
+	@Test
+	public void shouldReturnServiceHavingTwoOperationsHavingDefaultResponseCodes() throws IOException {
+		String propertyString = "SERVICE[0].NAME=some_service\r\n"
+				+ "SERVICE[0].OPERATION[0].DEFAULT_RESPONSE_CODE=200\r\n"
+				+ "SERVICE[0].OPERATION[1].DEFAULT_RESPONSE_CODE=201 \r\n";
+
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
+		WebService service = webServices.iterator().next();
+		Collection<WebserviceOperation> operations = service.getOperations();
+		assertThat(operations.size(), is(2));
+		assertThat(operations, hasItem(new OperationHavingDefaultResponseCodeEqualTo(
+				200)));
+		assertThat(operations, hasItem(new OperationHavingDefaultResponseCodeEqualTo(
+				201)));
 
 	}
 
@@ -446,13 +477,37 @@ public class PropertyProcessorTest {
 
 		@Override
 		public void describeTo(Description description) {
-			description.appendText("operation getDefaultResponse = " + defaultResponse + " but is "
+			description.appendText("operation having defaultResponse = " + defaultResponse + " but is "
 					+ operation);
 
 		}
 
 	}
 
+	class OperationHavingDefaultResponseCodeEqualTo extends ArgumentMatcher<WebserviceOperation> {
+		private WebserviceOperation operation;
+		private final int defaultResponseCode;
+
+		@Override
+		public boolean matches(Object argument) {
+			operation = (WebserviceOperation) argument;
+			return defaultResponseCode==operation.getDefaultResponseCode();
+		}
+
+		private OperationHavingDefaultResponseCodeEqualTo(int defaultResponseCode) {
+			super();
+			this.defaultResponseCode = defaultResponseCode;
+		}
+
+		@Override
+		public void describeTo(Description description) {
+			description.appendText("operation having defaultResponseCode = " + defaultResponseCode + " but is operation having defaultResponseCode = "
+					+ operation.getDefaultResponseCode());
+		}
+
+	}
+
+	
 	class ServiceHavingWsdlNameEqualTo extends ArgumentMatcher<WebService> {
 		private WebService service;
 		private final String wsdlName;

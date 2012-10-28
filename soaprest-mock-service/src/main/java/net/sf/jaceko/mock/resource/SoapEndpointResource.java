@@ -9,13 +9,13 @@ import javax.ws.rs.core.MediaType;
 
 import net.sf.jaceko.mock.exception.ClientFaultException;
 import net.sf.jaceko.mock.helper.XmlParser;
+import net.sf.jaceko.mock.model.MockResponse;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 
 @Path("/endpoint/soap/{serviceName}")
 public class SoapEndpointResource {
@@ -30,12 +30,18 @@ public class SoapEndpointResource {
 	@POST
 	@Consumes(MediaType.TEXT_XML)
 	@Produces(MediaType.TEXT_XML)
-	public String performRequest(@PathParam("serviceName") String serviceName, String request) {
+	public String performRequest(@PathParam("serviceName") String serviceName,
+			String request) {
 		LOG.debug("serviceName: " + serviceName + ", request:" + request);
 		String requestMessgageName = extractRequestMessageName(request);
-		String response = service.performRequest(serviceName, requestMessgageName, request, null, null);
-		LOG.debug("serviceName: " + serviceName + ", response:" + response);
-		return response;
+		String responseBody = null;
+		MockResponse response = service.performRequest(serviceName, requestMessgageName,
+				request, null, null);
+		if (response != null) {
+			responseBody = response.getBody();
+		}
+		LOG.debug("serviceName: " + serviceName + ", response:" + responseBody);
+		return responseBody;
 	}
 
 	private String extractRequestMessageName(String request) {

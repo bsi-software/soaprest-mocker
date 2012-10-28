@@ -11,6 +11,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.jaceko.mock.it.helper.dom.DocumentImpl;
 import net.sf.jaceko.mock.it.helper.request.HttpRequestSender;
+import net.sf.jaceko.mock.model.MockResponse;
 
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Before;
@@ -101,8 +102,8 @@ public class RestMockPOSTMethodIntegrationTest {
 		requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "<dummyReq>dummyReqText1</dummyReq>");
 		requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "<dummyReq>dummyReqText2</dummyReq>");
 
-		String recordedRequests = requestSender.sendGetRequest(REST_MOCK_POST_VERIFY_RECORDED_REQUESTS);
-		Document requestUrlParamsDoc = new DocumentImpl(recordedRequests);
+		MockResponse recordedRequests = requestSender.sendGetRequest(REST_MOCK_POST_VERIFY_RECORDED_REQUESTS);
+		Document requestUrlParamsDoc = new DocumentImpl(recordedRequests.getBody());
 
 		assertThat(
 				requestUrlParamsDoc,
@@ -119,8 +120,8 @@ public class RestMockPOSTMethodIntegrationTest {
 		requestSender.sendPostRequest(REST_MOCK_ENDPOINT + "?param=paramValue1", "");
 		requestSender.sendPostRequest(REST_MOCK_ENDPOINT + "?param=paramValue2", "");
 		
-		String requestUrlParams = requestSender.sendGetRequest(REST_MOCK_POST_VERIFY_RECORDED_REQUEST_PARAMS);
-		Document requestUrlParamsDoc = new DocumentImpl(requestUrlParams);
+		MockResponse requestUrlParams = requestSender.sendGetRequest(REST_MOCK_POST_VERIFY_RECORDED_REQUEST_PARAMS);
+		Document requestUrlParamsDoc = new DocumentImpl(requestUrlParams.getBody());
 
 		assertThat(
 				requestUrlParamsDoc,

@@ -31,7 +31,7 @@ public class WebserviceMockSvcLayerIntegrationTest {
 	public void shouldDelayRequest() {
 		String serviceName = "mptu";
 		String inputMessageName = "prepayRequest";
-		WebserviceOperation operation = new WebserviceOperation(null, null, "aa");
+		WebserviceOperation operation = new WebserviceOperation(null, null, "aa", 0);
 		operation.setCustomDelaySec(1);
 
 		when(configuration.getWebServiceOperation(serviceName, inputMessageName))

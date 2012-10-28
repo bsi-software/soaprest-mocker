@@ -4,9 +4,11 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import net.sf.jaceko.mock.model.MockResponse;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
 import org.apache.commons.httpclient.HttpStatus;
 
@@ -21,8 +23,8 @@ public class MockSetupResource {
     @POST
 	@Path("/response")
     @Consumes(MediaType.TEXT_XML)
-	public Response setUpResponse(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId, String customResponse) {
-		service.setCustomResponse(serviceName, operationId, 1, customResponse);
+	public Response setUpResponse(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId, @QueryParam("code") int customResponseCode, String customResponseBody) {
+		service.setCustomResponse(serviceName, operationId, 1, new MockResponse(customResponseBody, customResponseCode));
 		return Response.status(HttpStatus.SC_OK).build();
 	}
     
@@ -30,8 +32,8 @@ public class MockSetupResource {
 	@Path("/consecutive-response/{requestInOrder}")
     @Consumes(MediaType.TEXT_XML)
     public Response setUpResponse(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId, @PathParam("requestInOrder") int requestInOrder,
-			String customResponse) {
-		service.setCustomResponse(serviceName, operationId, requestInOrder, customResponse);
+    		@QueryParam("code") int customResponseCode, String customResponseBody) {
+		service.setCustomResponse(serviceName, operationId, requestInOrder, new MockResponse(customResponseBody));
 		return Response.status(HttpStatus.SC_OK).build();
 	}
 

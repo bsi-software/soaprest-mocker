@@ -60,11 +60,11 @@ public class MockserviceConfigurationTest {
 
 		String inputMessageName1 = "reserveRequest";
 		String inputMessageName2 = "confirmRequest";
-		WebserviceOperation operation1 = new WebserviceOperation(inputMessageName1, null, null);
-		WebserviceOperation operation2 = new WebserviceOperation(inputMessageName2, null, null);
+		WebserviceOperation operation1 = new WebserviceOperation(inputMessageName1, null, null, 0);
+		WebserviceOperation operation2 = new WebserviceOperation(inputMessageName2, null, null, 0);
 		
 		String inputMessageName3 = "prepayRequest";
-		WebserviceOperation operation3 = new WebserviceOperation(inputMessageName3, null, null);
+		WebserviceOperation operation3 = new WebserviceOperation(inputMessageName3, null, null, 0);
 		service1.addOperation(0, operation1);
 		service1.addOperation(1, operation2);
 		service2.addOperation(0, operation3);

@@ -52,6 +52,8 @@ public class PropertyProcessor {
 
 	private static final String DEFAULT_RESPONSE = "DEFAULT_RESPONSE";
 
+	private static final String DEFAULT_RESPONSE_CODE = "DEFAULT_RESPONSE_CODE";
+	
 	private static final String SERVICE_TYPE = "TYPE"; 
 	
 	private static final String SERVICE_NAME = "NAME";
@@ -75,7 +77,7 @@ public class PropertyProcessor {
 
 		for (Iterator<Object> iterator = keySet.iterator(); iterator.hasNext();) {
 			String propertyKey = (String) iterator.next();
-			String propertyValue = (String) properties.get(propertyKey);
+			String propertyValue = ((String) properties.get(propertyKey)).trim();
 
 			String[] propertyKeyParts = propertyKey.split("\\.");
 			if (propertyKeyParts.length >= 2) {
@@ -132,6 +134,8 @@ public class PropertyProcessor {
 		if (operationProperty.equals(DEFAULT_RESPONSE)) {
 			operation.setDefaultResponseFile(propertyValue);
 			setDefaultResponseText(operation);
+		} else if (operationProperty.equals(DEFAULT_RESPONSE_CODE)) {
+			operation.setDefaultResponseCode(Integer.valueOf(propertyValue));
 		} else if (operationProperty.equals(INPUT_MESSAGE)) {
 			operation.setOperationName(propertyValue);
 		} else if (operationProperty.equals(HTTP_METHOD)) {

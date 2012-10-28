@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import net.sf.jaceko.mock.exception.ClientFaultException;
+import net.sf.jaceko.mock.model.MockResponse;
 import net.sf.jaceko.mock.resource.SoapEndpointResource;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
 
@@ -121,12 +122,12 @@ public class SoapEndpointResourceTest {
 		String request = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tem=\"http://tempuri.org/\">"
 				+ "<soapenv:Body><tem:dummyRequest></tem:dummyRequest></soapenv:Body></soapenv:Envelope>";
 
-		String serviceResponse = "<dummyResponse/>";
+		String serviceResponseBody = "<dummyResponse/>";
 
 		when(service.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
-				serviceResponse);
+				new MockResponse(serviceResponseBody));
 		String response = resource.performRequest(serviceName, request);
-		assertThat(response, is(serviceResponse));
+		assertThat(response, is(serviceResponseBody));
 
 	}
 
