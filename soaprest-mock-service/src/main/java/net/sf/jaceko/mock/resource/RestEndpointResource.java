@@ -18,7 +18,6 @@ import net.sf.jaceko.mock.application.enums.HttpMethod;
 import net.sf.jaceko.mock.model.MockResponse;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
 
-
 @Path("/endpoint/rest/{serviceName}")
 public class RestEndpointResource {
 	private static final Logger LOG = Logger.getLogger(RestEndpointResource.class);
@@ -28,29 +27,30 @@ public class RestEndpointResource {
 	@GET
 	@Produces(MediaType.TEXT_XML)
 	public Response performGetRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest request) {
-		MockResponse response =  svcLayer.performRequest(serviceName, HttpMethod.GET.toString(), "", request.getQueryString(), null);
-		LOG.debug("serviceName: " + serviceName + ", response:" + response);
-		return Response.status(response.getCode()).entity(response.getBody()).build();
+		return performGetRequest(serviceName, request, null);
 
 	}
-	
+
 	@GET
 	@Path("/{resourceId}")
 	@Produces(MediaType.TEXT_XML)
-	public String performGetRequest(@PathParam("serviceName") String serviceName,
-			@Context HttpServletRequest request, @PathParam("resourceId") String resourceId) {
-		String response =  svcLayer.performRequest(serviceName, HttpMethod.GET.toString(), "", request.getQueryString(), resourceId).getBody();
-		LOG.debug("serviceName: " + serviceName + ", response:" + response);
-		return response;
+	public Response performGetRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest request,
+			@PathParam("resourceId") String resourceId) {
+		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.GET.toString(), "", request.getQueryString(),
+				resourceId);
+		LOG.debug("serviceName: " + serviceName + ", response:" + mockResponse);
+		return buildWebserviceResponse(mockResponse);
 	}
 
 	@POST
 	@Consumes(MediaType.TEXT_XML)
 	@Produces(MediaType.TEXT_XML)
-	public String performPostRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest httpServletRequest, String request) {
-		String response =  svcLayer.performRequest(serviceName, HttpMethod.POST.toString(), request, httpServletRequest.getQueryString(), null).getBody();
-		LOG.debug("serviceName: " + serviceName + ", response:" + response);
-		return response;
+	public Response performPostRequest(@PathParam("serviceName") String serviceName,
+			@Context HttpServletRequest httpServletRequest, String request) {
+		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.POST.toString(), request,
+				httpServletRequest.getQueryString(), null);
+		LOG.debug("serviceName: " + serviceName + ", response:" + mockResponse);
+		return buildWebserviceResponse(mockResponse);
 
 	}
 
@@ -58,10 +58,15 @@ public class RestEndpointResource {
 	@Consumes(MediaType.TEXT_XML)
 	@Produces(MediaType.TEXT_XML)
 	public String performPutRequest(@PathParam("serviceName") String serviceName, String request) {
-		String response =  svcLayer.performRequest(serviceName, HttpMethod.PUT.toString(), request, null, null).getBody();
+		String response = svcLayer.performRequest(serviceName, HttpMethod.PUT.toString(), request, null, null).getBody();
 		return response;
-		
+
 	}
+
+	private Response buildWebserviceResponse(MockResponse response) {
+		return Response.status(response.getCode()).entity(response.getBody()).build();
+	}
+
 	public void setRestserviceMockSvcLayer(WebserviceMockSvcLayer service) {
 		this.svcLayer = service;
 	}
@@ -69,7 +74,5 @@ public class RestEndpointResource {
 	public void setWebserviceMockService(WebserviceMockSvcLayer svcLayer) {
 		this.svcLayer = svcLayer;
 	}
-
-
 
 }

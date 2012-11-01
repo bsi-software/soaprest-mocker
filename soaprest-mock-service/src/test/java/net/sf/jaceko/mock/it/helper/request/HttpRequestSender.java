@@ -22,13 +22,13 @@ public class HttpRequestSender {
 
 	private HttpClient httpclient = new DefaultHttpClient();
 
-	public String sendPostRequest(String url, String requestBody)
+	public MockResponse sendPostRequest(String url, String requestBody)
 			throws UnsupportedEncodingException, IOException,
 			ClientProtocolException {
 		HttpEntityEnclosingRequestBase httpRequest = new HttpPost(url);
 		addRequestBody(httpRequest, requestBody);
 
-		return executeRequest(httpRequest).getBody();
+		return executeRequest(httpRequest);
 	}
 
 	public String sendPutRequest(String url, String requestBody)

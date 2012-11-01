@@ -14,6 +14,7 @@ import net.sf.jaceko.mock.it.helper.dom.DocumentImpl;
 import net.sf.jaceko.mock.it.helper.request.HttpRequestSender;
 import net.sf.jaceko.mock.model.MockResponse;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +31,7 @@ public class RestMockGETMethodIntegrationTest {
 
 	//mocked endpoints configured in ws-mock.properties
 	public static String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/endpoint/rest/dummy-rest";
-	public static String REST_MOCK_ENDPOINT_NOTAUTHORIZED = "http://localhost:8080/mock/endpoint/rest/dummy-rest-notauthorized";
+	public static String REST_MOCK_ENDPOINT_FORBIDDEN_RESPONSE_CODE = "http://localhost:8080/mock/endpoint/rest/dummy-rest-notauthorized";
 	
 	
 	public static String REST_MOCK_GET_SETUP_INIT 						= "http://localhost:8080/mock/dummy-rest/GET/setup/init";
@@ -53,7 +54,7 @@ public class RestMockGETMethodIntegrationTest {
 	public void shouldReturnDefaultRESTGetResponse()
 			throws ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
-		assertThat(response.getCode(), is(200));
+		assertThat(response.getCode(), is(HttpStatus.SC_OK));
 		Document serviceResponseDoc = new DocumentImpl(response.getBody());
 		assertThat(
 				serviceResponseDoc,
@@ -65,8 +66,8 @@ public class RestMockGETMethodIntegrationTest {
 	@Test
 	public void shouldReturnDefaultRESTGetResponse2()
 			throws ClientProtocolException, IOException, ParserConfigurationException, SAXException {
-		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT_NOTAUTHORIZED);
-		assertThat(response.getCode(), is(403));
+		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT_FORBIDDEN_RESPONSE_CODE);
+		assertThat(response.getCode(), is(HttpStatus.SC_FORBIDDEN));
 	
 	}
 
@@ -87,8 +88,28 @@ public class RestMockGETMethodIntegrationTest {
 						equalTo("custom REST GET response text")));
 
 		
-		assertThat("default response code", response.getCode(), is(200));
+		assertThat("default response code", response.getCode(), is(HttpStatus.SC_OK));
 	}
+
+	@Test
+	public void shouldReturnCustomRESTGetResponseBodyAndDefaultResponseCode_WhilePassingResourceId() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
+		//setting up response body on mock
+		//not setting custom response code
+		String customResponseXML = "<custom_get_response>custom REST GET response text</custom_get_response>";
+		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_RESPONSE, customResponseXML);
+		
+		//sending REST GET request 
+		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT + "/someResourceId");
+		
+		Document serviceResponseDoc = new DocumentImpl(response.getBody());
+		assertThat("custom response body", serviceResponseDoc,
+				hasXPath("//custom_get_response",
+						equalTo("custom REST GET response text")));
+
+		
+		assertThat("default response code", response.getCode(), is(HttpStatus.SC_OK));
+	}
+
 	
 	@Test
 	public void shouldReturnCustomRESTGetResponseBodyAndCode() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {

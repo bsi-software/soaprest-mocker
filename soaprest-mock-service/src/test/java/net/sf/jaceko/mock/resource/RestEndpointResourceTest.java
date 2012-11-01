@@ -14,6 +14,7 @@ import net.sf.jaceko.mock.model.MockResponse;
 import net.sf.jaceko.mock.resource.RestEndpointResource;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -67,7 +68,7 @@ public class RestEndpointResourceTest {
 	@Test
 	public void shouldReturnGET_OKResponse() {
 		String responseReturnedByServiceLayer = "someResponseText";
-		int responseCodeReturnedByServiceLayer = 200;
+		int responseCodeReturnedByServiceLayer = HttpStatus.SC_OK;
 		when(service.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
 				new MockResponse(responseReturnedByServiceLayer, responseCodeReturnedByServiceLayer));
 		Response getResponse = resource.performGetRequest(NOT_USED_SERVICE_NAME, servletContext);
@@ -76,8 +77,8 @@ public class RestEndpointResourceTest {
 	}
 
 	@Test
-	public void shouldReturnGET_NOT_AUTHORIZED_Response() {
-		int responseCodeReturnedByServiceLayer = 403;
+	public void shouldReturnGET_FORBIDDEN_Response() {
+		int responseCodeReturnedByServiceLayer = HttpStatus.SC_FORBIDDEN;
 		when(service.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
 				new MockResponse(null, responseCodeReturnedByServiceLayer));
 		Response getResponse = resource.performGetRequest(NOT_USED_SERVICE_NAME, servletContext);
@@ -85,13 +86,27 @@ public class RestEndpointResourceTest {
 	}
 	
 	@Test
-	public void shouldReturnGETResponseOnRequestWith_RESOURCE_ID() {
-		String responseReturnedByServuceLayer = "someResponse";
+	public void shouldReturnGET_OKResponseOnRequestWith_RESOURCE_ID() {
+		String responseReturnedByServiceLayer = "someResponseText";
+		int responseCodeReturnedByServiceLayer = HttpStatus.SC_OK;
 		when(service.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
-				new MockResponse(responseReturnedByServuceLayer, 0));
-		assertThat(resource.performGetRequest(NOT_USED_SERVICE_NAME, servletContext, NOT_USED_RESOURCE_ID), is(responseReturnedByServuceLayer));
+				new MockResponse(responseReturnedByServiceLayer, responseCodeReturnedByServiceLayer));
+		
+		Response getResponse = resource.performGetRequest(NOT_USED_SERVICE_NAME, servletContext, NOT_USED_RESOURCE_ID);
+		assertThat((String)getResponse.getEntity(), is(responseReturnedByServiceLayer));
+		assertThat(getResponse.getStatus(), is(responseCodeReturnedByServiceLayer));
 
 	}
+	
+	@Test
+	public void shouldReturnGET_FORBIDDEN_ResponseOnRequestWith_RESOURCE_ID() {
+		int responseCodeReturnedByServiceLayer = HttpStatus.SC_FORBIDDEN;
+		when(service.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
+				new MockResponse(null, responseCodeReturnedByServiceLayer));
+		Response getResponse = resource.performGetRequest(NOT_USED_SERVICE_NAME, servletContext, NOT_USED_RESOURCE_ID);
+		assertThat(getResponse.getStatus(), is(responseCodeReturnedByServiceLayer));
+	}
+
 
 	@Test
 	public void shouldPerformPostRequest() {
@@ -104,11 +119,14 @@ public class RestEndpointResourceTest {
 	}
 	
 	@Test
-	public void shouldReturnResponseReturnedByPostRequest() {
-		String responseReturnedByServuceLayer = "someResponse";
+	public void shouldReturnPOST_CREATEDResponse() {
+		String responseReturnedByServiceLayer = "someResponse";
+		int responseCodeReturnedByServiceLayer = HttpStatus.SC_CREATED;
 		when(service.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
-				new MockResponse(responseReturnedByServuceLayer, 0));
-		assertThat(resource.performPostRequest(NOT_USED_SERVICE_NAME, servletContext, null), is(responseReturnedByServuceLayer));
+				new MockResponse(responseReturnedByServiceLayer, responseCodeReturnedByServiceLayer));
+		Response response = resource.performPostRequest(NOT_USED_SERVICE_NAME, servletContext, null);
+		assertThat((String)response.getEntity(), is(responseReturnedByServiceLayer));
+		assertThat(response.getStatus(), is(responseCodeReturnedByServiceLayer));
 
 	}
 	
