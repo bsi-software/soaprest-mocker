@@ -105,12 +105,13 @@ public class RestMockPOSTMethodIntegrationTest {
 	public void shouldReturnConsecutiveCustomRESTPostResponses() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		//setting up consecutive responses on mock		
 		String customResponseXML1 = "<custom_post_response>custom REST POST response text 1</custom_post_response>";
-		requestSender.sendPostRequest(REST_MOCK_POST_SETUP_CONSECUTIVE_RESPONSE + "1", customResponseXML1);
+		requestSender.sendPostRequest(REST_MOCK_POST_SETUP_CONSECUTIVE_RESPONSE + "1" + "?code=403", customResponseXML1);
 
 		String customResponseXML2 = "<custom_post_response>custom REST POST response text 2</custom_post_response>";
-		requestSender.sendPostRequest(REST_MOCK_POST_SETUP_CONSECUTIVE_RESPONSE + "2", customResponseXML2);
+		requestSender.sendPostRequest(REST_MOCK_POST_SETUP_CONSECUTIVE_RESPONSE + "2" + "?code=200", customResponseXML2);
 		
 		MockResponse response = requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "");
+		assertThat(response.getCode(), is(HttpStatus.SC_FORBIDDEN));
 		Document serviceResponseDoc = new DocumentImpl(response.getBody());
 		
 		assertThat(
@@ -119,6 +120,8 @@ public class RestMockPOSTMethodIntegrationTest {
 						equalTo("custom REST POST response text 1")));
 
 		response = requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "");
+		assertThat(response.getCode(), is(HttpStatus.SC_OK));
+
 		serviceResponseDoc = new DocumentImpl(response.getBody());
 		assertThat(
 				serviceResponseDoc,
