@@ -68,7 +68,7 @@ public class RestMockPOSTMethodIntegrationTest {
 		String customResponseXML = "<custom_post_response>custom REST POST response text</custom_post_response>";
 		requestSender.sendPostRequest(REST_MOCK_POST_SETUP_RESPONSE, customResponseXML);
 		
-		//sending REST GET request 
+		//sending REST POST request 
 		MockResponse response = requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "");
 		
 		
@@ -87,7 +87,7 @@ public class RestMockPOSTMethodIntegrationTest {
 		String customResponseXML = "<custom_post_response>not authorized</custom_post_response>";
 		requestSender.sendPostRequest(REST_MOCK_POST_SETUP_RESPONSE + "?code=403", customResponseXML);
 		
-		//sending REST GET request 
+		//sending REST POST request 
 		MockResponse response = requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "");
 		
 		Document serviceResponseDoc = new DocumentImpl(response.getBody());
