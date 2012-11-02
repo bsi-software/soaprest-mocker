@@ -126,7 +126,7 @@ public class RestMockGETMethodIntegrationTest {
 						equalTo("not authorized")));
 
 		
-		assertThat("custom response code", response.getCode(), is(403));
+		assertThat("custom response code", response.getCode(), is(HttpStatus.SC_FORBIDDEN));
 		
 	}
 	
@@ -140,7 +140,7 @@ public class RestMockGETMethodIntegrationTest {
 		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE + "2" + "?code=403", customResponseXML2);
 		
 		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
-		assertThat(response.getCode(), is(200));
+		assertThat(response.getCode(), is(HttpStatus.SC_OK));
 		Document serviceResponseDoc = new DocumentImpl(response.getBody());
 		
 		assertThat(
@@ -149,7 +149,7 @@ public class RestMockGETMethodIntegrationTest {
 						equalTo("custom REST GET response text 1")));
 
 		response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
-		assertThat(response.getCode(), is(403));
+		assertThat(response.getCode(), is(HttpStatus.SC_FORBIDDEN));
 		serviceResponseDoc = new DocumentImpl(response.getBody());
 		assertThat(
 				serviceResponseDoc,
@@ -163,7 +163,7 @@ public class RestMockGETMethodIntegrationTest {
 		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE + "1", "");
 
 		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
-		assertThat(response.getCode(), is(200)); //default response code defined in ws-mock.properties
+		assertThat(response.getCode(), is(HttpStatus.SC_OK)); //default response code defined in ws-mock.properties
 
 	}
 
