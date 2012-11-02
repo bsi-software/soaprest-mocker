@@ -31,13 +31,13 @@ public class HttpRequestSender {
 		return executeRequest(httpRequest);
 	}
 
-	public String sendPutRequest(String url, String requestBody)
+	public MockResponse sendPutRequest(String url, String requestBody)
 			throws UnsupportedEncodingException, IOException,
 			ClientProtocolException {
 		HttpEntityEnclosingRequestBase httpRequest = new HttpPut(url);
 		addRequestBody(httpRequest, requestBody);
 
-		return executeRequest(httpRequest).getBody();
+		return executeRequest(httpRequest);
 	}
 
 	private void addRequestBody(HttpEntityEnclosingRequestBase httpRequest,

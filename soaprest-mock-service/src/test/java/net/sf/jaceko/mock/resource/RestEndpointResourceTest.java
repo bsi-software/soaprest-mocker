@@ -139,11 +139,12 @@ public class RestEndpointResourceTest {
 	}
 
 	@Test
-	public void shouldReturnResponseReturnedByPutRequest() {
-		String responseReturnedByServuceLayer = "someResponse123";
+	public void shouldReturnPutConflictResponse() {
+		String responseReturnedByServiceLayer = "someResponse123";
 		when(service.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
-				new MockResponse(responseReturnedByServuceLayer, 0));
-		assertThat(resource.performPutRequest(NOT_USED_SERVICE_NAME, null), is(responseReturnedByServuceLayer));
+				new MockResponse(responseReturnedByServiceLayer, 409));
+		Response response = resource.performPutRequest(NOT_USED_SERVICE_NAME, null);
+		assertThat((String)response.getEntity(), is(responseReturnedByServiceLayer));
 
 	}
 

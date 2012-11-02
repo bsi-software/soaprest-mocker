@@ -1,6 +1,7 @@
 package net.sf.jaceko.mock.it;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.xml.HasXPath.hasXPath;
 import static org.junit.Assert.assertThat;
 
@@ -13,6 +14,7 @@ import net.sf.jaceko.mock.it.helper.dom.DocumentImpl;
 import net.sf.jaceko.mock.it.helper.request.HttpRequestSender;
 import net.sf.jaceko.mock.model.MockResponse;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +36,7 @@ public class RestMockPUTMethodIntegrationTest {
 	public static String REST_MOCK_PUT_SETUP_INIT 						= "http://localhost:8080/mock/dummy-rest/PUT/setup/init";
 	public static String REST_MOCK_PUT_SETUP_RESPONSE 					= "http://localhost:8080/mock/dummy-rest/PUT/setup/response";
 	public static String REST_MOCK_PUT_SETUP_CONSECUTIVE_RESPONSE 		= "http://localhost:8080/mock/dummy-rest/PUT/setup/consecutive-response/";
-	public static String REST_MOCK_PUT_VERIFY_RECORDED_REQUESTS	 	= "http://localhost:8080/mock/dummy-rest/PUT/recorded/requests";
+	public static String REST_MOCK_PUT_VERIFY_RECORDED_REQUESTS	 		= "http://localhost:8080/mock/dummy-rest/PUT/recorded/requests";
 	public static String REST_MOCK_PUT_VERIFY_RECORDED_REQUEST_PARAMS 	= "http://localhost:8080/mock/dummy-rest/PUT/recorded/url-request-params";
 	
 	HttpRequestSender requestSender = new HttpRequestSender();
@@ -49,8 +51,9 @@ public class RestMockPUTMethodIntegrationTest {
 	public void shouldReturnDefaultRESTPostResponse()
 			throws ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		
-		String response = requestSender.sendPutRequest(REST_MOCK_ENDPOINT,"");
-		Document serviceResponseDoc = new DocumentImpl(response);
+		MockResponse response = requestSender.sendPutRequest(REST_MOCK_ENDPOINT,"");
+		assertThat(response.getCode(), is(HttpStatus.SC_OK));
+		Document serviceResponseDoc = new DocumentImpl(response.getBody());
 		assertThat(
 				serviceResponseDoc,
 				hasXPath("//put_response_data",
@@ -58,19 +61,44 @@ public class RestMockPUTMethodIntegrationTest {
 	}
 	
 	@Test
-	public void shouldReturnCustomRESTPutResponse() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
-		//setting up response on mock
-		String customResponseXML = "<custom_put_response>custom REST PUT response text</custom_put_response>";
+	public void shouldReturnCustomRESTPutResponseBodyAndDefaultResponseCode() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
+		//setting up response body on mock
+		//not setting custom response code
+		String customResponseXML = "<custom_response>custom REST PUT response text</custom_response>";
 		requestSender.sendPostRequest(REST_MOCK_PUT_SETUP_RESPONSE, customResponseXML);
 		
 		//sending REST PUT request 
-		String response = requestSender.sendPutRequest(REST_MOCK_ENDPOINT,"");
-		Document serviceResponseDoc = new DocumentImpl(response);
-		assertThat(
-				serviceResponseDoc,
-				hasXPath("//custom_put_response",
+		MockResponse response = requestSender.sendPutRequest(REST_MOCK_ENDPOINT, "");
+		
+		
+		Document serviceResponseDoc = new DocumentImpl(response.getBody());
+		assertThat("custom response body", serviceResponseDoc,
+				hasXPath("//custom_response",
 						equalTo("custom REST PUT response text")));
+
+		
+		assertThat("default response code", response.getCode(), is(HttpStatus.SC_OK));
 	}
+
+	
+	@Test
+	public void shouldReturnCustomRESTPutResponseBodyAndCode() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
+		String customResponseXML = "<custom_response>conflict</custom_response>";
+		requestSender.sendPostRequest(REST_MOCK_PUT_SETUP_RESPONSE + "?code=409", customResponseXML);
+		
+		//sending REST PUT request 
+		MockResponse response = requestSender.sendPutRequest(REST_MOCK_ENDPOINT, "");
+		
+		Document serviceResponseDoc = new DocumentImpl(response.getBody());
+		assertThat("custom response body", serviceResponseDoc,
+				hasXPath("//custom_response",
+						equalTo("conflict")));
+
+		
+		assertThat("custom response code", response.getCode(), is(HttpStatus.SC_CONFLICT));
+		
+	}
+
 	
 	@Test
 	public void shouldReturnConsecutiveCustomRESTPostResponses() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
@@ -81,8 +109,8 @@ public class RestMockPUTMethodIntegrationTest {
 		String customResponseXML2 = "<custom_put_response>custom REST PUT response text 2</custom_put_response>";
 		requestSender.sendPostRequest(REST_MOCK_PUT_SETUP_CONSECUTIVE_RESPONSE + "2", customResponseXML2);
 		
-		String response = requestSender.sendPutRequest(REST_MOCK_ENDPOINT, "");
-		Document serviceResponseDoc = new DocumentImpl(response);
+		MockResponse response = requestSender.sendPutRequest(REST_MOCK_ENDPOINT, "");
+		Document serviceResponseDoc = new DocumentImpl(response.getBody());
 		
 		assertThat(
 				serviceResponseDoc,
@@ -90,7 +118,7 @@ public class RestMockPUTMethodIntegrationTest {
 						equalTo("custom REST PUT response text 1")));
 
 		response = requestSender.sendPutRequest(REST_MOCK_ENDPOINT, "");
-		serviceResponseDoc = new DocumentImpl(response);
+		serviceResponseDoc = new DocumentImpl(response.getBody());
 		assertThat(
 				serviceResponseDoc,
 				hasXPath("//custom_put_response",

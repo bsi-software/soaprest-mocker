@@ -57,9 +57,10 @@ public class RestEndpointResource {
 	@PUT
 	@Consumes(MediaType.TEXT_XML)
 	@Produces(MediaType.TEXT_XML)
-	public String performPutRequest(@PathParam("serviceName") String serviceName, String request) {
-		String response = svcLayer.performRequest(serviceName, HttpMethod.PUT.toString(), request, null, null).getBody();
-		return response;
+	public Response performPutRequest(@PathParam("serviceName") String serviceName, String request) {
+		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.PUT.toString(), request, null, null);
+		LOG.debug("serviceName: " + serviceName + ", response:" + mockResponse);
+		return buildWebserviceResponse(mockResponse);
 
 	}
 
