@@ -92,23 +92,25 @@ public class MockSetupResourceTest {
 	}
 
 	@Test
-	public void shouldPassSetUpConsecutiveResponseToServiceLayer() {
+	public void shouldSetUpConsecutiveResponse() {
 		String serviceName = "ticketing";
 		String operationId = "reserveRequest";
-		String customResponse = "<dummyResponse></dummyResponse>";
+		int customResponseCode = 201;
+		String customResponseBody = "<dummyResponse></dummyResponse>";
 		int responseInOrder = 2;
 
-		resource.setUpResponse(serviceName, operationId, responseInOrder, 0, customResponse);
+		resource.setUpResponse(serviceName, operationId, responseInOrder, customResponseCode, customResponseBody);
 		verify(service).setCustomResponse(serviceName, operationId, responseInOrder,
-				new MockResponse(customResponse));
+				new MockResponse(customResponseBody, customResponseCode));
 
 		serviceName = "mptu";
 		operationId = "prepayRequest";
 		responseInOrder = 1;
-
-		resource.setUpResponse(serviceName, operationId, responseInOrder, 0, customResponse);
+		customResponseCode = 200;
+		
+		resource.setUpResponse(serviceName, operationId, responseInOrder, customResponseCode, customResponseBody);
 		verify(service).setCustomResponse(serviceName, operationId, responseInOrder,
-				new MockResponse(customResponse));
+				new MockResponse(customResponseBody, customResponseCode));
 	}
 
 	@Test

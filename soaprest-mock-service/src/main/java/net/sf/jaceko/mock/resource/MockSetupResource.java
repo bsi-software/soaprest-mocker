@@ -33,7 +33,7 @@ public class MockSetupResource {
     @Consumes(MediaType.TEXT_XML)
     public Response setUpResponse(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId, @PathParam("requestInOrder") int requestInOrder,
     		@QueryParam("code") int customResponseCode, String customResponseBody) {
-		service.setCustomResponse(serviceName, operationId, requestInOrder, new MockResponse(customResponseBody));
+		service.setCustomResponse(serviceName, operationId, requestInOrder, new MockResponse(customResponseBody, customResponseCode));
 		return Response.status(HttpStatus.SC_OK).build();
 	}
 

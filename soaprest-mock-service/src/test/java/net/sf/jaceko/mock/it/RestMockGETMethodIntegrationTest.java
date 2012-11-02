@@ -134,12 +134,13 @@ public class RestMockGETMethodIntegrationTest {
 	public void shouldReturnConsecutiveCustomRESTGetResponses() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		//setting up consecutive responses on mock		
 		String customResponseXML1 = "<custom_get_response>custom REST GET response text 1</custom_get_response>";
-		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE + "1", customResponseXML1);
+		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE + "1" + "?code=200", customResponseXML1);
 
 		String customResponseXML2 = "<custom_get_response>custom REST GET response text 2</custom_get_response>";
-		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE + "2", customResponseXML2);
+		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE + "2" + "?code=403", customResponseXML2);
 		
 		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
+		assertThat(response.getCode(), is(200));
 		Document serviceResponseDoc = new DocumentImpl(response.getBody());
 		
 		assertThat(
@@ -148,12 +149,24 @@ public class RestMockGETMethodIntegrationTest {
 						equalTo("custom REST GET response text 1")));
 
 		response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
+		assertThat(response.getCode(), is(403));
 		serviceResponseDoc = new DocumentImpl(response.getBody());
 		assertThat(
 				serviceResponseDoc,
 				hasXPath("//custom_get_response",
 						equalTo("custom REST GET response text 2")));
 	}
+	
+	@Test
+	public void shouldReturnDefaultResponseCode() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
+		//setting up consecutive responses on mock, without response code		
+		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE + "1", "");
+
+		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
+		assertThat(response.getCode(), is(200)); //default response code defined in ws-mock.properties
+
+	}
+
 
 	@Test
 	public void shoulVerifyRequestParameters() throws ClientProtocolException, IOException, ParserConfigurationException, SAXException {
