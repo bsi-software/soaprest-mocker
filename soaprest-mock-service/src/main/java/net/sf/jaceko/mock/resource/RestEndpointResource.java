@@ -2,6 +2,7 @@ package net.sf.jaceko.mock.resource;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -59,6 +60,23 @@ public class RestEndpointResource {
 	@Produces(MediaType.TEXT_XML)
 	public Response performPutRequest(@PathParam("serviceName") String serviceName, String request) {
 		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.PUT.toString(), request, null, null);
+		LOG.debug("serviceName: " + serviceName + ", response:" + mockResponse);
+		return buildWebserviceResponse(mockResponse);
+
+	}
+
+	@DELETE
+	@Produces(MediaType.TEXT_XML)
+	public Response performDeleteRequest(@PathParam("serviceName") String serviceName) {
+		return performDeleteRequest(serviceName, null);
+
+	}
+
+	@DELETE
+	@Path("/{resourceId}")
+	@Produces(MediaType.TEXT_XML)
+	public Response performDeleteRequest(@PathParam("serviceName") String serviceName, @PathParam("resourceId") String resourceId) {
+		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.DELETE.toString(), "", null, resourceId);
 		LOG.debug("serviceName: " + serviceName + ", response:" + mockResponse);
 		return buildWebserviceResponse(mockResponse);
 

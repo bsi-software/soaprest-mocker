@@ -9,6 +9,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -22,8 +23,7 @@ public class HttpRequestSender {
 
 	private HttpClient httpclient = new DefaultHttpClient();
 
-	public MockResponse sendPostRequest(String url, String requestBody)
-			throws UnsupportedEncodingException, IOException,
+	public MockResponse sendPostRequest(String url, String requestBody) throws UnsupportedEncodingException, IOException,
 			ClientProtocolException {
 		HttpEntityEnclosingRequestBase httpRequest = new HttpPost(url);
 		addRequestBody(httpRequest, requestBody);
@@ -31,8 +31,7 @@ public class HttpRequestSender {
 		return executeRequest(httpRequest);
 	}
 
-	public MockResponse sendPutRequest(String url, String requestBody)
-			throws UnsupportedEncodingException, IOException,
+	public MockResponse sendPutRequest(String url, String requestBody) throws UnsupportedEncodingException, IOException,
 			ClientProtocolException {
 		HttpEntityEnclosingRequestBase httpRequest = new HttpPut(url);
 		addRequestBody(httpRequest, requestBody);
@@ -40,22 +39,25 @@ public class HttpRequestSender {
 		return executeRequest(httpRequest);
 	}
 
-	private void addRequestBody(HttpEntityEnclosingRequestBase httpRequest,
-			String requestBody) throws UnsupportedEncodingException {
+	private void addRequestBody(HttpEntityEnclosingRequestBase httpRequest, String requestBody)
+			throws UnsupportedEncodingException {
 		httpRequest.setHeader("Content-Type", "text/xml;charset=UTF-8");
 		HttpEntity requestEntity = new StringEntity(requestBody);
 
 		httpRequest.setEntity(requestEntity);
 	}
 
-	public MockResponse sendGetRequest(String url) throws IOException,
-			ClientProtocolException {
+	public MockResponse sendGetRequest(String url) throws IOException, ClientProtocolException {
 		HttpGet httpGet = new HttpGet(url);
 		return executeRequest(httpGet);
 	}
 
-	private MockResponse executeRequest(HttpRequestBase httpRequest)
-			throws IOException, ClientProtocolException {
+	public MockResponse sendDeleteRequest(String url) throws ClientProtocolException, IOException {
+		HttpDelete httpDelete = new HttpDelete(url);
+		return executeRequest(httpDelete);
+	}
+
+	private MockResponse executeRequest(HttpRequestBase httpRequest) throws IOException, ClientProtocolException {
 		HttpResponse response = httpclient.execute(httpRequest);
 		HttpEntity entity = response.getEntity();
 		String body = null;

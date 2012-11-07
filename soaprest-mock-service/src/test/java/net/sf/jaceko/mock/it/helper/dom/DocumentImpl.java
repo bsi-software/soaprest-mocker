@@ -50,6 +50,9 @@ public class DocumentImpl implements Document {
 	 */
 	public DocumentImpl(String xml, boolean namespaceAware) throws ParserConfigurationException,
 			SAXException, IOException {
+		if (xml == null) {
+			throw new IllegalArgumentException("xml cannot be null");
+		}
 		this.strXml = xml;
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		documentBuilderFactory.setNamespaceAware(namespaceAware);

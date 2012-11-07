@@ -139,7 +139,7 @@ public class RestEndpointResourceTest {
 	}
 
 	@Test
-	public void shouldReturnPutConflictResponse() {
+	public void shouldReturnPUT_CONFLICTResponse() {
 		String responseReturnedByServiceLayer = "someResponse123";
 		when(service.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
 				new MockResponse(responseReturnedByServiceLayer, 409));
@@ -147,5 +147,45 @@ public class RestEndpointResourceTest {
 		assertThat((String)response.getEntity(), is(responseReturnedByServiceLayer));
 
 	}
+	
+	@Test
+	public void shouldPerformDeleteRequest() {
+		String serviceName = "dummyService";
+		resource.performDeleteRequest(serviceName);
+		verify(service).performRequest(serviceName, "DELETE", "", null, null);
+	}
+	
+	@Test
+	public void shouldPerformDeleteRequestPassingResourceId() {
+		String serviceName = "restServiceName";
+		String resourceId = "resId12";
+		resource.performDeleteRequest(serviceName, resourceId);
+		verify(service).performRequest(serviceName, "DELETE", "", null, resourceId);
+	}
+	
+	@Test
+	public void shouldReturnDELETE_NO_CONTENTResponse() {
+		String responseReturnedByServiceLayer = "someResponseText";
+		int responseCodeReturnedByServiceLayer = HttpStatus.SC_NO_CONTENT;
+		when(service.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
+				new MockResponse(responseReturnedByServiceLayer, responseCodeReturnedByServiceLayer));
+		Response getResponse = resource.performDeleteRequest(NOT_USED_SERVICE_NAME);
+		assertThat((String)getResponse.getEntity(), is(responseReturnedByServiceLayer));
+		assertThat(getResponse.getStatus(), is(responseCodeReturnedByServiceLayer));
+	}
+	
+	@Test
+	public void shouldReturnDELETE_NO_CONTENTResponseOnRequestWith_RESOURCE_ID() {
+		String responseReturnedByServiceLayer = "someResponseText";
+		int responseCodeReturnedByServiceLayer = HttpStatus.SC_NO_CONTENT;
+		when(service.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
+				new MockResponse(responseReturnedByServiceLayer, responseCodeReturnedByServiceLayer));
+		
+		Response getResponse = resource.performDeleteRequest(NOT_USED_SERVICE_NAME, NOT_USED_RESOURCE_ID);
+		assertThat((String)getResponse.getEntity(), is(responseReturnedByServiceLayer));
+		assertThat(getResponse.getStatus(), is(responseCodeReturnedByServiceLayer));
+
+	}
+
 
 }
