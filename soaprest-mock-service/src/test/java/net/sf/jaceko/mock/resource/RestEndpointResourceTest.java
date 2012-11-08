@@ -137,6 +137,16 @@ public class RestEndpointResourceTest {
 		resource.performPutRequest(serviceName, request);
 		verify(service).performRequest(serviceName, "PUT", request, null, null);
 	}
+	
+	@Test
+	public void shouldPerformPutRequestPassingResourceId() {
+		String serviceName = "restServiceName";
+		String resourceId = "resId12";
+		String request = "<dummyRequest>abc</dummyRequest>";
+		resource.performPutRequest(serviceName, resourceId, request);
+		verify(service).performRequest(serviceName, "PUT", request, null, resourceId);
+	}
+
 
 	@Test
 	public void shouldReturnPUT_CONFLICTResponse() {

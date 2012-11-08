@@ -59,11 +59,19 @@ public class RestEndpointResource {
 	@Consumes(MediaType.TEXT_XML)
 	@Produces(MediaType.TEXT_XML)
 	public Response performPutRequest(@PathParam("serviceName") String serviceName, String request) {
-		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.PUT.toString(), request, null, null);
+		return performPutRequest(serviceName, null, request);
+	}
+	
+	@PUT
+	@Path("/{resourceId}")
+	@Consumes(MediaType.TEXT_XML)
+	@Produces(MediaType.TEXT_XML)
+	public Response performPutRequest(@PathParam("serviceName") String serviceName, @PathParam("resourceId") String resourceId, String request) {
+		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.PUT.toString(), request, null, resourceId);
 		LOG.debug("serviceName: " + serviceName + ", response:" + mockResponse);
 		return buildWebserviceResponse(mockResponse);
-
 	}
+
 
 	@DELETE
 	@Produces(MediaType.TEXT_XML)
@@ -93,5 +101,6 @@ public class RestEndpointResource {
 	public void setWebserviceMockService(WebserviceMockSvcLayer svcLayer) {
 		this.svcLayer = svcLayer;
 	}
+
 
 }
