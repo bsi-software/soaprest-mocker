@@ -30,7 +30,7 @@ import org.xml.sax.SAXException;
 public class RestMockPUTMethodIntegrationTest {
 
 	// mocked endpoints configured in ws-mock.properties
-	private static final String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/endpoint/rest/dummy-rest";
+	private static final String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/endpoint/REST/dummy-rest";
 
 	private static final String REST_MOCK_PUT_SETUP_INIT 				 	= "http://localhost:8080/mock/dummy-rest/PUT/setup/init";
 	private static final String REST_MOCK_PUT_SETUP_RESPONSE 			 	= "http://localhost:8080/mock/dummy-rest/PUT/setup/response";

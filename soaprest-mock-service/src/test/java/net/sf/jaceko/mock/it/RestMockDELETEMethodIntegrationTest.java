@@ -30,7 +30,7 @@ import org.xml.sax.SAXException;
 public class RestMockDELETEMethodIntegrationTest {
 
 	//mocked endpoints configured in ws-mock.properties
-	public static String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/endpoint/rest/dummy-rest";
+	public static String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/endpoint/REST/dummy-rest";
 	
 	
 	public static String REST_MOCK_DELETE_SETUP_INIT 						= "http://localhost:8080/mock/dummy-rest/DELETE/setup/init";

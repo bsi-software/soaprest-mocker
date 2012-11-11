@@ -17,7 +17,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-@Path("/endpoint/soap/{serviceName}")
+@Path("/endpoint/SOAP/{serviceName}")
 public class SoapEndpointResource {
 	private static final Logger LOG = Logger.getLogger(SoapEndpointResource.class);
 

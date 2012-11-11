@@ -30,7 +30,7 @@ import org.xml.sax.SAXException;
 public class RestMockGETMethodIntegrationTest {
 
 	//mocked endpoints configured in ws-mock.properties
-	public static String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/endpoint/rest/dummy-rest";
+	public static String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/endpoint/REST/dummy-rest";
 	public static String REST_MOCK_ENDPOINT_FORBIDDEN_RESPONSE_CODE = "http://localhost:8080/mock/endpoint/rest/dummy-rest-notauthorized";
 	
 	
