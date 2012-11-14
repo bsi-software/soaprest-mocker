@@ -41,9 +41,7 @@ public class HttpRequestSender {
 
 	private void addRequestBody(HttpEntityEnclosingRequestBase httpRequest, String requestBody)
 			throws UnsupportedEncodingException {
-		httpRequest.setHeader("Content-Type", "text/xml;charset=UTF-8");
 		HttpEntity requestEntity = new StringEntity(requestBody);
-
 		httpRequest.setEntity(requestEntity);
 	}
 

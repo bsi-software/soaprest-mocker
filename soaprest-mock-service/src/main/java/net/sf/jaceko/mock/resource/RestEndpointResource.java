@@ -26,7 +26,7 @@ public class RestEndpointResource {
 	private WebserviceMockSvcLayer svcLayer;
 
 	@GET
-	@Produces(MediaType.TEXT_XML)
+	@Produces(MediaType.TEXT_PLAIN)
 	public Response performGetRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest request) {
 		return performGetRequest(serviceName, request, null);
 
@@ -34,7 +34,7 @@ public class RestEndpointResource {
 
 	@GET
 	@Path("/{resourceId}")
-	@Produces(MediaType.TEXT_XML)
+	@Produces(MediaType.TEXT_PLAIN)
 	public Response performGetRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest request,
 			@PathParam("resourceId") String resourceId) {
 		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.GET.toString(), "", request.getQueryString(),
@@ -44,8 +44,8 @@ public class RestEndpointResource {
 	}
 
 	@POST
-	@Consumes(MediaType.TEXT_XML)
-	@Produces(MediaType.TEXT_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
 	public Response performPostRequest(@PathParam("serviceName") String serviceName,
 			@Context HttpServletRequest httpServletRequest, String request) {
 		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.POST.toString(), request,
@@ -56,16 +56,16 @@ public class RestEndpointResource {
 	}
 
 	@PUT
-	@Consumes(MediaType.TEXT_XML)
-	@Produces(MediaType.TEXT_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
 	public Response performPutRequest(@PathParam("serviceName") String serviceName, String request) {
 		return performPutRequest(serviceName, null, request);
 	}
 	
 	@PUT
 	@Path("/{resourceId}")
-	@Consumes(MediaType.TEXT_XML)
-	@Produces(MediaType.TEXT_XML)
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
 	public Response performPutRequest(@PathParam("serviceName") String serviceName, @PathParam("resourceId") String resourceId, String request) {
 		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.PUT.toString(), request, null, resourceId);
 		LOG.debug("serviceName: " + serviceName + ", response:" + mockResponse);
@@ -74,7 +74,7 @@ public class RestEndpointResource {
 
 
 	@DELETE
-	@Produces(MediaType.TEXT_XML)
+	@Produces(MediaType.TEXT_PLAIN)
 	public Response performDeleteRequest(@PathParam("serviceName") String serviceName) {
 		return performDeleteRequest(serviceName, null);
 
@@ -82,7 +82,7 @@ public class RestEndpointResource {
 
 	@DELETE
 	@Path("/{resourceId}")
-	@Produces(MediaType.TEXT_XML)
+	@Produces(MediaType.TEXT_PLAIN)
 	public Response performDeleteRequest(@PathParam("serviceName") String serviceName, @PathParam("resourceId") String resourceId) {
 		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.DELETE.toString(), "", null, resourceId);
 		LOG.debug("serviceName: " + serviceName + ", response:" + mockResponse);
