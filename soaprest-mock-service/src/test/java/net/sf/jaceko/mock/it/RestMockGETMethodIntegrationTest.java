@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThat;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.jaceko.mock.it.helper.dom.DocumentImpl;
@@ -46,7 +47,7 @@ public class RestMockGETMethodIntegrationTest {
 	@Before
 	public void initMock() throws UnsupportedEncodingException, ClientProtocolException, IOException {
 		//initalizing mock, clearing history of previous requests
-		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_INIT, "");
+		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_INIT, "", MediaType.TEXT_XML);
 	}
 	
 	//default response defined in ws-mock.properties
@@ -76,7 +77,7 @@ public class RestMockGETMethodIntegrationTest {
 		//setting up response body on mock
 		//not setting custom response code
 		String customResponseXML = "<custom_get_response>custom REST GET response text</custom_get_response>";
-		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_RESPONSE, customResponseXML);
+		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_RESPONSE, customResponseXML, MediaType.TEXT_XML);
 		
 		//sending REST GET request 
 		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
@@ -96,7 +97,7 @@ public class RestMockGETMethodIntegrationTest {
 		//setting up response body on mock
 		//not setting custom response code
 		String customResponseXML = "<custom_get_response>custom REST GET response text</custom_get_response>";
-		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_RESPONSE, customResponseXML);
+		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_RESPONSE, customResponseXML, MediaType.TEXT_XML);
 		
 		//sending REST GET request 
 		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT + "/someResourceId");
@@ -114,7 +115,7 @@ public class RestMockGETMethodIntegrationTest {
 	@Test
 	public void shouldReturnCustomRESTGetResponseBodyAndCode() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		String customResponseXML = "<custom_get_response>not authorized</custom_get_response>";
-		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_RESPONSE + "?code=403", customResponseXML);
+		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_RESPONSE + "?code=403", customResponseXML, MediaType.TEXT_XML);
 		
 		//sending REST GET request 
 		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
@@ -134,10 +135,10 @@ public class RestMockGETMethodIntegrationTest {
 	public void shouldReturnConsecutiveCustomRESTGetResponses() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		//setting up consecutive responses on mock		
 		String customResponseXML1 = "<custom_get_response>custom REST GET response text 1</custom_get_response>";
-		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE + "1" + "?code=200", customResponseXML1);
+		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE + "1" + "?code=200", customResponseXML1, MediaType.TEXT_XML);
 
 		String customResponseXML2 = "<custom_get_response>custom REST GET response text 2</custom_get_response>";
-		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE + "2" + "?code=403", customResponseXML2);
+		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE + "2" + "?code=403", customResponseXML2, MediaType.TEXT_XML);
 		
 		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
 		assertThat(response.getCode(), is(HttpStatus.SC_OK));
@@ -160,7 +161,7 @@ public class RestMockGETMethodIntegrationTest {
 	@Test
 	public void shouldReturnDefaultResponseCode() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		//setting up consecutive responses on mock, without response code		
-		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE + "1", "");
+		requestSender.sendPostRequest(REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE + "1", "", MediaType.TEXT_XML);
 
 		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
 		assertThat(response.getCode(), is(HttpStatus.SC_OK)); //default response code defined in ws-mock.properties

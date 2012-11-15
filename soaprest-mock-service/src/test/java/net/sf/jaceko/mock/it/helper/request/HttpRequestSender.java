@@ -3,6 +3,8 @@ package net.sf.jaceko.mock.it.helper.request;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import javax.ws.rs.core.MediaType;
+
 import net.sf.jaceko.mock.model.MockResponse;
 
 import org.apache.http.HttpEntity;
@@ -23,10 +25,10 @@ public class HttpRequestSender {
 
 	private HttpClient httpclient = new DefaultHttpClient();
 
-	public MockResponse sendPostRequest(String url, String requestBody) throws UnsupportedEncodingException, IOException,
+	public MockResponse sendPostRequest(String url, String requestBody, String mediaType) throws UnsupportedEncodingException, IOException,
 			ClientProtocolException {
 		HttpEntityEnclosingRequestBase httpRequest = new HttpPost(url);
-		addRequestBody(httpRequest, requestBody);
+		addRequestBody(httpRequest, requestBody, mediaType);
 
 		return executeRequest(httpRequest);
 	}
@@ -34,13 +36,18 @@ public class HttpRequestSender {
 	public MockResponse sendPutRequest(String url, String requestBody) throws UnsupportedEncodingException, IOException,
 			ClientProtocolException {
 		HttpEntityEnclosingRequestBase httpRequest = new HttpPut(url);
-		addRequestBody(httpRequest, requestBody);
+		String mediaType = MediaType.TEXT_XML;
+		addRequestBody(httpRequest, requestBody, mediaType);
 
 		return executeRequest(httpRequest);
 	}
 
-	private void addRequestBody(HttpEntityEnclosingRequestBase httpRequest, String requestBody)
+	private void addRequestBody(HttpEntityEnclosingRequestBase httpRequest, String requestBody, String mediaType)
 			throws UnsupportedEncodingException {
+		StringBuilder contenType = new StringBuilder();
+				contenType.append(mediaType);
+				contenType.append(";charset=UTF-8");
+		httpRequest.setHeader("Content-Type", contenType.toString());
 		HttpEntity requestEntity = new StringEntity(requestBody);
 		httpRequest.setEntity(requestEntity);
 	}

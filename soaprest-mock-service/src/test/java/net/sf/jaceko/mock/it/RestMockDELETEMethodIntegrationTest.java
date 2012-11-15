@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThat;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.jaceko.mock.it.helper.dom.DocumentImpl;
@@ -44,7 +45,7 @@ public class RestMockDELETEMethodIntegrationTest {
 	@Before
 	public void initMock() throws UnsupportedEncodingException, ClientProtocolException, IOException {
 		//initalizing mock, clearing history of previous requests
-		requestSender.sendPostRequest(REST_MOCK_DELETE_SETUP_INIT, "");
+		requestSender.sendPostRequest(REST_MOCK_DELETE_SETUP_INIT, "", MediaType.TEXT_XML);
 	}
 
 	@Test
@@ -65,7 +66,7 @@ public class RestMockDELETEMethodIntegrationTest {
 		//setting up response body on mock
 		//not setting custom response code
 		String customResponseXML = "<custom_response>custom REST DELETE response text</custom_response>";
-		requestSender.sendPostRequest(REST_MOCK_DELETE_SETUP_RESPONSE, customResponseXML);
+		requestSender.sendPostRequest(REST_MOCK_DELETE_SETUP_RESPONSE, customResponseXML, MediaType.TEXT_XML);
 		
 		//sending REST DELETE request 
 		MockResponse response = requestSender.sendDeleteRequest(REST_MOCK_ENDPOINT);
@@ -84,7 +85,7 @@ public class RestMockDELETEMethodIntegrationTest {
 	@Test
 	public void shouldReturnCustomRESTDeleteResponseBodyAndCode() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		String customResponseXML = "<custom_response>conflict</custom_response>";
-		requestSender.sendPostRequest(REST_MOCK_DELETE_SETUP_RESPONSE + "?code=409", customResponseXML);
+		requestSender.sendPostRequest(REST_MOCK_DELETE_SETUP_RESPONSE + "?code=409", customResponseXML, MediaType.TEXT_XML);
 		
 		//sending REST DELETE request 
 		MockResponse response = requestSender.sendDeleteRequest(REST_MOCK_ENDPOINT);
@@ -104,10 +105,10 @@ public class RestMockDELETEMethodIntegrationTest {
 	public void shouldReturnConsecutiveCustomRESTDeleteResponses() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		//setting up consecutive responses on mock		
 		String customResponseXML1 = "<custom_delete_response>custom REST DELETE response text 1</custom_delete_response>";
-		requestSender.sendPostRequest(REST_MOCK_DELETE_SETUP_CONSECUTIVE_RESPONSE + "1", customResponseXML1);
+		requestSender.sendPostRequest(REST_MOCK_DELETE_SETUP_CONSECUTIVE_RESPONSE + "1", customResponseXML1, MediaType.TEXT_XML);
 
 		String customResponseXML2 = "<custom_delete_response>custom REST DELETE response text 2</custom_delete_response>";
-		requestSender.sendPostRequest(REST_MOCK_DELETE_SETUP_CONSECUTIVE_RESPONSE + "2", customResponseXML2);
+		requestSender.sendPostRequest(REST_MOCK_DELETE_SETUP_CONSECUTIVE_RESPONSE + "2", customResponseXML2, MediaType.TEXT_XML);
 		
 		MockResponse response = requestSender.sendDeleteRequest(REST_MOCK_ENDPOINT);
 		Document serviceResponseDoc = new DocumentImpl(response.getBody());
@@ -130,7 +131,7 @@ public class RestMockDELETEMethodIntegrationTest {
 		//setting up response body on mock
 		//not setting custom response code
 		String customResponseXML = "<custom_delete_response>custom REST DELETE response text</custom_delete_response>";
-		requestSender.sendPostRequest(REST_MOCK_DELETE_SETUP_RESPONSE, customResponseXML);
+		requestSender.sendPostRequest(REST_MOCK_DELETE_SETUP_RESPONSE, customResponseXML, MediaType.TEXT_XML);
 		
 		//sending REST DELETE request 
 		MockResponse response = requestSender.sendDeleteRequest(REST_MOCK_ENDPOINT + "/someResourceId");

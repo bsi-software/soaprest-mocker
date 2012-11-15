@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThat;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.jaceko.mock.it.helper.dom.DocumentImpl;
@@ -43,7 +44,7 @@ public class RestMockPUTMethodIntegrationTest {
 	@Before
 	public void initMock() throws UnsupportedEncodingException, ClientProtocolException, IOException {
 		// initalizing mock, clearing history of previous requests
-		requestSender.sendPostRequest(REST_MOCK_PUT_SETUP_INIT, "");
+		requestSender.sendPostRequest(REST_MOCK_PUT_SETUP_INIT, "", MediaType.TEXT_XML);
 	}
 
 	@Test
@@ -62,7 +63,7 @@ public class RestMockPUTMethodIntegrationTest {
 		// setting up response body on mock
 		// not setting custom response code
 		String customResponseXML = "<custom_response>custom REST PUT response text</custom_response>";
-		requestSender.sendPostRequest(REST_MOCK_PUT_SETUP_RESPONSE, customResponseXML);
+		requestSender.sendPostRequest(REST_MOCK_PUT_SETUP_RESPONSE, customResponseXML, MediaType.TEXT_XML);
 
 		// sending REST PUT request
 		MockResponse response = requestSender.sendPutRequest(REST_MOCK_ENDPOINT, "");
@@ -80,7 +81,7 @@ public class RestMockPUTMethodIntegrationTest {
 		// setting up response body on mock
 		// not setting custom response code
 		String customResponseXML = "<custom_put_response>custom REST PUT response text</custom_put_response>";
-		requestSender.sendPostRequest(REST_MOCK_PUT_SETUP_RESPONSE, customResponseXML);
+		requestSender.sendPostRequest(REST_MOCK_PUT_SETUP_RESPONSE, customResponseXML, MediaType.TEXT_XML);
 
 		// sending REST PUT request
 		MockResponse response = requestSender.sendPutRequest(REST_MOCK_ENDPOINT + "/someResourceId", "");
@@ -109,7 +110,7 @@ public class RestMockPUTMethodIntegrationTest {
 	public void shouldReturnCustomRESTPutResponseBodyAndCode() throws UnsupportedEncodingException, ClientProtocolException,
 			IOException, ParserConfigurationException, SAXException {
 		String customResponseXML = "<custom_response>conflict</custom_response>";
-		requestSender.sendPostRequest(REST_MOCK_PUT_SETUP_RESPONSE + "?code=409", customResponseXML);
+		requestSender.sendPostRequest(REST_MOCK_PUT_SETUP_RESPONSE + "?code=409", customResponseXML, MediaType.TEXT_XML);
 
 		// sending REST PUT request
 		MockResponse response = requestSender.sendPutRequest(REST_MOCK_ENDPOINT, "");
@@ -126,10 +127,10 @@ public class RestMockPUTMethodIntegrationTest {
 			IOException, ParserConfigurationException, SAXException {
 		// setting up consecutive responses on mock
 		String customResponseXML1 = "<custom_put_response>custom REST PUT response text 1</custom_put_response>";
-		requestSender.sendPostRequest(REST_MOCK_PUT_SETUP_CONSECUTIVE_RESPONSE + "1", customResponseXML1);
+		requestSender.sendPostRequest(REST_MOCK_PUT_SETUP_CONSECUTIVE_RESPONSE + "1", customResponseXML1, MediaType.TEXT_XML);
 
 		String customResponseXML2 = "<custom_put_response>custom REST PUT response text 2</custom_put_response>";
-		requestSender.sendPostRequest(REST_MOCK_PUT_SETUP_CONSECUTIVE_RESPONSE + "2", customResponseXML2);
+		requestSender.sendPostRequest(REST_MOCK_PUT_SETUP_CONSECUTIVE_RESPONSE + "2", customResponseXML2, MediaType.TEXT_XML);
 
 		MockResponse response = requestSender.sendPutRequest(REST_MOCK_ENDPOINT, "");
 		Document serviceResponseDoc = new DocumentImpl(response.getBody());
