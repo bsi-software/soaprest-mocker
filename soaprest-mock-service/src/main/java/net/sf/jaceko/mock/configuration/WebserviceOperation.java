@@ -23,8 +23,6 @@ public class WebserviceOperation {
 	@SuppressWarnings("unchecked")
 	private List<MockResponse> customResponses = new GrowthList();;
 
-	private int customDelaySec;
-
 	public WebserviceOperation() {
 		super();
 
@@ -82,16 +80,8 @@ public class WebserviceOperation {
 		customResponses.set(requestNumber - 1, customResponse);
 	}
 
-	public void setCustomDelaySec(int customDelaySec) {
-		this.customDelaySec = customDelaySec;
-	}
-
-	public int getCustomDelaySec() {
-		return customDelaySec;
-	}
 
 	public void init() {
-		customDelaySec = 0;
 		customResponses.clear();
 		invocationNumber = 0;
 	}
@@ -120,15 +110,10 @@ public class WebserviceOperation {
 	public String toString() {
 		final int maxLen = 10;
 		return String
-				.format("WebserviceOperation [operationName=%s, defaultResponseFile=%s, defaultResponseText=%s, defaultResponseCode=%s, invocationNumber=%s, customResponses=%s, customDelaySec=%s]",
-						operationName,
-						defaultResponseFile,
-						defaultResponseText,
-						defaultResponseCode,
-						invocationNumber,
-						customResponses != null ? customResponses.subList(0,
-								Math.min(customResponses.size(), maxLen))
-								: null, customDelaySec);
+				.format("WebserviceOperation [operationName=%s, defaultResponseFile=%s, defaultResponseText=%s, defaultResponseCode=%s, invocationNumber=%s, customResponses=%s]",
+						operationName, defaultResponseFile, defaultResponseText, defaultResponseCode, invocationNumber,
+						customResponses != null ? customResponses.subList(0, Math.min(customResponses.size(), maxLen)) : null);
 	}
+
 
 }

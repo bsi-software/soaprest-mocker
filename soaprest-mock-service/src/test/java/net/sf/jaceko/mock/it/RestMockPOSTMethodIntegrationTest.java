@@ -3,11 +3,13 @@ package net.sf.jaceko.mock.it;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.xml.HasXPath.hasXPath;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Calendar;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.ParserConfigurationException;
@@ -158,6 +160,17 @@ public class RestMockPOSTMethodIntegrationTest {
 		response = requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "", MediaType.TEXT_XML);
 		assertThat(response.getBody(), is(customResponseJson2));
 
+	}
+	
+	@Test
+	public void shouldDelayResponseFor1sec() throws UnsupportedEncodingException, ClientProtocolException, IOException {
+		requestSender.sendPostRequest(REST_MOCK_POST_SETUP_RESPONSE + "?delay=1", "", MediaType.TEXT_XML);
+		
+		Calendar before = Calendar.getInstance();
+		requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "", MediaType.TEXT_XML);
+		Calendar after  = Calendar.getInstance();
+		long oneSecInMilis = 1000l;
+		assertThat(after.getTimeInMillis() - before.getTimeInMillis(), is(greaterThanOrEqualTo(oneSecInMilis)));
 	}
 	@Test
 	public void shoulVerifyRecordedRequests() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {

@@ -112,15 +112,6 @@ public class WebserviceOperationTest {
 		assertThat(operation.getResponse(2).getBody(), is("defaultResp"));
 	}
 	
-	@Test
-	public void shouldClearDelay() {
-		operation.setCustomDelaySec(5);
-		assertThat(operation.getCustomDelaySec(), is(5));
-
-		operation.init();
-		assertThat(operation.getCustomDelaySec(), is(0));
-		
-	}
 	
 	@Test
 	public void shouldClearInvocationCount() {

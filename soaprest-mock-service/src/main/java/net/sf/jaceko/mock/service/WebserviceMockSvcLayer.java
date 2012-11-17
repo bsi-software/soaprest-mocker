@@ -25,9 +25,8 @@ public class WebserviceMockSvcLayer {
 		WebserviceOperation serviceOperation = getWebserviceOperation(serviceName, operationId);
 		int invocationNumber = serviceOperation.getNextInvocationNumber();
 		MockResponse response = serviceOperation.getResponse(invocationNumber);
-		int delaySec = serviceOperation.getCustomDelaySec();
 		recordRequest(serviceName, operationId, request, queryString, resourceId);
-		delayService.delaySec(delaySec);
+		delayService.delaySec(response.getDelaySec());
 		return response;
 
 	}
@@ -38,12 +37,6 @@ public class WebserviceMockSvcLayer {
 		serviceOperation.setCustomResponse(expectedResponse, requestInOrder);
 		serviceOperation.resetInvocationNumber();
 
-	}
-
-	public void setRequestDelay(String serviceName, String operationId, int delaySec) {
-		WebserviceOperation serviceOperation = getWebserviceOperation(serviceName, operationId);
-		serviceOperation.setCustomDelaySec(delaySec);
-		serviceOperation.resetInvocationNumber();
 	}
 
 	public String getWsdl(String serviceName) {

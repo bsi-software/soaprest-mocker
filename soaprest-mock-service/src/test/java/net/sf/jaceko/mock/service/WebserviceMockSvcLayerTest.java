@@ -374,48 +374,6 @@ public class WebserviceMockSvcLayerTest {
 	}
 
 	@Test
-	public void shouldSetCustomRequestDelay() {
-		String serviceName = "mptu";
-		String operationId = "prepayRequest";
-		String defaultResponse = "<defaultResp>abc</defaultResp>";
-		int delaySec = 5;
-
-		WebserviceOperation operation = new WebserviceOperation(null, null, defaultResponse, 0);
-
-		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
-
-		serviceLayer.setRequestDelay(serviceName, operationId, delaySec);
-		assertThat(operation.getCustomDelaySec(), is(delaySec));
-
-	}
-	
-	
-	@Test
-	public void shouldResetInvocationNumberWhileSettingUpDelay() {
-		String serviceName = "mptu";
-		String operationId = "prepayRequest";
-		WebserviceOperation operation = new WebserviceOperation(null, null, "", 0);
-
-		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
-
-		serviceLayer.setRequestDelay(serviceName, operationId, 5);
-		assertThat(operation.getNextInvocationNumber(), is(1));
-		assertThat(operation.getNextInvocationNumber(), is(2));
-
-		serviceLayer.setRequestDelay(serviceName, operationId, 5);
-		assertThat(operation.getNextInvocationNumber(), is(1));
-
-	}
-
-	@Test(expected = ServiceNotConfiguredException.class)
-	public void setRequestDelayShouldThrowExceptionIfOperationNotFound() {
-
-		when(configuration.getWebServiceOperation(anyString(), anyString())).thenReturn(null);
-
-		serviceLayer.setRequestDelay("", "", 5);
-	}
-
-	@Test
 	public void shouldGetWsdlText() {
 
 		String serviceName = "ticketing";
@@ -448,7 +406,8 @@ public class WebserviceMockSvcLayerTest {
 	public void shouldDelayRequest() {
 		WebserviceOperation operation = new WebserviceOperation();
 		int delaySec = 5;
-		operation.setCustomDelaySec(delaySec);
+		MockResponse customResponse = new MockResponse(delaySec);
+		operation.setCustomResponse(customResponse , 1);
 
 		when(configuration.getWebServiceOperation(anyString(), anyString())).thenReturn(operation);
 		serviceLayer.performRequest("", "", "", NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
@@ -456,23 +415,7 @@ public class WebserviceMockSvcLayerTest {
 		verify(delayService).delaySec(delaySec);
 	}
 
-	@Test
-	public void shouldDelayByZeroSecAfterMockReinit() {
-		WebserviceOperation operation = new WebserviceOperation();
-		int delaySec = 5;
-		operation.setCustomDelaySec(delaySec);
-		String serviceName = "mptu";
-		String operationId = "prepayRequest";
-
-		when(configuration.getWebServiceOperation(anyString(), anyString())).thenReturn(operation);
-		serviceLayer.performRequest(serviceName, operationId, "", NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
-		verify(delayService).delaySec(delaySec);
-		serviceLayer.initMock(serviceName, operationId);
-		serviceLayer.performRequest(serviceName, operationId, "", NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
-		verify(delayService).delaySec(0);
-
-	}
-
+	
 	@Test(expected = ServiceNotConfiguredException.class)
 	public void shouldThrowExceptionPerforingRequestIfWebserviceOperationNotFound() {
 		when(configuration.getWebServiceOperation(anyString(), anyString())).thenReturn(null);
