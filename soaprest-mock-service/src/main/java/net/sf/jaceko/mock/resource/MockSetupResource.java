@@ -31,9 +31,9 @@ public class MockSetupResource {
     @POST
 	@Path("/consecutive-response/{requestInOrder}")
     @Consumes({MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response setConsecutiveUpResponse(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId, @PathParam("requestInOrder") int requestInOrder,
-    		@QueryParam("code") int customResponseCode, String customResponseBody) {
-		service.setCustomResponse(serviceName, operationId, requestInOrder, new MockResponse(customResponseBody, customResponseCode));
+    public Response setUpResponse(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId, @PathParam("requestInOrder") int requestInOrder,
+    		@QueryParam("code") int customResponseCode, @QueryParam("delay") int delaySec, String customResponseBody) {
+		service.setCustomResponse(serviceName, operationId, requestInOrder, new MockResponse(customResponseBody, customResponseCode, delaySec));
 		return Response.status(HttpStatus.SC_OK).build();
 	}
 

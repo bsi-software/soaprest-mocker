@@ -37,7 +37,7 @@ public class MockSetupResourceTest {
 		resource.initMock(serviceName, operationId);
 		verify(service).initMock(serviceName, operationId);
 
-		serviceName = "mptu";
+		serviceName = "prepayService";
 		operationId = "prepayRequest";
 
 		resource.initMock(serviceName, operationId);
@@ -89,7 +89,7 @@ public class MockSetupResourceTest {
 	}
 	@Test
 	public void setUpResponseShouldReturnResponseWithStatusOK() {
-		Response response = resource.setConsecutiveUpResponse("", "",1, 0, "");
+		Response response = resource.setUpResponse("", "",1, 0, 0, "");
 		assertThat(response.getStatus(), is(HttpStatus.SC_OK));
 	}
 
@@ -100,19 +100,21 @@ public class MockSetupResourceTest {
 		int customResponseCode = 201;
 		String customResponseBody = "<dummyResponse></dummyResponse>";
 		int responseInOrder = 2;
+		int delaySec = 2;
 
-		resource.setConsecutiveUpResponse(serviceName, operationId, responseInOrder, customResponseCode, customResponseBody);
+		
+		resource.setUpResponse(serviceName, operationId, responseInOrder, customResponseCode, delaySec, customResponseBody);
 		verify(service).setCustomResponse(serviceName, operationId, responseInOrder,
-				new MockResponse(customResponseBody, customResponseCode));
+				new MockResponse(customResponseBody, customResponseCode, delaySec));
 
-		serviceName = "mptu";
+		serviceName = "prepayService";
 		operationId = "prepayRequest";
 		responseInOrder = 1;
 		customResponseCode = 200;
-		
-		resource.setConsecutiveUpResponse(serviceName, operationId, responseInOrder, customResponseCode, customResponseBody);
+		delaySec = 5;
+		resource.setUpResponse(serviceName, operationId, responseInOrder, customResponseCode, delaySec, customResponseBody);
 		verify(service).setCustomResponse(serviceName, operationId, responseInOrder,
-				new MockResponse(customResponseBody, customResponseCode));
+				new MockResponse(customResponseBody, customResponseCode, delaySec));
 	}
 	
 }

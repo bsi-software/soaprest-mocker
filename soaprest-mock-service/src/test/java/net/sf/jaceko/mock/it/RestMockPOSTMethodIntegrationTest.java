@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.xml.HasXPath.hasXPath;
 import static org.junit.Assert.assertThat;
 
@@ -171,6 +172,26 @@ public class RestMockPOSTMethodIntegrationTest {
 		Calendar after  = Calendar.getInstance();
 		long oneSecInMilis = 1000l;
 		assertThat(after.getTimeInMillis() - before.getTimeInMillis(), is(greaterThanOrEqualTo(oneSecInMilis)));
+	}
+	
+	@Test
+	public void shouldDelaySecondResponseFor1Sec() throws UnsupportedEncodingException, ClientProtocolException, IOException {
+		requestSender.sendPostRequest(REST_MOCK_POST_SETUP_CONSECUTIVE_RESPONSE + "2/?delay=1", "", MediaType.TEXT_XML);
+		long oneSecInMilis = 1000l;
+
+
+		//first request is not delayed
+		Calendar before = Calendar.getInstance();
+		requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "", MediaType.TEXT_XML);
+		Calendar after  = Calendar.getInstance();
+		assertThat(after.getTimeInMillis() - before.getTimeInMillis(), is(not(greaterThanOrEqualTo(oneSecInMilis))));
+
+		//second request
+		before = Calendar.getInstance();
+		requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "", MediaType.TEXT_XML);
+		after  = Calendar.getInstance();
+		assertThat(after.getTimeInMillis() - before.getTimeInMillis(), is(greaterThanOrEqualTo(oneSecInMilis)));
+
 	}
 	@Test
 	public void shoulVerifyRecordedRequests() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
