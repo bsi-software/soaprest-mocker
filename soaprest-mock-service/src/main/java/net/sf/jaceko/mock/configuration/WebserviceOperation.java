@@ -19,6 +19,8 @@
  */
 package net.sf.jaceko.mock.configuration;
 
+import static java.util.Collections.synchronizedList;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -41,7 +43,7 @@ public class WebserviceOperation {
 	private AtomicInteger invocationNumber = new AtomicInteger(0);
 
 	@SuppressWarnings("unchecked")
-	private List<MockResponse> customResponses = new GrowthList();
+	private List<MockResponse> customResponses = synchronizedList(new GrowthList());
 
 	public WebserviceOperation() {
 		super();
@@ -83,11 +85,12 @@ public class WebserviceOperation {
 
 	public MockResponse getResponse(int requestNumber) {
 		int index = requestNumber - 1;
-		if (customResponses.size() < requestNumber || customResponses.get(index) == null) {
-			return new MockResponse(defaultResponseText, defaultResponseCode);
+		synchronized (customResponses) {
+			if (customResponses.size() < requestNumber || customResponses.get(index) == null) {
+				return new MockResponse(defaultResponseText, defaultResponseCode);
+			}
+			return customResponses.get(index);
 		}
-
-		return customResponses.get(index);
 	}
 
 	public void setCustomResponse(MockResponse customResponse, int requestNumber) {
@@ -98,7 +101,7 @@ public class WebserviceOperation {
 		customResponses.set(requestNumber - 1, customResponse);
 	}
 
-	public void init() {
+	public synchronized void init() {
 		customResponses.clear();
 		resetInvocationNumber();
 	}
