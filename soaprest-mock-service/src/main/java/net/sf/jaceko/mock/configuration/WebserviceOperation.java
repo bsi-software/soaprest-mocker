@@ -2,24 +2,25 @@
  *
  *     Copyright (C) 2012 Jacek Obarymski
  *
- *     This file is part of SOAP/REST Mock Servce.
+ *     This file is part of SOAP/REST Mock Service.
  *
- *     SOAP/REST Mock Servce is free software; you can redistribute it and/or modify
+ *     SOAP/REST Mock Service is free software; you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License, version 3
  *     as published by the Free Software Foundation.
  *
- *     SOAP/REST Mock Servce is distributed in the hope that it will be useful,
+ *     SOAP/REST Mock Service is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
  *
  *     You should have received a copy of the GNU Lesser General Public License
- *     along with SOAP/REST Mock Servce; if not, write to the Free Software
+ *     along with SOAP/REST Mock Service; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 package net.sf.jaceko.mock.configuration;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import net.sf.jaceko.mock.model.MockResponse;
 
@@ -37,18 +38,17 @@ public class WebserviceOperation {
 	private String defaultResponseFile;
 	private String defaultResponseText;
 	private int defaultResponseCode;
-	private int invocationNumber = 0;
+	private AtomicInteger invocationNumber = new AtomicInteger(0);
 
 	@SuppressWarnings("unchecked")
-	private List<MockResponse> customResponses = new GrowthList();;
+	private List<MockResponse> customResponses = new GrowthList();
 
 	public WebserviceOperation() {
 		super();
 
 	}
 
-	public WebserviceOperation(String operationName,
-			String defaultResponseFile, String defaultResponseText,
+	public WebserviceOperation(String operationName, String defaultResponseFile, String defaultResponseText,
 			int defaultResponseCode) {
 		super();
 		this.operationName = operationName;
@@ -83,8 +83,7 @@ public class WebserviceOperation {
 
 	public MockResponse getResponse(int requestNumber) {
 		int index = requestNumber - 1;
-		if (customResponses.size() < requestNumber
-				|| customResponses.get(index) == null) {
+		if (customResponses.size() < requestNumber || customResponses.get(index) == null) {
 			return new MockResponse(defaultResponseText, defaultResponseCode);
 		}
 
@@ -99,21 +98,20 @@ public class WebserviceOperation {
 		customResponses.set(requestNumber - 1, customResponse);
 	}
 
-
 	public void init() {
 		customResponses.clear();
-		invocationNumber = 0;
+		resetInvocationNumber();
 	}
 
 	/**
 	 * increments and returns number of consecutive service invocations
 	 */
 	public int getNextInvocationNumber() {
-		return ++invocationNumber;
+		return invocationNumber.incrementAndGet();
 	}
 
 	public void resetInvocationNumber() {
-		invocationNumber = 0;
+		invocationNumber.set(0);
 
 	}
 
@@ -133,6 +131,5 @@ public class WebserviceOperation {
 						operationName, defaultResponseFile, defaultResponseText, defaultResponseCode, invocationNumber,
 						customResponses != null ? customResponses.subList(0, Math.min(customResponses.size(), maxLen)) : null);
 	}
-
 
 }
