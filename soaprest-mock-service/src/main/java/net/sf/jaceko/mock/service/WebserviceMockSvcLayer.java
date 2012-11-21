@@ -103,15 +103,15 @@ public class WebserviceMockSvcLayer {
 		}
 	}
 
-	private synchronized Map<String, Collection<MockRequest>> fetchRequestsPerOperationMap(String serviceName) {
-
-		Map<String, Collection<MockRequest>> requestsPerOperationMap = recordedRequestsMap.get(serviceName);
-		if (requestsPerOperationMap == null) {
-			requestsPerOperationMap = synchronizedMap(new HashMap<String, Collection<MockRequest>>());
-			recordedRequestsMap.put(serviceName, requestsPerOperationMap);
+	private Map<String, Collection<MockRequest>> fetchRequestsPerOperationMap(String serviceName) {
+		synchronized (recordedRequestsMap) {
+			Map<String, Collection<MockRequest>> requestsPerOperationMap = recordedRequestsMap.get(serviceName);
+			if (requestsPerOperationMap == null) {
+				requestsPerOperationMap = synchronizedMap(new HashMap<String, Collection<MockRequest>>());
+				recordedRequestsMap.put(serviceName, requestsPerOperationMap);
+			}
+			return requestsPerOperationMap;
 		}
-
-		return requestsPerOperationMap;
 	}
 
 	public Collection<String> getRecordedRequestBodies(String serviceName, String operationId) {
