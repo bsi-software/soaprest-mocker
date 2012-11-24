@@ -35,7 +35,6 @@ import net.sf.jaceko.mock.resource.WsdlExposingResource;
 import net.sf.jaceko.mock.service.DelayService;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
 
-@SuppressWarnings("deprecation")
 public class MockserviceApplication extends Application {
 	private static final String PROPERTY_FILE = "ws-mock.properties";
 
