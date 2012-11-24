@@ -30,9 +30,7 @@ import net.sf.jaceko.mock.configuration.PropertyProcessor;
 import net.sf.jaceko.mock.resource.MockSetupResource;
 import net.sf.jaceko.mock.resource.RecordedRequestsResource;
 import net.sf.jaceko.mock.resource.RestEndpointResource;
-import net.sf.jaceko.mock.resource.RestEndpointResourceLowerCaseUrl;
 import net.sf.jaceko.mock.resource.SoapEndpointResource;
-import net.sf.jaceko.mock.resource.SoapEndpointResourceLowerCaseUrl;
 import net.sf.jaceko.mock.resource.WsdlExposingResource;
 import net.sf.jaceko.mock.service.DelayService;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
@@ -63,17 +61,9 @@ public class MockserviceApplication extends Application {
 		SoapEndpointResource mockSoapEndpointResource = new SoapEndpointResource();
 		mockSoapEndpointResource.setWebserviceMockService(svcLayer);
 
-		SoapEndpointResourceLowerCaseUrl mockSoapEndpointResourceLowerCaseUrl = new SoapEndpointResourceLowerCaseUrl();
-		mockSoapEndpointResourceLowerCaseUrl.setWebserviceMockService(svcLayer);
-
-		
 		RestEndpointResource mockRestEndpointResource = new RestEndpointResource();
 		mockRestEndpointResource.setWebserviceMockService(svcLayer);
 
-		RestEndpointResourceLowerCaseUrl mockRestEndpointResourceLowerCaseUrl = new RestEndpointResourceLowerCaseUrl();
-		mockRestEndpointResourceLowerCaseUrl.setWebserviceMockService(svcLayer);
-
-		
 		WsdlExposingResource wsdlExposingResource = new WsdlExposingResource();
 		wsdlExposingResource.setWebserviceMockService(svcLayer);
 
@@ -82,8 +72,6 @@ public class MockserviceApplication extends Application {
 		singletons.add(mockSetupResource);
 		singletons.add(recordedRequestsResource);
 		singletons.add(wsdlExposingResource);
-		singletons.add(mockRestEndpointResourceLowerCaseUrl);
-		singletons.add(mockSoapEndpointResourceLowerCaseUrl);
 
 	}
 
