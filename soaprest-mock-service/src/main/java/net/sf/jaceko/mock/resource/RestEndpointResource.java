@@ -38,7 +38,7 @@ import net.sf.jaceko.mock.application.enums.HttpMethod;
 import net.sf.jaceko.mock.model.MockResponse;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
 
-@Path("/endpoint/REST/{serviceName}")
+@Path("/services/REST/{serviceName}/endpoint")
 public class RestEndpointResource {
 	private static final Logger LOG = Logger.getLogger(RestEndpointResource.class);
 

@@ -31,13 +31,13 @@ import org.xml.sax.SAXException;
 public class RestMockPUTMethodIntegrationTest {
 
 	// mocked endpoints configured in ws-mock.properties
-	private static final String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/endpoint/REST/dummy-rest";
+	private static final String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/services/REST/dummy-rest/endpoint";
 
-	private static final String REST_MOCK_PUT_SETUP_INIT 				 	= "http://localhost:8080/mock/dummy-rest/PUT/setup/init";
-	private static final String REST_MOCK_PUT_SETUP_RESPONSE 			 	= "http://localhost:8080/mock/dummy-rest/PUT/setup/response";
-	private static final String REST_MOCK_PUT_SETUP_CONSECUTIVE_RESPONSE 	= "http://localhost:8080/mock/dummy-rest/PUT/setup/consecutive-response/";
-	private static final String REST_MOCK_PUT_VERIFY_RECORDED_REQUESTS 	 	= "http://localhost:8080/mock/dummy-rest/PUT/recorded/requests";
-	private static final String REST_MOCK_PUT_VERIFY_RECORDED_RESOURCE_IDS 	= "http://localhost:8080/mock/dummy-rest/PUT/recorded/resource-ids";
+	private static final String REST_MOCK_PUT_SETUP_INIT 				 	= "http://localhost:8080/mock/services/REST/dummy-rest/setup/PUT/init";
+	private static final String REST_MOCK_PUT_SETUP_RESPONSE 			 	= "http://localhost:8080/mock/services/REST/dummy-rest/setup/PUT/response";
+	private static final String REST_MOCK_PUT_SETUP_CONSECUTIVE_RESPONSE 	= "http://localhost:8080/mock/services/REST/dummy-rest/setup/PUT/responses/";
+	private static final String REST_MOCK_PUT_VERIFY_RECORDED_REQUESTS 	 	= "http://localhost:8080/mock/services/REST/dummy-rest/verify/PUT/requests";
+	private static final String REST_MOCK_PUT_VERIFY_RECORDED_RESOURCE_IDS 	= "http://localhost:8080/mock/services/REST/dummy-rest/verify/PUT/resource-ids";
 
 	HttpRequestSender requestSender = new HttpRequestSender();
 

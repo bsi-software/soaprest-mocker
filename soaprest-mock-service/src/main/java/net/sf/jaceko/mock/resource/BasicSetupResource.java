@@ -29,35 +29,35 @@ import javax.ws.rs.core.Response;
 
 import net.sf.jaceko.mock.model.MockResponse;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
+
 import org.apache.commons.httpclient.HttpStatus;
 
-
-@Path("/{serviceName}/{operationId}/setup")
-public class MockSetupResource {
-
+public abstract class BasicSetupResource {
 
 	private WebserviceMockSvcLayer service;
 
-	
-    @POST
-	@Path("/response")
-    @Consumes({MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+	public BasicSetupResource() {
+		super();
+	}
+
+	@POST
+	@Path("/{operationId}/response")
+	@Consumes({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response setUpResponse(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId, @QueryParam("code") int customResponseCode, @QueryParam("delay") int delaySec, String customResponseBody) {
-    	service.setCustomResponse(serviceName, operationId, 1, new MockResponse(customResponseBody, customResponseCode, delaySec));
+		service.setCustomResponse(serviceName, operationId, 1, new MockResponse(customResponseBody, customResponseCode, delaySec));
 		return Response.status(HttpStatus.SC_OK).build();
 	}
-    
-    @POST
-	@Path("/consecutive-response/{requestInOrder}")
-    @Consumes({MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response setUpResponse(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId, @PathParam("requestInOrder") int requestInOrder,
-    		@QueryParam("code") int customResponseCode, @QueryParam("delay") int delaySec, String customResponseBody) {
+
+	@POST
+	@Path("/{operationId}/responses/{requestInOrder}")
+	@Consumes({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Response setUpResponse(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId, @PathParam("requestInOrder") int requestInOrder, @QueryParam("code") int customResponseCode, @QueryParam("delay") int delaySec, String customResponseBody) {
 		service.setCustomResponse(serviceName, operationId, requestInOrder, new MockResponse(customResponseBody, customResponseCode, delaySec));
 		return Response.status(HttpStatus.SC_OK).build();
 	}
 
-    @POST
-	@Path("/init")
+	@POST
+	@Path("/{operationId}/init")
 	public Response initMock(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
 		service.initMock(serviceName, operationId);
 		return Response.status(HttpStatus.SC_OK).build();
@@ -66,7 +66,5 @@ public class MockSetupResource {
 	public void setWebserviceMockService(WebserviceMockSvcLayer service) {
 		this.service = service;
 	}
-
-	
 
 }

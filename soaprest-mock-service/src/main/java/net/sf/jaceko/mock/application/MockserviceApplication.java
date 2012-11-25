@@ -27,10 +27,12 @@ import javax.ws.rs.core.Application;
 
 import net.sf.jaceko.mock.configuration.MockserviceConfiguration;
 import net.sf.jaceko.mock.configuration.PropertyProcessor;
-import net.sf.jaceko.mock.resource.MockSetupResource;
-import net.sf.jaceko.mock.resource.RecordedRequestsResource;
 import net.sf.jaceko.mock.resource.RestEndpointResource;
+import net.sf.jaceko.mock.resource.RestServiceMockSetupResource;
+import net.sf.jaceko.mock.resource.RestServiceMockVerificatonResource;
 import net.sf.jaceko.mock.resource.SoapEndpointResource;
+import net.sf.jaceko.mock.resource.SoapServiceMockSetupResource;
+import net.sf.jaceko.mock.resource.SoapServiceMockVerificatonResource;
 import net.sf.jaceko.mock.resource.WsdlExposingResource;
 import net.sf.jaceko.mock.service.DelayService;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
@@ -52,11 +54,18 @@ public class MockserviceApplication extends Application {
 		WebserviceMockSvcLayer svcLayer = new WebserviceMockSvcLayer();
 		svcLayer.setMockserviceConfiguration(configuration);
 		svcLayer.setDelayService(delayService);
-		MockSetupResource mockSetupResource = new MockSetupResource();
-		mockSetupResource.setWebserviceMockService(svcLayer);
-		RecordedRequestsResource recordedRequestsResource = new RecordedRequestsResource();
-		recordedRequestsResource.setWebserviceMockService(svcLayer);
 
+		RestServiceMockSetupResource restMockSetupResource = new RestServiceMockSetupResource();
+		restMockSetupResource.setWebserviceMockService(svcLayer);
+		RestServiceMockVerificatonResource restVerificationResource = new RestServiceMockVerificatonResource();
+		restVerificationResource.setWebserviceMockService(svcLayer);
+
+		SoapServiceMockSetupResource soapMockSetupResource = new SoapServiceMockSetupResource();
+		soapMockSetupResource.setWebserviceMockService(svcLayer);
+		SoapServiceMockVerificatonResource soapVerificationResource = new SoapServiceMockVerificatonResource();
+		soapVerificationResource.setWebserviceMockService(svcLayer);
+
+		
 		SoapEndpointResource mockSoapEndpointResource = new SoapEndpointResource();
 		mockSoapEndpointResource.setWebserviceMockService(svcLayer);
 
@@ -68,8 +77,10 @@ public class MockserviceApplication extends Application {
 
 		singletons.add(mockSoapEndpointResource);
 		singletons.add(mockRestEndpointResource);
-		singletons.add(mockSetupResource);
-		singletons.add(recordedRequestsResource);
+		singletons.add(restMockSetupResource);
+		singletons.add(restVerificationResource);
+		singletons.add(soapMockSetupResource);
+		singletons.add(soapVerificationResource);
 		singletons.add(wsdlExposingResource);
 
 	}

@@ -31,14 +31,13 @@ import org.xml.sax.SAXException;
 public class RestMockDELETEMethodIntegrationTest {
 
 	//mocked endpoints configured in ws-mock.properties
-	public static String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/endpoint/REST/dummy-rest";
+	private static String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/services/REST/dummy-rest/endpoint";
 	
 	
-	public static String REST_MOCK_DELETE_SETUP_INIT 						= "http://localhost:8080/mock/dummy-rest/DELETE/setup/init";
-	public static String REST_MOCK_DELETE_SETUP_RESPONSE 					= "http://localhost:8080/mock/dummy-rest/DELETE/setup/response";
-	public static String REST_MOCK_DELETE_SETUP_CONSECUTIVE_RESPONSE 		= "http://localhost:8080/mock/dummy-rest/DELETE/setup/consecutive-response/";
-	public static String REST_MOCK_DELETE_VERIFY_RECORDED_REQUESTS	 		= "http://localhost:8080/mock/dummy-rest/DELETE/recorded/requests";
-	public static String REST_MOCK_DELETE_VERIFY_RECORDED_REQUEST_PARAMS 	= "http://localhost:8080/mock/dummy-rest/DELETE/recorded/url-request-params";
+	
+	private static final String REST_MOCK_DELETE_SETUP_INIT 				 	= "http://localhost:8080/mock/services/REST/dummy-rest/setup/DELETE/init";
+	private static final String REST_MOCK_DELETE_SETUP_RESPONSE 			 	= "http://localhost:8080/mock/services/REST/dummy-rest/setup/DELETE/response";
+	private static final String REST_MOCK_DELETE_SETUP_CONSECUTIVE_RESPONSE 	= "http://localhost:8080/mock/services/REST/dummy-rest/setup/DELETE/responses/";
 	
 	HttpRequestSender requestSender = new HttpRequestSender();
 	

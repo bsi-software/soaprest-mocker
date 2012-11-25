@@ -31,15 +31,15 @@ import org.xml.sax.SAXException;
 public class RestMockGETMethodIntegrationTest {
 
 	//mocked endpoints configured in ws-mock.properties
-	public static String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/endpoint/REST/dummy-rest";
-	public static String REST_MOCK_ENDPOINT_FORBIDDEN_RESPONSE_CODE = "http://localhost:8080/mock/endpoint/rest/dummy-rest-notauthorized";
+	private static final String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/services/REST/dummy-rest/endpoint";
+	private static final String REST_MOCK_ENDPOINT_FORBIDDEN_RESPONSE_CODE = "http://localhost:8080/mock/services/REST/dummy-rest-notauthorized/endpoint";
 	
 	
-	public static String REST_MOCK_GET_SETUP_INIT 						= "http://localhost:8080/mock/dummy-rest/GET/setup/init";
-	public static String REST_MOCK_GET_SETUP_RESPONSE 	 				= "http://localhost:8080/mock/dummy-rest/GET/setup/response";
-	public static String REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE 		= "http://localhost:8080/mock/dummy-rest/GET/setup/consecutive-response/";
-	public static String REST_MOCK_GET_VERIFY_RECORDED_RESOURCE_IDS 	= "http://localhost:8080/mock/dummy-rest/GET/recorded/resource-ids";
-	public static String REST_MOCK_GET_VERIFY_RECORDED_REQUEST_PARAMS 	= "http://localhost:8080/mock/dummy-rest/GET/recorded/url-request-params";
+	private static final String REST_MOCK_GET_SETUP_INIT 						= "http://localhost:8080/mock/services/REST/dummy-rest/setup/GET/init";
+	private static final String REST_MOCK_GET_SETUP_RESPONSE 	 				= "http://localhost:8080/mock/services/REST/dummy-rest/setup/GET/response";
+	private static final String REST_MOCK_GET_SETUP_CONSECUTIVE_RESPONSE 		= "http://localhost:8080/mock/services/REST/dummy-rest/setup/GET/responses/";
+	private static final String REST_MOCK_GET_VERIFY_RECORDED_RESOURCE_IDS 	= "http://localhost:8080/mock/services/REST/dummy-rest/verify/GET/resource-ids";
+	private static final String REST_MOCK_GET_VERIFY_RECORDED_REQUEST_PARAMS 	= "http://localhost:8080/mock/services/REST/dummy-rest/verify/GET/url-request-params";
 	
 	
 	HttpRequestSender requestSender = new HttpRequestSender();

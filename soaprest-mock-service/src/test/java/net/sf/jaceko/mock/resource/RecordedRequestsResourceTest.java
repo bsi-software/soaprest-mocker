@@ -15,7 +15,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.jaceko.mock.helper.XmlParser;
 import net.sf.jaceko.mock.it.helper.dom.DocumentImpl;
-import net.sf.jaceko.mock.resource.RecordedRequestsResource;
+import net.sf.jaceko.mock.resource.RestServiceMockVerificatonResource;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
 
 import org.junit.Before;
@@ -27,7 +27,7 @@ import org.xml.sax.SAXException;
 
 
 public class RecordedRequestsResourceTest {
-	private RecordedRequestsResource resource = new RecordedRequestsResource();
+	private BasicVerifictationResource resource = new RestServiceMockVerificatonResource();
 
 	@Mock
 	private WebserviceMockSvcLayer service;

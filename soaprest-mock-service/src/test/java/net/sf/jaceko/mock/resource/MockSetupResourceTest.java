@@ -18,7 +18,7 @@ import org.mockito.Mock;
 
 public class MockSetupResourceTest {
 
-	private MockSetupResource resource = new MockSetupResource();
+	private BasicSetupResource resource = new RestServiceMockSetupResource();
 
 	@Mock
 	private WebserviceMockSvcLayer service;
