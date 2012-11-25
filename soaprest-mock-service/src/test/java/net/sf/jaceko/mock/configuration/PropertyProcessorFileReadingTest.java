@@ -34,10 +34,9 @@ public class PropertyProcessorFileReadingTest {
 	public void shouldReadWsdlContentsFromFile() throws IOException, ParserConfigurationException,
 			SAXException {
 		String propertyString = "SERVICE[0].NAME=ticketing\r\n"
-				+ "SERVICE[0].WSDL=dummy.wsdl\r\n"
+				+ "SERVICE[0].WSDL=hello-for-unit-tests.wsdl\r\n"
 				+ "SERVICE[0].TYPE=SOAP\r\n"
-				+ "SERVICE[0].OPERATION[0].INPUT_MESSAGE=reserveRequest\r\n"
-				+ "SERVICE[0].OPERATION[1].INPUT_MESSAGE=confirmRequest\r\n";
+				+ "SERVICE[0].OPERATION[0].INPUT_MESSAGE=someRequest\r\n";
 
 		Reader reader = new StringReader(propertyString);
 		MockserviceConfiguration configuration = propertyProcessor.process(reader);
