@@ -57,6 +57,12 @@ public class MockResponse {
 	public void setCode(int code) {
 		this.code = code;
 	}
+	
+	public void setZeroCodeTo(int code) {
+		if (this.code == 0) {
+			setCode(code);
+		}
+	}
 
 	public int getDelaySec() {
 		return delaySec;

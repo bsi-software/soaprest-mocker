@@ -21,7 +21,7 @@ package net.sf.jaceko.mock.resource;
 
 import javax.ws.rs.Path;
 
-@Path("/services/SOAP/{serviceName}/setup")
+@Path("/services/SOAP/{serviceName}/operations")
 public class SoapServiceMockSetupResource extends BasicSetupResource {
 
 }

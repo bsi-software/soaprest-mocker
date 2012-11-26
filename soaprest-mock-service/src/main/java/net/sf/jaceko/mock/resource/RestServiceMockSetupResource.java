@@ -23,7 +23,7 @@ import javax.ws.rs.Path;
 
 
 
-@Path("/services/REST/{serviceName}/setup")
+@Path("/services/REST/{serviceName}/operations")
 public class RestServiceMockSetupResource extends BasicSetupResource {
 
 	

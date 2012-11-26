@@ -38,18 +38,17 @@ public class RestMockPOSTMethodIntegrationTest {
 	private static final String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/services/REST/dummy-rest/endpoint";
 	
 	
-	private static final String REST_MOCK_POST_SETUP_INIT 						= "http://localhost:8080/mock/services/REST/dummy-rest/setup/POST/init";
-	private static final String REST_MOCK_POST_SETUP_RESPONSE 					= "http://localhost:8080/mock/services/REST/dummy-rest/setup/POST/response";
-	private static final String REST_MOCK_POST_SETUP_CONSECUTIVE_RESPONSE 		= "http://localhost:8080/mock/services/REST/dummy-rest/setup/POST/responses/";
-	private static final String REST_MOCK_POST_VERIFY_RECORDED_REQUESTS	 	= "http://localhost:8080/mock/services/REST/dummy-rest/verify/POST/requests";
-	private static final String REST_MOCK_POST_VERIFY_RECORDED_REQUEST_PARAMS 	= "http://localhost:8080/mock/services/REST/dummy-rest/verify/POST/url-request-params";
+	private static final String REST_MOCK_POST_INIT 						= "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/init";
+	private static final String REST_MOCK_POST_RESPONSES 					= "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/responses";
+	private static final String REST_MOCK_POST_RECORDED_REQUESTS	 		= "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/recorded-requests";
+	private static final String REST_MOCK_POST_RECORDED_REQUEST_PARAMS 		= "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/recorded-request-params";
 	
 	HttpRequestSender requestSender = new HttpRequestSender();
 	
 	@Before
 	public void initMock() throws UnsupportedEncodingException, ClientProtocolException, IOException {
 		//initalizing mock, clearing history of previous requests
-		requestSender.sendPostRequest(REST_MOCK_POST_SETUP_INIT, "", MediaType.TEXT_XML);
+		requestSender.sendPostRequest(REST_MOCK_POST_INIT, "", MediaType.TEXT_XML);
 	}
 
 	@Test
@@ -71,7 +70,7 @@ public class RestMockPOSTMethodIntegrationTest {
 		//setting up xml response body on mock
 		//not setting custom response code
 		String customResponseXML = "<custom_post_response>custom REST POST response text</custom_post_response>";
-		requestSender.sendPostRequest(REST_MOCK_POST_SETUP_RESPONSE, customResponseXML, MediaType.TEXT_XML);
+		requestSender.sendPostRequest(REST_MOCK_POST_RESPONSES, customResponseXML, MediaType.TEXT_XML);
 		
 		//sending REST POST request 
 		MockResponse response = requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "", MediaType.TEXT_XML);
@@ -91,7 +90,7 @@ public class RestMockPOSTMethodIntegrationTest {
 		//setting up json response body on mock
 		//not setting custom response code
 		String customResponseJson = "{\"json\": \"obj\"}";
-		requestSender.sendPostRequest(REST_MOCK_POST_SETUP_RESPONSE, customResponseJson, MediaType.APPLICATION_JSON);
+		requestSender.sendPostRequest(REST_MOCK_POST_RESPONSES, customResponseJson, MediaType.APPLICATION_JSON);
 		
 		//sending REST POST request 
 		MockResponse response = requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "", MediaType.TEXT_XML);
@@ -102,7 +101,7 @@ public class RestMockPOSTMethodIntegrationTest {
 	@Test
 	public void shouldReturnXmlResponseBodyAndCode() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		String customResponseXML = "<custom_post_response>not authorized</custom_post_response>";
-		requestSender.sendPostRequest(REST_MOCK_POST_SETUP_RESPONSE + "?code=403", customResponseXML, MediaType.TEXT_XML);
+		requestSender.sendPostRequest(REST_MOCK_POST_RESPONSES + "?code=403", customResponseXML, MediaType.TEXT_XML);
 		
 		//sending REST POST request 
 		MockResponse response = requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "", MediaType.TEXT_XML);
@@ -117,15 +116,44 @@ public class RestMockPOSTMethodIntegrationTest {
 		
 	}
 
-	
+
 	@Test
 	public void shouldReturnConsecutiveCustomXmlResponses() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		//setting up consecutive responses on mock		
 		String customResponseXML1 = "<custom_post_response>custom REST POST response text 1</custom_post_response>";
-		requestSender.sendPostRequest(REST_MOCK_POST_SETUP_CONSECUTIVE_RESPONSE + "1" + "?code=403", customResponseXML1, MediaType.TEXT_XML);
+		requestSender.sendPostRequest(REST_MOCK_POST_RESPONSES + "?code=403", customResponseXML1, MediaType.TEXT_XML);
 
 		String customResponseXML2 = "<custom_post_response>custom REST POST response text 2</custom_post_response>";
-		requestSender.sendPostRequest(REST_MOCK_POST_SETUP_CONSECUTIVE_RESPONSE + "2" + "?code=200", customResponseXML2, MediaType.TEXT_XML);
+		requestSender.sendPostRequest(REST_MOCK_POST_RESPONSES + "?code=200", customResponseXML2, MediaType.TEXT_XML);
+		
+		MockResponse response = requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "", MediaType.TEXT_XML);
+		assertThat(response.getCode(), is(HttpStatus.SC_FORBIDDEN));
+		Document serviceResponseDoc = new DocumentImpl(response.getBody());
+		
+		assertThat(
+				serviceResponseDoc,
+				hasXPath("//custom_post_response",
+						equalTo("custom REST POST response text 1")));
+
+		response = requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "", MediaType.TEXT_XML);
+		assertThat(response.getCode(), is(HttpStatus.SC_OK));
+
+		serviceResponseDoc = new DocumentImpl(response.getBody());
+		assertThat(
+				serviceResponseDoc,
+				hasXPath("//custom_post_response",
+						equalTo("custom REST POST response text 2")));
+	}
+
+	
+	@Test
+	public void shouldReturnConsecutiveCustomXmlResponses2() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
+		//setting up consecutive responses on mock		
+		String customResponseXML1 = "<custom_post_response>custom REST POST response text 1</custom_post_response>";
+		requestSender.sendPutRequest(REST_MOCK_POST_RESPONSES + "/1" + "?code=403", customResponseXML1, MediaType.TEXT_XML);
+
+		String customResponseXML2 = "<custom_post_response>custom REST POST response text 2</custom_post_response>";
+		requestSender.sendPutRequest(REST_MOCK_POST_RESPONSES + "/2" + "?code=200", customResponseXML2, MediaType.TEXT_XML);
 		
 		MockResponse response = requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "", MediaType.TEXT_XML);
 		assertThat(response.getCode(), is(HttpStatus.SC_FORBIDDEN));
@@ -150,10 +178,10 @@ public class RestMockPOSTMethodIntegrationTest {
 	public void shouldReturnConsecutiveCustomJsonResponses() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		//setting up consecutive responses on mock		
 		String customResponseJson1 = "{\"custom_post_response\": \"custom REST POST response text 1\"}";
-		requestSender.sendPostRequest(REST_MOCK_POST_SETUP_CONSECUTIVE_RESPONSE + "1" + "?code=403", customResponseJson1, MediaType.APPLICATION_JSON);
+		requestSender.sendPutRequest(REST_MOCK_POST_RESPONSES + "/1" + "?code=403", customResponseJson1, MediaType.APPLICATION_JSON);
 
 		String customResponseJson2 = "{\"custom_post_response\": \"custom REST POST response text 2\"}";
-		requestSender.sendPostRequest(REST_MOCK_POST_SETUP_CONSECUTIVE_RESPONSE + "2" + "?code=200", customResponseJson2, MediaType.APPLICATION_JSON);
+		requestSender.sendPutRequest(REST_MOCK_POST_RESPONSES + "/2" + "?code=200", customResponseJson2, MediaType.APPLICATION_JSON);
 
 		MockResponse response = requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "", MediaType.TEXT_XML);
 		assertThat(response.getBody(), is(customResponseJson1));
@@ -165,7 +193,7 @@ public class RestMockPOSTMethodIntegrationTest {
 	
 	@Test
 	public void shouldDelayResponseFor1sec() throws UnsupportedEncodingException, ClientProtocolException, IOException {
-		requestSender.sendPostRequest(REST_MOCK_POST_SETUP_RESPONSE + "?delay=1", "", MediaType.TEXT_XML);
+		requestSender.sendPostRequest(REST_MOCK_POST_RESPONSES + "?delay=1", "", MediaType.TEXT_XML);
 		
 		Calendar before = Calendar.getInstance();
 		requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "", MediaType.TEXT_XML);
@@ -176,7 +204,7 @@ public class RestMockPOSTMethodIntegrationTest {
 	
 	@Test
 	public void shouldDelaySecondResponseFor1Sec() throws UnsupportedEncodingException, ClientProtocolException, IOException {
-		requestSender.sendPostRequest(REST_MOCK_POST_SETUP_CONSECUTIVE_RESPONSE + "2/?delay=1", "", MediaType.TEXT_XML);
+		requestSender.sendPutRequest(REST_MOCK_POST_RESPONSES + "/2/?delay=1", "", MediaType.TEXT_XML);
 		long oneSecInMilis = 1000l;
 
 
@@ -198,15 +226,15 @@ public class RestMockPOSTMethodIntegrationTest {
 		requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "<dummyReq>dummyReqText1</dummyReq>", MediaType.TEXT_XML);
 		requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "<dummyReq>dummyReqText2</dummyReq>", MediaType.TEXT_XML);
 
-		MockResponse recordedRequests = requestSender.sendGetRequest(REST_MOCK_POST_VERIFY_RECORDED_REQUESTS);
+		MockResponse recordedRequests = requestSender.sendGetRequest(REST_MOCK_POST_RECORDED_REQUESTS);
 		Document requestUrlParamsDoc = new DocumentImpl(recordedRequests.getBody());
 
 		assertThat(
 				requestUrlParamsDoc,
-				hasXPath("//requests/dummyReq[1]", equalTo("dummyReqText1")));
+				hasXPath("//recorded-requests/dummyReq[1]", equalTo("dummyReqText1")));
 		assertThat(
 				requestUrlParamsDoc,
-				hasXPath("//requests/dummyReq[2]", equalTo("dummyReqText2")));
+				hasXPath("//recorded-requests/dummyReq[2]", equalTo("dummyReqText2")));
 	}
 
 	@Test
@@ -214,12 +242,12 @@ public class RestMockPOSTMethodIntegrationTest {
 		String requestBody = "{\"dummyReq\": \"dummyReqText1\"}";
 		requestSender.sendPostRequest(REST_MOCK_ENDPOINT, requestBody, MediaType.APPLICATION_JSON);
 
-		MockResponse recordedRequests = requestSender.sendGetRequest(REST_MOCK_POST_VERIFY_RECORDED_REQUESTS);
+		MockResponse recordedRequests = requestSender.sendGetRequest(REST_MOCK_POST_RECORDED_REQUESTS);
 		Document requestUrlParamsDoc = new DocumentImpl(recordedRequests.getBody());
 
 		assertThat(
 				requestUrlParamsDoc,
-				hasXPath("//requests", containsString(requestBody)));
+				hasXPath("//recorded-requests", containsString(requestBody)));
 	}
 
 	
@@ -228,16 +256,16 @@ public class RestMockPOSTMethodIntegrationTest {
 		requestSender.sendPostRequest(REST_MOCK_ENDPOINT + "?param=paramValue1", "", MediaType.TEXT_XML);
 		requestSender.sendPostRequest(REST_MOCK_ENDPOINT + "?param=paramValue2", "", MediaType.TEXT_XML);
 		
-		MockResponse requestUrlParams = requestSender.sendGetRequest(REST_MOCK_POST_VERIFY_RECORDED_REQUEST_PARAMS);
+		MockResponse requestUrlParams = requestSender.sendGetRequest(REST_MOCK_POST_RECORDED_REQUEST_PARAMS);
 		Document requestUrlParamsDoc = new DocumentImpl(requestUrlParams.getBody());
 
 		assertThat(
 				requestUrlParamsDoc,
-				hasXPath("//urlRequestParams/queryString[1]",
+				hasXPath("//recorded-request-params/recorded-request-param[1]",
 						equalTo("param=paramValue1")));
 		assertThat(
 				requestUrlParamsDoc,
-				hasXPath("//urlRequestParams/queryString[2]",
+				hasXPath("//recorded-request-params/recorded-request-param[2]",
 						equalTo("param=paramValue2")));
 	}
 	

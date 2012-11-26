@@ -85,6 +85,23 @@ public class WebserviceMockSvcLayerTest {
 		serviceLayer.performRequest("", "", "", NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 
 	}
+	
+	@Test
+	public void shouldAddSeriesOfResponses() {
+		String serviceName = "svc123";
+		String operationId = "someRequest";
+		MockResponse response1 = new MockResponse("<someResp/>");
+		MockResponse response2 = new MockResponse("<someResp2/>");
+		WebserviceOperation operation = new WebserviceOperation();
+
+		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
+		serviceLayer.addCustomResponse(serviceName, operationId, response1);
+		serviceLayer.addCustomResponse(serviceName, operationId, response2);
+		
+		assertThat(operation.getResponse(1), is(response1));
+		assertThat(operation.getResponse(2), is(response2));
+
+	}
 
 	@Test
 	public void shouldSetCustomResponse() {

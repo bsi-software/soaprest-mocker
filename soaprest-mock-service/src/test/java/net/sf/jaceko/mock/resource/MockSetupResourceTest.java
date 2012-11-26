@@ -15,7 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-
 public class MockSetupResourceTest {
 
 	private BasicSetupResource resource = new RestServiceMockSetupResource();
@@ -28,7 +27,7 @@ public class MockSetupResourceTest {
 		initMocks(this);
 		resource.setWebserviceMockService(service);
 	}
-	
+
 	@Test
 	public void shouldPassClearRecordedRequestsToServiceLayer() {
 		String serviceName = "ticketing";
@@ -44,7 +43,7 @@ public class MockSetupResourceTest {
 		verify(service).initMock(serviceName, operationId);
 
 	}
-	
+
 	@Test
 	public void initMockShouldReturnResponseWithStatusOK() {
 		Response response = resource.initMock("", "");
@@ -52,7 +51,7 @@ public class MockSetupResourceTest {
 	}
 
 	@Test
-	public void shouldSetUpCustomResponse() {
+	public void shouldAddCustomResponse() {
 
 		String serviceName = "ticketing";
 		String operationId = "POST";
@@ -60,18 +59,15 @@ public class MockSetupResourceTest {
 		int customResponseCode = 201;
 		int delaySec = 1;
 
-		resource.setUpResponse(serviceName, operationId, customResponseCode, delaySec, customResponseBody);
-		int expectedResponseInOrder = 1;
+		resource.addResponse(serviceName, operationId, customResponseCode, delaySec, customResponseBody);
 		MockResponse expectedResponse = new MockResponse(customResponseBody, customResponseCode, delaySec);
 
-		
-		verify(service).setCustomResponse(serviceName, operationId, expectedResponseInOrder,
-				expectedResponse);
+		verify(service).addCustomResponse(serviceName, operationId, expectedResponse);
 
 	}
-	
+
 	@Test
-	public void shouldSetUpCustomResponse2() {
+	public void shouldAddCustomResponse2() {
 
 		String serviceName = "ticketing";
 		String operationId = "GET";
@@ -79,31 +75,29 @@ public class MockSetupResourceTest {
 		int customResponseCode = 200;
 		int delaySec = 2;
 
-		resource.setUpResponse(serviceName, operationId, customResponseCode, delaySec, customResponseBody);
-		int expectedResponseInOrder = 1;
+		resource.addResponse(serviceName, operationId, customResponseCode, delaySec, customResponseBody);
 		MockResponse expectedResponse = new MockResponse(customResponseBody, customResponseCode, delaySec);
 
-		verify(service).setCustomResponse(serviceName, operationId, expectedResponseInOrder,
-				expectedResponse);
+		verify(service).addCustomResponse(serviceName, operationId, expectedResponse);
 
 	}
+
 	@Test
-	public void setUpResponseShouldReturnResponseWithStatusOK() {
-		Response response = resource.setUpResponse("", "",1, 0, 0, "");
+	public void setResponseShouldReturnResponseWithStatusOK() {
+		Response response = resource.setResponse("", "", 1, 0, 0, "");
 		assertThat(response.getStatus(), is(HttpStatus.SC_OK));
 	}
 
 	@Test
-	public void shouldSetUpConsecutiveResponse() {
+	public void shouldSetUpSecondResponse() {
 		String serviceName = "ticketing";
 		String operationId = "reserveRequest";
 		int customResponseCode = 201;
-		String customResponseBody = "<dummyResponse></dummyResponse>";
+		String customResponseBody = "<dummyResponse>aabb</dummyResponse>";
 		int responseInOrder = 2;
 		int delaySec = 2;
 
-		
-		resource.setUpResponse(serviceName, operationId, responseInOrder, customResponseCode, delaySec, customResponseBody);
+		resource.setResponse(serviceName, operationId, responseInOrder, customResponseCode, delaySec, customResponseBody);
 		verify(service).setCustomResponse(serviceName, operationId, responseInOrder,
 				new MockResponse(customResponseBody, customResponseCode, delaySec));
 
@@ -112,9 +106,24 @@ public class MockSetupResourceTest {
 		responseInOrder = 1;
 		customResponseCode = 200;
 		delaySec = 5;
-		resource.setUpResponse(serviceName, operationId, responseInOrder, customResponseCode, delaySec, customResponseBody);
+		resource.setResponse(serviceName, operationId, responseInOrder, customResponseCode, delaySec, customResponseBody);
 		verify(service).setCustomResponse(serviceName, operationId, responseInOrder,
 				new MockResponse(customResponseBody, customResponseCode, delaySec));
 	}
-	
+
+	@Test
+	public void shouldSetUpFifthResponse() {
+		String serviceName = "ticketing";
+		String operationId = "reserveRequest";
+		int customResponseCode = 200;
+		String customResponseBody = "<dummyResponse>abc123</dummyResponse>";
+		int responseInOrder = 5;
+		int delaySec = 3;
+
+		resource.setResponse(serviceName, operationId, responseInOrder, customResponseCode, delaySec, customResponseBody);
+		verify(service).setCustomResponse(serviceName, operationId, responseInOrder,
+				new MockResponse(customResponseBody, customResponseCode, delaySec));
+
+	}
+
 }

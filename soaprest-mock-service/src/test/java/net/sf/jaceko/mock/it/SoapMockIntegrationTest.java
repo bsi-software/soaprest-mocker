@@ -28,10 +28,9 @@ public class SoapMockIntegrationTest {
 	//mocked endpoints configured in ws-mock.properties
 	private static final String SOAP_MOCK_ENDPOINT = "http://localhost:8080/mock/services/SOAP/hello-soap/endpoint";
 	
-	private static final String SOAP_MOCK_SETUP_INIT 						= "http://localhost:8080/mock/services/SOAP/hello-soap/setup/sayHello/init";
-	private static final String SOAP_MOCK_SETUP_RESPONSE 					= "http://localhost:8080/mock/services/SOAP/hello-soap/setup/sayHello/response";
-	private static final String SOAP_MOCK_SETUP_CONSECUTIVE_RESPONSES 		= "http://localhost:8080/mock/services/SOAP/hello-soap/setup/sayHello/responses/";
-	private static final String SOAP_MOCK_VERIFY_RECORDED_REQUESTS	 		= "http://localhost:8080/mock/services/SOAP/hello-soap/verify/sayHello/requests";
+	private static final String SOAP_MOCK_INIT 						= "http://localhost:8080/mock/services/SOAP/hello-soap/operations/sayHello/init";
+	private static final String SOAP_MOCK_RESPONSES					= "http://localhost:8080/mock/services/SOAP/hello-soap/operations/sayHello/responses";
+	private static final String SOAP_MOCK_RECORDED_REQUESTS	 		= "http://localhost:8080/mock/services/SOAP/hello-soap/operations/sayHello/recorded-requests";
 
 	private static final String REQUEST = "<soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:urn=\"urn:examples:helloservice\">\r\n" + 
 			"   <soapenv:Header/>\r\n" + 
@@ -56,7 +55,7 @@ public class SoapMockIntegrationTest {
 	@Before
 	public void initMock() throws UnsupportedEncodingException, ClientProtocolException, IOException {
 		//initalizing mock, clearing history of previous requests
-		requestSender.sendPostRequest(SOAP_MOCK_SETUP_INIT, "", MediaType.TEXT_XML);
+		requestSender.sendPostRequest(SOAP_MOCK_INIT, "", MediaType.TEXT_XML);
 	}
 	
 	@Test
@@ -77,7 +76,7 @@ public class SoapMockIntegrationTest {
 	public void shouldReturnCustomResponse() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		//setting up xml response body on mock
 		String customResponseXML = MessageFormat.format(RESPONSE_TEMPLATE, "Hi!");
-		requestSender.sendPostRequest(SOAP_MOCK_SETUP_RESPONSE, customResponseXML, MediaType.TEXT_XML);
+		requestSender.sendPostRequest(SOAP_MOCK_RESPONSES, customResponseXML, MediaType.TEXT_XML);
 		
 		//sending SOAP request 
 		MockResponse response = requestSender.sendPostRequest(SOAP_MOCK_ENDPOINT, REQUEST, MediaType.TEXT_XML);
@@ -94,8 +93,7 @@ public class SoapMockIntegrationTest {
 	public void shouldReturnCustomSecondResponse() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		//setting up xml response body on mock
 		String customResponseXML = MessageFormat.format(RESPONSE_TEMPLATE, "Aloha!");
-		String responseNo = "2";
-		requestSender.sendPostRequest(SOAP_MOCK_SETUP_CONSECUTIVE_RESPONSES + responseNo, customResponseXML, MediaType.TEXT_XML);
+		requestSender.sendPutRequest(SOAP_MOCK_RESPONSES + "/2", customResponseXML, MediaType.TEXT_XML);
 		
 		//sending 1st SOAP request 
 		requestSender.sendPostRequest(SOAP_MOCK_ENDPOINT, REQUEST, MediaType.TEXT_XML);
@@ -116,16 +114,16 @@ public class SoapMockIntegrationTest {
 		requestSender.sendPostRequest(SOAP_MOCK_ENDPOINT, MessageFormat.format(REQUEST, "Jacek"), MediaType.TEXT_XML);
 		requestSender.sendPostRequest(SOAP_MOCK_ENDPOINT, MessageFormat.format(REQUEST, "Peter"), MediaType.TEXT_XML);
 
-		MockResponse recordedRequests = requestSender.sendGetRequest(SOAP_MOCK_VERIFY_RECORDED_REQUESTS);
+		MockResponse recordedRequests = requestSender.sendGetRequest(SOAP_MOCK_RECORDED_REQUESTS);
 		Document requestUrlParamsDoc = new DocumentImpl(recordedRequests.getBody());
 
 		assertThat(
 				requestUrlParamsDoc,
-				hasXPath("//requests/Envelope[1]/Body/sayHello/firstName", equalTo("Jacek")));
+				hasXPath("//recorded-requests/Envelope[1]/Body/sayHello/firstName", equalTo("Jacek")));
 
 		assertThat(
 				requestUrlParamsDoc,
-				hasXPath("//requests/Envelope[2]/Body/sayHello/firstName", equalTo("Peter")));
+				hasXPath("//recorded-requests/Envelope[2]/Body/sayHello/firstName", equalTo("Peter")));
 
 	}
 

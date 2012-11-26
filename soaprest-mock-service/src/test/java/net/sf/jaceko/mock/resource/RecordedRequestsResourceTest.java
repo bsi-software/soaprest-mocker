@@ -55,9 +55,9 @@ public class RecordedRequestsResourceTest {
 
 		Document requestsDoc = XmlParser.parse(requestsXml, false);
 
-		assertThat(requestsDoc, hasXPath("count(/requests/req)", equalTo("2")));
-		assertThat(requestsDoc, hasXPath("/requests/req[1]", equalTo("dummyRequestContent1")));
-		assertThat(requestsDoc, hasXPath("/requests/req[2]", equalTo("dummyRequestContent2")));
+		assertThat(requestsDoc, hasXPath("count(/recorded-requests/req)", equalTo("2")));
+		assertThat(requestsDoc, hasXPath("/recorded-requests/req[1]", equalTo("dummyRequestContent1")));
+		assertThat(requestsDoc, hasXPath("/recorded-requests/req[2]", equalTo("dummyRequestContent2")));
 	}
 
 	@Test
@@ -71,8 +71,8 @@ public class RecordedRequestsResourceTest {
 
 		String requestsXml = resource.getRecordedRequests(serviceName, operationId);
 		Document requestsDoc = XmlParser.parse(requestsXml, false);
-		assertThat(requestsDoc, hasXPath("count(/requests)", equalTo("1")));
-		assertThat(requestsDoc, hasXPath("count(/requests/req)", equalTo("0")));
+		assertThat(requestsDoc, hasXPath("count(/recorded-requests)", equalTo("1")));
+		assertThat(requestsDoc, hasXPath("count(/recorded-requests/req)", equalTo("0")));
 
 	}
 	
@@ -93,9 +93,9 @@ public class RecordedRequestsResourceTest {
 
 		Document requestsDoc = new DocumentImpl(requestParamsXml);
 
-		assertThat(requestsDoc, hasXPath("count(/urlRequestParams/queryString)", equalTo("2")));
-		assertThat(requestsDoc, hasXPath("/urlRequestParams/queryString[1]", equalTo(reqParams1)));
-		assertThat(requestsDoc, hasXPath("/urlRequestParams/queryString[2]", equalTo(reqParams2)));
+		assertThat(requestsDoc, hasXPath("count(/recorded-request-params/recorded-request-param)", equalTo("2")));
+		assertThat(requestsDoc, hasXPath("/recorded-request-params/recorded-request-param[1]", equalTo(reqParams1)));
+		assertThat(requestsDoc, hasXPath("/recorded-request-params/recorded-request-param[2]", equalTo(reqParams2)));
 	}
 	
 	@Test

@@ -22,8 +22,6 @@ package net.sf.jaceko.mock.it.helper.request;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import javax.ws.rs.core.MediaType;
-
 import net.sf.jaceko.mock.model.MockResponse;
 
 import org.apache.http.HttpEntity;
@@ -52,12 +50,10 @@ public class HttpRequestSender {
 		return executeRequest(httpRequest);
 	}
 
-	public MockResponse sendPutRequest(String url, String requestBody) throws UnsupportedEncodingException, IOException,
+	public MockResponse sendPutRequest(String url, String requestBody, String mediaType) throws UnsupportedEncodingException, IOException,
 			ClientProtocolException {
 		HttpEntityEnclosingRequestBase httpRequest = new HttpPut(url);
-		String mediaType = MediaType.TEXT_XML;
 		addRequestBody(httpRequest, requestBody, mediaType);
-
 		return executeRequest(httpRequest);
 	}
 

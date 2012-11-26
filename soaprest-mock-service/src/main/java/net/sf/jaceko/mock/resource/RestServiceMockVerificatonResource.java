@@ -21,7 +21,7 @@ package net.sf.jaceko.mock.resource;
 
 import javax.ws.rs.Path;
 
-@Path("/services/REST/{serviceName}/verify/{operationId}")
+@Path("/services/REST/{serviceName}/operations/{operationId}")
 public class RestServiceMockVerificatonResource extends BasicVerifictationResource {
 
 }

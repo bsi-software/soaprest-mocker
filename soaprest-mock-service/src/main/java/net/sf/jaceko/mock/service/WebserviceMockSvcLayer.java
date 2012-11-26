@@ -53,12 +53,19 @@ public class WebserviceMockSvcLayer {
 
 	}
 
-	public void setCustomResponse(String serviceName, String operationId, int requestInOrder, MockResponse expectedResponse) {
+	public void setCustomResponse(String serviceName, String operationId, int requestInOrder, MockResponse response) {
 		WebserviceOperation serviceOperation = getWebserviceOperation(serviceName, operationId);
-		serviceOperation.setCustomResponse(expectedResponse, requestInOrder);
+		serviceOperation.setCustomResponse(response, requestInOrder);
 		serviceOperation.resetInvocationNumber();
 
 	}
+	
+	public void addCustomResponse(String serviceName, String operationId, MockResponse response) {
+		WebserviceOperation serviceOperation = getWebserviceOperation(serviceName, operationId);
+		serviceOperation.addCustomResponse(response);
+		
+	}
+
 
 	public String getWsdl(String serviceName) {
 		WebService soapService = configuration.getWebService(serviceName);
@@ -181,5 +188,6 @@ public class WebserviceMockSvcLayer {
 	private void clearRecordedRequests(String serviceName, String operationId) {
 		getRecordedRequests(serviceName, operationId).clear();
 	}
+
 
 }

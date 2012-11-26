@@ -79,11 +79,26 @@ public class WebserviceOperationTest {
 	}
 
 	@Test
-	public void shouldSetupConsecutiveResponses() {
+	public void shouldAddSeriesOfResponses() {
+		MockResponse customResponse1 = new MockResponse("abc1", 201);
+		MockResponse customResponse2 = new MockResponse("def45", 200);
+		MockResponse customResponse3 = new MockResponse("sadf1", 403);
+		operation.addCustomResponse(customResponse1);
+		operation.addCustomResponse(customResponse2);
+		operation.addCustomResponse(customResponse3);
+
+		assertThat(operation.getResponse(1), is(customResponse1));
+		assertThat(operation.getResponse(2), is(customResponse2));
+		assertThat(operation.getResponse(3), is(customResponse3));
+
+	}
+	
+	@Test
+	public void shouldSetConsecutiveResponses() {
 		MockResponse customResponse1 = new MockResponse("sadfsadfsa1", 201);
 		MockResponse customResponse2 = new MockResponse("sadfsadfsa2", 200);
-		operation.setCustomResponse(customResponse1, 1);
 		operation.setCustomResponse(customResponse2, 2);
+		operation.setCustomResponse(customResponse1, 1);
 
 		assertThat(operation.getResponse(1), is(customResponse1));
 		assertThat(operation.getResponse(2), is(customResponse2));

@@ -40,7 +40,7 @@ public class BasicVerifictationResource {
 	}
 
 	@GET
-	@Path("/requests")
+	@Path("/recorded-requests")
 	@Produces(MediaType.TEXT_XML)
 	public String getRecordedRequests(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
 	
@@ -50,7 +50,7 @@ public class BasicVerifictationResource {
 	}
 
 	@GET
-	@Path("/url-request-params")
+	@Path("/recorded-request-params")
 	@Produces(MediaType.TEXT_XML)
 	public String getRecordedUrlParams(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
 		Collection<String> recordedUrlParams = service.getRecordedUrlParams(
@@ -59,7 +59,7 @@ public class BasicVerifictationResource {
 	}
 
 	@GET
-	@Path("/resource-ids")
+	@Path("/recorded-resource-ids")
 	@Produces(MediaType.TEXT_XML)
 	public String getRecordedResourceIds(@PathParam("serviceName") String serviceName, @PathParam("operationId")  String operationId) {
 		Collection<String> recordedResourceIds = service
@@ -72,12 +72,12 @@ public class BasicVerifictationResource {
 	}
 
 	private String buildRequestsXml(Collection<String> recordedRequests) {
-		return buildListXml(recordedRequests, "requests", null, false);
+		return buildListXml(recordedRequests, "recorded-requests", null, false);
 	}
 
 	private String buildRequestParamsXml(Collection<String> recordedUrlParams) {
-		String rootElementName = "urlRequestParams";
-		String elementName = "queryString";
+		String rootElementName = "recorded-request-params";
+		String elementName = "recorded-request-param";
 		boolean surroundElementTextWithCdata = true;
 		return buildListXml(recordedUrlParams, rootElementName, elementName,
 				surroundElementTextWithCdata);

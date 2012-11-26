@@ -94,12 +94,16 @@ public class WebserviceOperation {
 	}
 
 	public void setCustomResponse(MockResponse customResponse, int requestNumber) {
-		if (customResponse.getCode() == 0) {
-			customResponse.setCode(defaultResponseCode);
-		}
-
+		customResponse.setZeroCodeTo(defaultResponseCode);
 		customResponses.set(requestNumber - 1, customResponse);
 	}
+	
+	public void addCustomResponse(MockResponse customResponse) {
+		customResponse.setZeroCodeTo(defaultResponseCode);
+		customResponses.add(customResponse);
+		
+	}
+
 
 	public synchronized void init() {
 		customResponses.clear();
@@ -134,5 +138,6 @@ public class WebserviceOperation {
 						operationName, defaultResponseFile, defaultResponseText, defaultResponseCode, invocationNumber,
 						customResponses != null ? customResponses.subList(0, Math.min(customResponses.size(), maxLen)) : null);
 	}
+
 
 }
