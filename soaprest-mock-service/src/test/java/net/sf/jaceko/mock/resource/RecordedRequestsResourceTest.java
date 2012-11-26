@@ -113,9 +113,9 @@ public class RecordedRequestsResourceTest {
 		String requestParamsXml = resource.getRecordedResourceIds(serviceName, operationId);
 		Document requestsDoc = new DocumentImpl(requestParamsXml);
 
-		assertThat(requestsDoc, hasXPath("count(/resourceIds/resourceId)", equalTo("2")));
-		assertThat(requestsDoc, hasXPath("/resourceIds/resourceId[1]", equalTo(resourceId1)));
-		assertThat(requestsDoc, hasXPath("/resourceIds/resourceId[2]", equalTo(resourceId2)));
+		assertThat(requestsDoc, hasXPath("count(/recorded-resource-ids/recorded-resource-id)", equalTo("2")));
+		assertThat(requestsDoc, hasXPath("/recorded-resource-ids/recorded-resource-id[1]", equalTo(resourceId1)));
+		assertThat(requestsDoc, hasXPath("/recorded-resource-ids/recorded-resource-id[2]", equalTo(resourceId2)));
 		
 	}
 

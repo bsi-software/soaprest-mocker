@@ -100,8 +100,8 @@ public class RestMockPUTMethodIntegrationTest {
 		MockResponse verifyResponse = requestSender.sendGetRequest(REST_MOCK_PUT_RECORDED_RESOURCE_IDS);
 		Document verifyResponseDoc = new DocumentImpl(verifyResponse.getBody());
 
-		assertThat(verifyResponseDoc, hasXPath("//resourceIds/resourceId[1]", equalTo("id1")));
-		assertThat(verifyResponseDoc, hasXPath("//resourceIds/resourceId[2]", equalTo("id2")));
+		assertThat(verifyResponseDoc, hasXPath("//recorded-resource-ids/recorded-resource-id[1]", equalTo("id1")));
+		assertThat(verifyResponseDoc, hasXPath("//recorded-resource-ids/recorded-resource-id[2]", equalTo("id2")));
 
 	}
 

@@ -64,8 +64,8 @@ public class BasicVerifictationResource {
 	public String getRecordedResourceIds(@PathParam("serviceName") String serviceName, @PathParam("operationId")  String operationId) {
 		Collection<String> recordedResourceIds = service
 				.getRecordedResourceIds(serviceName, operationId);
-		String rootElementName = "resourceIds";
-		String elementName = "resourceId";
+		String rootElementName = "recorded-resource-ids";
+		String elementName = "recorded-resource-id";
 		boolean surroundElementTextWithCdata = false;
 		return buildListXml(recordedResourceIds, rootElementName, elementName,
 				surroundElementTextWithCdata);

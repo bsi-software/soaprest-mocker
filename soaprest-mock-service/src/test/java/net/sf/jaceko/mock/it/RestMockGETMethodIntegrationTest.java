@@ -198,11 +198,11 @@ public class RestMockGETMethodIntegrationTest {
 
 		assertThat(
 				verifyResponseDoc,
-				hasXPath("//resourceIds/resourceId[1]",
+				hasXPath("//recorded-resource-ids/recorded-resource-id[1]",
 						equalTo("id123")));
 		assertThat(
 				verifyResponseDoc,
-				hasXPath("//resourceIds/resourceId[2]",
+				hasXPath("//recorded-resource-ids/recorded-resource-id[2]",
 						equalTo("id567")));
 
 	}
