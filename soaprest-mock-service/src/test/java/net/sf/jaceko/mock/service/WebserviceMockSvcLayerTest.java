@@ -11,13 +11,10 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.Collection;
 
-import net.sf.jaceko.mock.configuration.MockserviceConfiguration;
-import net.sf.jaceko.mock.configuration.WebService;
-import net.sf.jaceko.mock.configuration.WebserviceOperation;
 import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
-import net.sf.jaceko.mock.model.MockResponse;
-import net.sf.jaceko.mock.service.DelayService;
-import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
+import net.sf.jaceko.mock.model.request.MockResponse;
+import net.sf.jaceko.mock.model.webservice.WebService;
+import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +27,7 @@ public class WebserviceMockSvcLayerTest {
 	private static String NOT_USED_REQUEST_BODY = null;
 
 	@Mock
-	private MockserviceConfiguration configuration;
+	private MockConfigurationService configuration;
 
 	@Mock
 	private DelayService delayService;
@@ -85,7 +82,7 @@ public class WebserviceMockSvcLayerTest {
 		serviceLayer.performRequest("", "", "", NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 
 	}
-	
+
 	@Test
 	public void shouldAddSeriesOfResponses() {
 		String serviceName = "svc123";
@@ -97,7 +94,7 @@ public class WebserviceMockSvcLayerTest {
 		when(configuration.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 		serviceLayer.addCustomResponse(serviceName, operationId, response1);
 		serviceLayer.addCustomResponse(serviceName, operationId, response2);
-		
+
 		assertThat(operation.getResponse(1), is(response1));
 		assertThat(operation.getResponse(2), is(response2));
 
@@ -430,5 +427,4 @@ public class WebserviceMockSvcLayerTest {
 		when(configuration.getWebServiceOperation(anyString(), anyString())).thenReturn(null);
 		serviceLayer.getRecordedUrlParams("", "");
 	}
-
 }

@@ -10,11 +10,11 @@ import java.io.StringReader;
 import java.util.Collection;
 
 import net.sf.jaceko.mock.application.enums.ServiceType;
-import net.sf.jaceko.mock.configuration.MockserviceConfiguration;
 import net.sf.jaceko.mock.configuration.PropertyProcessor;
-import net.sf.jaceko.mock.configuration.WebService;
-import net.sf.jaceko.mock.configuration.WebserviceOperation;
 import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
+import net.sf.jaceko.mock.model.webservice.WebService;
+import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
+import net.sf.jaceko.mock.service.MockConfigurationService;
 
 import org.hamcrest.Description;
 import org.junit.Test;
@@ -61,8 +61,8 @@ public class PropertyProcessorTest {
 	private Collection<WebService> processPropertiesAndReturnWebServices(String propertyString)
 			throws IOException {
 		Reader reader = new StringReader(propertyString);
-		MockserviceConfiguration configuration = propertyProcessor.process(reader);
-		return configuration.getSoapServices();
+		MockConfigurationService configuration = propertyProcessor.process(reader);
+		return configuration.getWebServices();
 	}
 
 	@Test

@@ -17,27 +17,29 @@
  *     along with SOAP/REST Mock Service; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package net.sf.jaceko.mock.configuration;
+package net.sf.jaceko.mock.service;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
+import net.sf.jaceko.mock.model.webservice.WebService;
+import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
 
 
-public class MockserviceConfiguration {
+public class MockConfigurationService {
 
 	private Map<String, WebService> servicesMap = new HashMap<String, WebService>();
 
-	public void setSoapServices(Collection<WebService> services) {
+	public void setWebServices(Collection<WebService> services) {
 		servicesMap = new HashMap<String, WebService>();
 		for (WebService soapService : services) {
 			servicesMap.put(soapService.getName(), soapService);
 		}
 	}
 
-	public Collection<WebService> getSoapServices() {
+	public Collection<WebService> getWebServices() {
 		return servicesMap.values();
 	}
 

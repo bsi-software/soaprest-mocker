@@ -28,7 +28,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import net.sf.jaceko.mock.model.MockResponse;
+import net.sf.jaceko.mock.model.request.MockResponse;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
 
 import org.apache.commons.httpclient.HttpStatus;

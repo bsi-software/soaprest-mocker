@@ -22,7 +22,7 @@ package net.sf.jaceko.mock.it.helper.request;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import net.sf.jaceko.mock.model.MockResponse;
+import net.sf.jaceko.mock.model.request.MockResponse;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;

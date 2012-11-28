@@ -16,11 +16,11 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.jaceko.mock.application.enums.HttpMethod;
 import net.sf.jaceko.mock.application.enums.ServiceType;
-import net.sf.jaceko.mock.configuration.MockserviceConfiguration;
 import net.sf.jaceko.mock.configuration.PropertyProcessor;
-import net.sf.jaceko.mock.configuration.WebService;
-import net.sf.jaceko.mock.configuration.WebserviceOperation;
 import net.sf.jaceko.mock.helper.XmlParser;
+import net.sf.jaceko.mock.model.webservice.WebService;
+import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
+import net.sf.jaceko.mock.service.MockConfigurationService;
 
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -39,8 +39,8 @@ public class PropertyProcessorFileReadingTest {
 				+ "SERVICE[0].OPERATION[0].INPUT_MESSAGE=someRequest\r\n";
 
 		Reader reader = new StringReader(propertyString);
-		MockserviceConfiguration configuration = propertyProcessor.process(reader);
-		Collection<WebService> services = configuration.getSoapServices();
+		MockConfigurationService configuration = propertyProcessor.process(reader);
+		Collection<WebService> services = configuration.getWebServices();
 		WebService soapService = services.iterator().next();
 		String wsdlText = soapService.getWsdlText();
 		Document wsdlDoc = XmlParser.parse(wsdlText, false);
@@ -56,9 +56,9 @@ public class PropertyProcessorFileReadingTest {
 				+ "SERVICE[0].OPERATION[0].DEFAULT_RESPONSE=dummy_default_soap_response.xml\r\n";
 
 		Reader reader = new StringReader(propertyString);
-		MockserviceConfiguration configuration = propertyProcessor.process(reader);
+		MockConfigurationService configuration = propertyProcessor.process(reader);
 
-		Collection<WebService> services = configuration.getSoapServices();
+		Collection<WebService> services = configuration.getWebServices();
 		WebService soapService = services.iterator().next();
 		WebserviceOperation operation = soapService.getOperation(0);
 
@@ -78,9 +78,9 @@ public class PropertyProcessorFileReadingTest {
 				+ "SERVICE[0].OPERATION[1].INPUT_MESSAGE=confirmRequest\r\n";
 
 		Reader reader = new StringReader(propertyString);
-		MockserviceConfiguration configuration = propertyProcessor.process(reader);
+		MockConfigurationService configuration = propertyProcessor.process(reader);
 
-		Collection<WebService> services = configuration.getSoapServices();
+		Collection<WebService> services = configuration.getWebServices();
 		WebService soapService = services.iterator().next();
 		WebserviceOperation operation = soapService.getOperation(0);
 		assertThat(operation, notNullValue());
@@ -91,9 +91,9 @@ public class PropertyProcessorFileReadingTest {
 	public void shouldReadPropertiesFromFile() throws ParserConfigurationException, SAXException, IOException {
 
 		String mockPropertiesFileName = "ws-mock-for-unit-tests.properties";
-		MockserviceConfiguration configuration = propertyProcessor.process(mockPropertiesFileName);
+		MockConfigurationService configuration = propertyProcessor.process(mockPropertiesFileName);
 		
-		Collection<WebService> services = configuration.getSoapServices();
+		Collection<WebService> services = configuration.getWebServices();
 		assertThat(services.size(), is(2));
 		WebService soapService = configuration.getWebService("dummy_soap");
 		assertThat(soapService.getName(), is("dummy_soap"));

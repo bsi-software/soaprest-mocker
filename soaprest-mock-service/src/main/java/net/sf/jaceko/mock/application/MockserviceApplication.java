@@ -25,16 +25,17 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
-import net.sf.jaceko.mock.configuration.MockserviceConfiguration;
 import net.sf.jaceko.mock.configuration.PropertyProcessor;
 import net.sf.jaceko.mock.resource.RestEndpointResource;
 import net.sf.jaceko.mock.resource.RestServiceMockSetupResource;
 import net.sf.jaceko.mock.resource.RestServiceMockVerificatonResource;
+import net.sf.jaceko.mock.resource.ServicesResource;
 import net.sf.jaceko.mock.resource.SoapEndpointResource;
 import net.sf.jaceko.mock.resource.SoapServiceMockSetupResource;
 import net.sf.jaceko.mock.resource.SoapServiceMockVerificatonResource;
 import net.sf.jaceko.mock.resource.WsdlExposingResource;
 import net.sf.jaceko.mock.service.DelayService;
+import net.sf.jaceko.mock.service.MockConfigurationService;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
 
 public class MockserviceApplication extends Application {
@@ -43,7 +44,7 @@ public class MockserviceApplication extends Application {
 	public MockserviceApplication() {
 		super();
 		PropertyProcessor propertyProcessor = new PropertyProcessor();
-		MockserviceConfiguration configuration = null;
+		MockConfigurationService configuration = null;
 		try {
 			configuration = propertyProcessor.process(PROPERTY_FILE);
 		} catch (IOException e) {
@@ -74,6 +75,9 @@ public class MockserviceApplication extends Application {
 
 		WsdlExposingResource wsdlExposingResource = new WsdlExposingResource();
 		wsdlExposingResource.setWebserviceMockService(svcLayer);
+		
+		ServicesResource servicesResource = new ServicesResource();
+		servicesResource.setMockConfigurationService(configuration);
 
 		singletons.add(mockSoapEndpointResource);
 		singletons.add(mockRestEndpointResource);
@@ -82,6 +86,7 @@ public class MockserviceApplication extends Application {
 		singletons.add(soapMockSetupResource);
 		singletons.add(soapVerificationResource);
 		singletons.add(wsdlExposingResource);
+		singletons.add(servicesResource);
 
 	}
 

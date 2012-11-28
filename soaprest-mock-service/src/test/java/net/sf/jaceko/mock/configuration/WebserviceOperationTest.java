@@ -3,8 +3,8 @@ package net.sf.jaceko.mock.configuration;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import net.sf.jaceko.mock.configuration.WebserviceOperation;
-import net.sf.jaceko.mock.model.MockResponse;
+import net.sf.jaceko.mock.model.request.MockResponse;
+import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Before;

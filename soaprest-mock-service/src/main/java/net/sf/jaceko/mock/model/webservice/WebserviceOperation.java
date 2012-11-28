@@ -17,14 +17,14 @@
  *     along with SOAP/REST Mock Service; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package net.sf.jaceko.mock.configuration;
+package net.sf.jaceko.mock.model.webservice;
 
 import static java.util.Collections.synchronizedList;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import net.sf.jaceko.mock.model.MockResponse;
+import net.sf.jaceko.mock.model.request.MockResponse;
 
 import org.apache.commons.collections.list.GrowthList;
 
@@ -63,7 +63,7 @@ public class WebserviceOperation {
 		return operationName;
 	}
 
-	void setOperationName(String operationName) {
+	public void setOperationName(String operationName) {
 		this.operationName = operationName;
 	}
 
@@ -71,7 +71,7 @@ public class WebserviceOperation {
 		return defaultResponseFile;
 	}
 
-	void setDefaultResponseFile(String defaultResponseFile) {
+	public void setDefaultResponseFile(String defaultResponseFile) {
 		this.defaultResponseFile = defaultResponseFile;
 	}
 
@@ -79,7 +79,7 @@ public class WebserviceOperation {
 		return this.defaultResponseText;
 	}
 
-	void setDefaultResponseText(String defaultResponseText) {
+	public void setDefaultResponseText(String defaultResponseText) {
 		this.defaultResponseText = defaultResponseText;
 	}
 

@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import net.sf.jaceko.mock.exception.ClientFaultException;
-import net.sf.jaceko.mock.model.MockResponse;
+import net.sf.jaceko.mock.model.request.MockResponse;
 import net.sf.jaceko.mock.resource.SoapEndpointResource;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
 

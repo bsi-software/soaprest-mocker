@@ -28,7 +28,7 @@ import javax.ws.rs.core.MediaType;
 
 import net.sf.jaceko.mock.exception.ClientFaultException;
 import net.sf.jaceko.mock.helper.XmlParser;
-import net.sf.jaceko.mock.model.MockResponse;
+import net.sf.jaceko.mock.model.request.MockResponse;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
 
 import org.apache.log4j.Logger;

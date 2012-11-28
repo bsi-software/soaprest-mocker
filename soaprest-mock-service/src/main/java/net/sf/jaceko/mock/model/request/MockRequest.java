@@ -17,7 +17,7 @@
  *     along with SOAP/REST Mock Service; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package net.sf.jaceko.mock.model;
+package net.sf.jaceko.mock.model.request;
 
 public class MockRequest {
 

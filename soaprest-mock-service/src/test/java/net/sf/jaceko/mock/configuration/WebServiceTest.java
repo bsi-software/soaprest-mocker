@@ -2,8 +2,8 @@ package net.sf.jaceko.mock.configuration;
 
 import static org.junit.Assert.assertThat;
 
-import net.sf.jaceko.mock.configuration.WebService;
-import net.sf.jaceko.mock.configuration.WebserviceOperation;
+import net.sf.jaceko.mock.model.webservice.WebService;
+import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
 
 import org.junit.Test;
 

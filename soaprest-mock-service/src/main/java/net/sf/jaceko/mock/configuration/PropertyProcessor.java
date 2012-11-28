@@ -36,6 +36,9 @@ import java.util.regex.Pattern;
 import net.sf.jaceko.mock.application.enums.HttpMethod;
 import net.sf.jaceko.mock.application.enums.ServiceType;
 import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
+import net.sf.jaceko.mock.model.webservice.WebService;
+import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
+import net.sf.jaceko.mock.service.MockConfigurationService;
 
 import org.apache.log4j.Logger;
 
@@ -88,7 +91,7 @@ public class PropertyProcessor {
 	 * @return
 	 * @throws IOException
 	 */
-	public MockserviceConfiguration process(Reader reader) throws IOException {
+	public MockConfigurationService process(Reader reader) throws IOException {
 		Properties properties = new Properties();
 		properties.load(reader);
 		Set<Object> keySet = properties.keySet();
@@ -120,8 +123,8 @@ public class PropertyProcessor {
 			}
 		}
 
-		MockserviceConfiguration configuration = new MockserviceConfiguration();
-		configuration.setSoapServices(services.values());
+		MockConfigurationService configuration = new MockConfigurationService();
+		configuration.setWebServices(services.values());
 
 		return configuration;
 
@@ -241,7 +244,7 @@ public class PropertyProcessor {
 		return -1;
 	}
 
-	public MockserviceConfiguration process(String fileName) throws IOException {
+	public MockConfigurationService process(String fileName) throws IOException {
 		String fileContents = readFileContents(fileName);
 		if (fileContents == null) {
 			throw new FileNotFoundException("Property file not found in the classpath: " + fileName);

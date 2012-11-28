@@ -28,15 +28,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.jaceko.mock.configuration.MockserviceConfiguration;
-import net.sf.jaceko.mock.configuration.WebService;
-import net.sf.jaceko.mock.configuration.WebserviceOperation;
 import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
-import net.sf.jaceko.mock.model.MockResponse;
-import net.sf.jaceko.mock.model.MockRequest;
+import net.sf.jaceko.mock.model.request.MockRequest;
+import net.sf.jaceko.mock.model.request.MockResponse;
+import net.sf.jaceko.mock.model.webservice.WebService;
+import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
 
 public class WebserviceMockSvcLayer {
-	private MockserviceConfiguration configuration;
+	private MockConfigurationService configuration;
 
 	private final Map<String, Map<String, Collection<MockRequest>>> recordedRequestsMap = synchronizedMap(new HashMap<String, Map<String, Collection<MockRequest>>>());
 
@@ -59,13 +58,12 @@ public class WebserviceMockSvcLayer {
 		serviceOperation.resetInvocationNumber();
 
 	}
-	
+
 	public void addCustomResponse(String serviceName, String operationId, MockResponse response) {
 		WebserviceOperation serviceOperation = getWebserviceOperation(serviceName, operationId);
 		serviceOperation.addCustomResponse(response);
-		
-	}
 
+	}
 
 	public String getWsdl(String serviceName) {
 		WebService soapService = configuration.getWebService(serviceName);
@@ -75,7 +73,7 @@ public class WebserviceMockSvcLayer {
 		return soapService.getWsdlText();
 	}
 
-	public void setMockserviceConfiguration(MockserviceConfiguration configuration) {
+	public void setMockserviceConfiguration(MockConfigurationService configuration) {
 		this.configuration = configuration;
 	}
 
@@ -188,6 +186,5 @@ public class WebserviceMockSvcLayer {
 	private void clearRecordedRequests(String serviceName, String operationId) {
 		getRecordedRequests(serviceName, operationId).clear();
 	}
-
 
 }

@@ -35,7 +35,7 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import net.sf.jaceko.mock.application.enums.HttpMethod;
-import net.sf.jaceko.mock.model.MockResponse;
+import net.sf.jaceko.mock.model.request.MockResponse;
 import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
 
 @Path("/services/REST/{serviceName}/endpoint")
