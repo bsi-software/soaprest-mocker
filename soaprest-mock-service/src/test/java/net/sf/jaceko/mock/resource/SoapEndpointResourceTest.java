@@ -10,7 +10,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import net.sf.jaceko.mock.exception.ClientFaultException;
 import net.sf.jaceko.mock.model.request.MockResponse;
 import net.sf.jaceko.mock.resource.SoapEndpointResource;
-import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
+import net.sf.jaceko.mock.service.RequestExecutor;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +21,7 @@ public class SoapEndpointResourceTest {
 	private SoapEndpointResource resource = new SoapEndpointResource();
 
 	@Mock
-	private WebserviceMockSvcLayer service;
+	private RequestExecutor service;
 
 	@Before
 	public void before() {

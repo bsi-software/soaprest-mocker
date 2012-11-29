@@ -28,65 +28,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
 import net.sf.jaceko.mock.model.request.MockRequest;
-import net.sf.jaceko.mock.model.request.MockResponse;
-import net.sf.jaceko.mock.model.webservice.WebService;
-import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
 
-public class WebserviceMockSvcLayer {
-	private MockConfigurationService configuration;
+public class RecordedRequestsHolder {
+	private MockConfigurationHolder configurationHolder;
 
 	private final Map<String, Map<String, Collection<MockRequest>>> recordedRequestsMap = synchronizedMap(new HashMap<String, Map<String, Collection<MockRequest>>>());
 
-	private DelayService delayService;
-
-	public MockResponse performRequest(String serviceName, String operationId, String request, String queryString,
-			String resourceId) {
-		WebserviceOperation serviceOperation = getWebserviceOperation(serviceName, operationId);
-		int invocationNumber = serviceOperation.getNextInvocationNumber();
-		MockResponse response = serviceOperation.getResponse(invocationNumber);
-		recordRequest(serviceName, operationId, request, queryString, resourceId);
-		delayService.delaySec(response.getDelaySec());
-		return response;
-
-	}
-
-	public void setCustomResponse(String serviceName, String operationId, int requestInOrder, MockResponse response) {
-		WebserviceOperation serviceOperation = getWebserviceOperation(serviceName, operationId);
-		serviceOperation.setCustomResponse(response, requestInOrder);
-		serviceOperation.resetInvocationNumber();
-
-	}
-
-	public void addCustomResponse(String serviceName, String operationId, MockResponse response) {
-		WebserviceOperation serviceOperation = getWebserviceOperation(serviceName, operationId);
-		serviceOperation.addCustomResponse(response);
-
-	}
-
-	public String getWsdl(String serviceName) {
-		WebService soapService = configuration.getWebService(serviceName);
-		if (soapService == null) {
-			throw new ServiceNotConfiguredException("Undefined service: " + serviceName);
-		}
-		return soapService.getWsdlText();
-	}
-
-	public void setMockserviceConfiguration(MockConfigurationService configuration) {
-		this.configuration = configuration;
-	}
-
-	private WebserviceOperation getWebserviceOperation(String serviceName, String operationId) {
-		WebserviceOperation serviceOperation = configuration.getWebServiceOperation(serviceName, operationId);
-		if (serviceOperation == null) {
-			throw new ServiceNotConfiguredException("Undefined webservice operation: operationId:" + operationId
-					+ " of service: " + serviceName);
-		}
-		return serviceOperation;
-	}
-
-	private void recordRequest(String serviceName, String operationId, String requestBody, String queryString, String resourceId) {
+	public void recordRequest(String serviceName, String operationId, String requestBody, String queryString, String resourceId) {
 		Map<String, Collection<MockRequest>> requestsPerOperationMap = fetchRequestsPerOperationMap(serviceName);
 
 		Collection<MockRequest> recordedRequests = fetchRecordedRequests(operationId, requestsPerOperationMap);
@@ -108,7 +57,7 @@ public class WebserviceMockSvcLayer {
 		}
 	}
 
-	private Map<String, Collection<MockRequest>> fetchRequestsPerOperationMap(String serviceName) {
+	public Map<String, Collection<MockRequest>> fetchRequestsPerOperationMap(String serviceName) {
 		synchronized (recordedRequestsMap) {
 			Map<String, Collection<MockRequest>> requestsPerOperationMap = recordedRequestsMap.get(serviceName);
 			if (requestsPerOperationMap == null) {
@@ -144,8 +93,8 @@ public class WebserviceMockSvcLayer {
 		return recordedRequestParams;
 	}
 
-	private Collection<MockRequest> getRecordedRequests(String serviceName, String operationId) {
-		getWebserviceOperation(serviceName, operationId);
+	public Collection<MockRequest> getRecordedRequests(String serviceName, String operationId) {
+		configurationHolder.getWebServiceOperation(serviceName, operationId);
 		Map<String, Collection<MockRequest>> requestsPerOperationMap = recordedRequestsMap.get(serviceName);
 		if (requestsPerOperationMap == null) {
 			return Collections.emptyList();
@@ -168,23 +117,14 @@ public class WebserviceMockSvcLayer {
 		}
 		return recordedResourceIds;
 	}
-
-	public void setDelayService(DelayService delayService) {
-		this.delayService = delayService;
-	}
-
-	public void initMock(String serviceName, String operationId) {
-		clearOperationSetup(serviceName, operationId);
-		clearRecordedRequests(serviceName, operationId);
-	}
-
-	private void clearOperationSetup(String serviceName, String operationId) {
-		WebserviceOperation serviceOperation = getWebserviceOperation(serviceName, operationId);
-		serviceOperation.init();
-	}
-
-	private void clearRecordedRequests(String serviceName, String operationId) {
+	
+	public void clearRecordedRequests(String serviceName, String operationId) {
 		getRecordedRequests(serviceName, operationId).clear();
+	}
+
+
+	public void setMockserviceConfiguration(MockConfigurationHolder configurationHolder) {
+		this.configurationHolder = configurationHolder;
 	}
 
 }

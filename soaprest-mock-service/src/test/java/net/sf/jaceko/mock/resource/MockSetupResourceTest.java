@@ -8,7 +8,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import javax.ws.rs.core.Response;
 
 import net.sf.jaceko.mock.model.request.MockResponse;
-import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
+import net.sf.jaceko.mock.service.MockSetupExecutor;
 
 import org.apache.http.HttpStatus;
 import org.junit.Before;
@@ -20,12 +20,12 @@ public class MockSetupResourceTest {
 	private BasicSetupResource resource = new RestServiceMockSetupResource();
 
 	@Mock
-	private WebserviceMockSvcLayer service;
+	private MockSetupExecutor mockSetupExecutor;
 
 	@Before
 	public void before() {
 		initMocks(this);
-		resource.setWebserviceMockService(service);
+		resource.setMockSetupExecutor(mockSetupExecutor);
 	}
 
 	@Test
@@ -34,13 +34,13 @@ public class MockSetupResourceTest {
 		String operationId = "reserveRequest";
 
 		resource.initMock(serviceName, operationId);
-		verify(service).initMock(serviceName, operationId);
+		verify(mockSetupExecutor).initMock(serviceName, operationId);
 
 		serviceName = "prepayService";
 		operationId = "prepayRequest";
 
 		resource.initMock(serviceName, operationId);
-		verify(service).initMock(serviceName, operationId);
+		verify(mockSetupExecutor).initMock(serviceName, operationId);
 
 	}
 
@@ -62,7 +62,7 @@ public class MockSetupResourceTest {
 		resource.addResponse(serviceName, operationId, customResponseCode, delaySec, customResponseBody);
 		MockResponse expectedResponse = new MockResponse(customResponseBody, customResponseCode, delaySec);
 
-		verify(service).addCustomResponse(serviceName, operationId, expectedResponse);
+		verify(mockSetupExecutor).addCustomResponse(serviceName, operationId, expectedResponse);
 
 	}
 
@@ -78,7 +78,7 @@ public class MockSetupResourceTest {
 		resource.addResponse(serviceName, operationId, customResponseCode, delaySec, customResponseBody);
 		MockResponse expectedResponse = new MockResponse(customResponseBody, customResponseCode, delaySec);
 
-		verify(service).addCustomResponse(serviceName, operationId, expectedResponse);
+		verify(mockSetupExecutor).addCustomResponse(serviceName, operationId, expectedResponse);
 
 	}
 
@@ -98,7 +98,7 @@ public class MockSetupResourceTest {
 		int delaySec = 2;
 
 		resource.setResponse(serviceName, operationId, responseInOrder, customResponseCode, delaySec, customResponseBody);
-		verify(service).setCustomResponse(serviceName, operationId, responseInOrder,
+		verify(mockSetupExecutor).setCustomResponse(serviceName, operationId, responseInOrder,
 				new MockResponse(customResponseBody, customResponseCode, delaySec));
 
 		serviceName = "prepayService";
@@ -107,7 +107,7 @@ public class MockSetupResourceTest {
 		customResponseCode = 200;
 		delaySec = 5;
 		resource.setResponse(serviceName, operationId, responseInOrder, customResponseCode, delaySec, customResponseBody);
-		verify(service).setCustomResponse(serviceName, operationId, responseInOrder,
+		verify(mockSetupExecutor).setCustomResponse(serviceName, operationId, responseInOrder,
 				new MockResponse(customResponseBody, customResponseCode, delaySec));
 	}
 
@@ -121,7 +121,7 @@ public class MockSetupResourceTest {
 		int delaySec = 3;
 
 		resource.setResponse(serviceName, operationId, responseInOrder, customResponseCode, delaySec, customResponseBody);
-		verify(service).setCustomResponse(serviceName, operationId, responseInOrder,
+		verify(mockSetupExecutor).setCustomResponse(serviceName, operationId, responseInOrder,
 				new MockResponse(customResponseBody, customResponseCode, delaySec));
 
 	}

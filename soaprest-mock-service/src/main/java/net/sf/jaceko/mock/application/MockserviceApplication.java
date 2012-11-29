@@ -25,7 +25,6 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
-import net.sf.jaceko.mock.configuration.PropertyProcessor;
 import net.sf.jaceko.mock.resource.RestEndpointResource;
 import net.sf.jaceko.mock.resource.RestServiceMockSetupResource;
 import net.sf.jaceko.mock.resource.RestServiceMockVerificatonResource;
@@ -34,9 +33,12 @@ import net.sf.jaceko.mock.resource.SoapEndpointResource;
 import net.sf.jaceko.mock.resource.SoapServiceMockSetupResource;
 import net.sf.jaceko.mock.resource.SoapServiceMockVerificatonResource;
 import net.sf.jaceko.mock.resource.WsdlExposingResource;
-import net.sf.jaceko.mock.service.DelayService;
-import net.sf.jaceko.mock.service.MockConfigurationService;
-import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
+import net.sf.jaceko.mock.service.Delayer;
+import net.sf.jaceko.mock.service.MockConfigurationHolder;
+import net.sf.jaceko.mock.service.MockSetupExecutor;
+import net.sf.jaceko.mock.service.PropertyProcessor;
+import net.sf.jaceko.mock.service.RecordedRequestsHolder;
+import net.sf.jaceko.mock.service.RequestExecutor;
 
 public class MockserviceApplication extends Application {
 	private static final String PROPERTY_FILE = "ws-mock.properties";
@@ -44,27 +46,36 @@ public class MockserviceApplication extends Application {
 	public MockserviceApplication() {
 		super();
 		PropertyProcessor propertyProcessor = new PropertyProcessor();
-		MockConfigurationService configuration = null;
+		MockConfigurationHolder configurationHolder = null;
 		try {
-			configuration = propertyProcessor.process(PROPERTY_FILE);
+			configurationHolder = propertyProcessor.process(PROPERTY_FILE);
 		} catch (IOException e) {
 			throw new RuntimeException("Problem reading property file", e);
 		}
-		DelayService delayService = new DelayService();
+		RecordedRequestsHolder recordedRequestsHolder = new RecordedRequestsHolder();
+		recordedRequestsHolder.setMockserviceConfiguration(configurationHolder);
+		Delayer delayer = new Delayer();
+		
+		MockSetupExecutor mockSetupExecutor = new MockSetupExecutor();
+		mockSetupExecutor.setMockserviceConfiguration(configurationHolder);
+		mockSetupExecutor.setRecordedRequestsHolder(recordedRequestsHolder);
 
-		WebserviceMockSvcLayer svcLayer = new WebserviceMockSvcLayer();
-		svcLayer.setMockserviceConfiguration(configuration);
-		svcLayer.setDelayService(delayService);
+		RequestExecutor svcLayer = new RequestExecutor();
+		svcLayer.setMockserviceConfiguration(configurationHolder);
+		svcLayer.setDelayer(delayer);
+		svcLayer.setRecordedRequestsHolder(recordedRequestsHolder);
 
 		RestServiceMockSetupResource restMockSetupResource = new RestServiceMockSetupResource();
-		restMockSetupResource.setWebserviceMockService(svcLayer);
+		restMockSetupResource.setMockSetupExecutor(mockSetupExecutor);
+		
 		RestServiceMockVerificatonResource restVerificationResource = new RestServiceMockVerificatonResource();
-		restVerificationResource.setWebserviceMockService(svcLayer);
+		restVerificationResource.setRecordedRequestsHolder(recordedRequestsHolder);
 
 		SoapServiceMockSetupResource soapMockSetupResource = new SoapServiceMockSetupResource();
-		soapMockSetupResource.setWebserviceMockService(svcLayer);
+		soapMockSetupResource.setMockSetupExecutor(mockSetupExecutor);
+		
 		SoapServiceMockVerificatonResource soapVerificationResource = new SoapServiceMockVerificatonResource();
-		soapVerificationResource.setWebserviceMockService(svcLayer);
+		soapVerificationResource.setRecordedRequestsHolder(recordedRequestsHolder);
 
 		
 		SoapEndpointResource mockSoapEndpointResource = new SoapEndpointResource();
@@ -77,7 +88,7 @@ public class MockserviceApplication extends Application {
 		wsdlExposingResource.setWebserviceMockService(svcLayer);
 		
 		ServicesResource servicesResource = new ServicesResource();
-		servicesResource.setMockConfigurationService(configuration);
+		servicesResource.setMockConfigurationService(configurationHolder);
 
 		singletons.add(mockSoapEndpointResource);
 		singletons.add(mockRestEndpointResource);

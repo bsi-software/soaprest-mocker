@@ -29,11 +29,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
+import net.sf.jaceko.mock.service.RecordedRequestsHolder;
 
 public class BasicVerifictationResource {
 
-	private WebserviceMockSvcLayer service;
+	private RecordedRequestsHolder recordedRequestsHolder;
 
 	public BasicVerifictationResource() {
 		super();
@@ -44,7 +44,7 @@ public class BasicVerifictationResource {
 	@Produces(MediaType.TEXT_XML)
 	public String getRecordedRequests(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
 	
-		Collection<String> recordedRequests = service.getRecordedRequestBodies(
+		Collection<String> recordedRequests = recordedRequestsHolder.getRecordedRequestBodies(
 				serviceName, operationId);
 		return buildRequestsXml(recordedRequests);
 	}
@@ -53,7 +53,7 @@ public class BasicVerifictationResource {
 	@Path("/recorded-request-params")
 	@Produces(MediaType.TEXT_XML)
 	public String getRecordedUrlParams(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
-		Collection<String> recordedUrlParams = service.getRecordedUrlParams(
+		Collection<String> recordedUrlParams = recordedRequestsHolder.getRecordedUrlParams(
 				serviceName, operationId);
 		return buildRequestParamsXml(recordedUrlParams);
 	}
@@ -62,7 +62,7 @@ public class BasicVerifictationResource {
 	@Path("/recorded-resource-ids")
 	@Produces(MediaType.TEXT_XML)
 	public String getRecordedResourceIds(@PathParam("serviceName") String serviceName, @PathParam("operationId")  String operationId) {
-		Collection<String> recordedResourceIds = service
+		Collection<String> recordedResourceIds = recordedRequestsHolder
 				.getRecordedResourceIds(serviceName, operationId);
 		String rootElementName = "recorded-resource-ids";
 		String elementName = "recorded-resource-id";
@@ -106,8 +106,8 @@ public class BasicVerifictationResource {
 		return builder.toString();
 	}
 
-	public void setWebserviceMockService(WebserviceMockSvcLayer service) {
-		this.service = service;
+	public void setRecordedRequestsHolder(RecordedRequestsHolder recordedRequestsHolder) {
+		this.recordedRequestsHolder = recordedRequestsHolder;
 	}
 
 }

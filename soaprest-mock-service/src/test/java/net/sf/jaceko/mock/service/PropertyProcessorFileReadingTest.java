@@ -1,4 +1,4 @@
-package net.sf.jaceko.mock.configuration;
+package net.sf.jaceko.mock.service;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -16,11 +16,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.jaceko.mock.application.enums.HttpMethod;
 import net.sf.jaceko.mock.application.enums.ServiceType;
-import net.sf.jaceko.mock.configuration.PropertyProcessor;
-import net.sf.jaceko.mock.helper.XmlParser;
+import net.sf.jaceko.mock.dom.DocumentImpl;
 import net.sf.jaceko.mock.model.webservice.WebService;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
-import net.sf.jaceko.mock.service.MockConfigurationService;
 
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -39,11 +37,11 @@ public class PropertyProcessorFileReadingTest {
 				+ "SERVICE[0].OPERATION[0].INPUT_MESSAGE=someRequest\r\n";
 
 		Reader reader = new StringReader(propertyString);
-		MockConfigurationService configuration = propertyProcessor.process(reader);
+		MockConfigurationHolder configuration = propertyProcessor.process(reader);
 		Collection<WebService> services = configuration.getWebServices();
 		WebService soapService = services.iterator().next();
 		String wsdlText = soapService.getWsdlText();
-		Document wsdlDoc = XmlParser.parse(wsdlText, false);
+		Document wsdlDoc = new DocumentImpl(wsdlText);
 		assertThat(wsdlDoc, hasXPath("/definitions/message/@name", equalTo("SayHelloRequest")));
 
 	}
@@ -56,14 +54,14 @@ public class PropertyProcessorFileReadingTest {
 				+ "SERVICE[0].OPERATION[0].DEFAULT_RESPONSE=dummy_default_soap_response.xml\r\n";
 
 		Reader reader = new StringReader(propertyString);
-		MockConfigurationService configuration = propertyProcessor.process(reader);
+		MockConfigurationHolder configuration = propertyProcessor.process(reader);
 
 		Collection<WebService> services = configuration.getWebServices();
 		WebService soapService = services.iterator().next();
 		WebserviceOperation operation = soapService.getOperation(0);
 
 		String responseXML = operation.getDefaultResponseText();
-		Document responseDoc = XmlParser.parse(responseXML, false);
+		Document responseDoc = new DocumentImpl(responseXML);
 
 		assertThat(responseDoc, hasXPath("/dummyResponse/reqId", equalTo("789789")));
 		assertThat(responseDoc, hasXPath("/dummyResponse/status", equalTo("OK")));
@@ -78,7 +76,7 @@ public class PropertyProcessorFileReadingTest {
 				+ "SERVICE[0].OPERATION[1].INPUT_MESSAGE=confirmRequest\r\n";
 
 		Reader reader = new StringReader(propertyString);
-		MockConfigurationService configuration = propertyProcessor.process(reader);
+		MockConfigurationHolder configuration = propertyProcessor.process(reader);
 
 		Collection<WebService> services = configuration.getWebServices();
 		WebService soapService = services.iterator().next();
@@ -91,7 +89,7 @@ public class PropertyProcessorFileReadingTest {
 	public void shouldReadPropertiesFromFile() throws ParserConfigurationException, SAXException, IOException {
 
 		String mockPropertiesFileName = "ws-mock-for-unit-tests.properties";
-		MockConfigurationService configuration = propertyProcessor.process(mockPropertiesFileName);
+		MockConfigurationHolder configuration = propertyProcessor.process(mockPropertiesFileName);
 		
 		Collection<WebService> services = configuration.getWebServices();
 		assertThat(services.size(), is(2));
@@ -101,7 +99,7 @@ public class PropertyProcessorFileReadingTest {
 		assertThat(soapService.getOperation(0).getOperationName(), is("dummySoapRequest"));
 
 		String wsdlText = soapService.getWsdlText();
-		Document wsdlDoc = XmlParser.parse(wsdlText, false);
+		Document wsdlDoc = new DocumentImpl(wsdlText);
 		assertThat(wsdlDoc, hasXPath("/definitions/service/documentation", equalTo("Dummy wsdl file")));
 		
 		WebService restService = configuration.getWebService("dummy_rest_get");

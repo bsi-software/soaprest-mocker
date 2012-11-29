@@ -27,8 +27,7 @@ import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
 import net.sf.jaceko.mock.model.webservice.WebService;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
 
-
-public class MockConfigurationService {
+public class MockConfigurationHolder {
 
 	private Map<String, WebService> servicesMap = new HashMap<String, WebService>();
 
@@ -45,9 +44,6 @@ public class MockConfigurationService {
 
 	public WebserviceOperation getWebServiceOperation(String serviceName, String operationId) {
 		WebService service = getWebService(serviceName);
-		if (service == null) {
-			throw new ServiceNotConfiguredException("Undefined webservice:" + serviceName);
-		}
 		Collection<WebserviceOperation> operations = service.getOperations();
 		for (WebserviceOperation operation : operations) {
 			if (operation.getOperationName().equals(operationId)) {
@@ -55,11 +51,18 @@ public class MockConfigurationService {
 			}
 		}
 
-		return null;
+		throw new ServiceNotConfiguredException("Undefined webservice operation: operationId:" + operationId + " of service: "
+				+ serviceName);
+
 	}
 
 	public WebService getWebService(String serviceName) {
-		return servicesMap.get(serviceName);
+		WebService service = servicesMap.get(serviceName);
+		if (service == null) {
+			throw new ServiceNotConfiguredException("Undefined webservice:" + serviceName);
+		}
+		return service;
+
 	}
 
 }

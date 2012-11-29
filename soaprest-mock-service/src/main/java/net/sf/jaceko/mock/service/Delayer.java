@@ -17,26 +17,26 @@
  *     along with SOAP/REST Mock Service; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package net.sf.jaceko.mock.helper;
+package net.sf.jaceko.mock.service;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.text.MessageFormat;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import org.apache.log4j.Logger;
 
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
+public class Delayer {
+	private static final Logger LOG = Logger.getLogger(Delayer.class);
+	private static final int MILIS_IN_SEC = 1000;
 
-public class XmlParser {
-	public static Document parse(String xml, boolean namespaceAware) throws ParserConfigurationException, SAXException, IOException {
-		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
-				.newInstance();
-		documentBuilderFactory.setNamespaceAware(namespaceAware);
-		DocumentBuilder documentBuilder = documentBuilderFactory
-				.newDocumentBuilder();
-		return documentBuilder.parse(new ByteArrayInputStream(xml.getBytes()));
+	public void delaySec(int sec) {
+		
+		if (sec == 0)
+			return;
+		LOG.debug(MessageFormat.format("Delaying request for {0} seconds.", sec));
+		try {
+			Thread.sleep(sec * MILIS_IN_SEC);
+		} catch (InterruptedException e) {
+			// do nothing
+		}
 	}
 
 }

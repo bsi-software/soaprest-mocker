@@ -28,12 +28,12 @@ import javax.ws.rs.core.MediaType;
 
 import net.sf.jaceko.mock.model.webservice.WebService;
 import net.sf.jaceko.mock.model.webservice.WebServices;
-import net.sf.jaceko.mock.service.MockConfigurationService;
+import net.sf.jaceko.mock.service.MockConfigurationHolder;
 
 @Path("/services")
 public class ServicesResource {
 
-	private MockConfigurationService mockConfigurationService;
+	private MockConfigurationHolder mockConfigurationService;
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML })
@@ -42,7 +42,7 @@ public class ServicesResource {
 		return new WebServices(servicesCollection);
 	}
 
-	public void setMockConfigurationService(MockConfigurationService mockConfigurationService) {
+	public void setMockConfigurationService(MockConfigurationHolder mockConfigurationService) {
 		this.mockConfigurationService = mockConfigurationService;
 	}
 

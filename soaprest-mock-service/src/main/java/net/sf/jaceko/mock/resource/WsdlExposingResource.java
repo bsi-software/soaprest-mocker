@@ -25,13 +25,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
+import net.sf.jaceko.mock.service.RequestExecutor;
 
 
 @Path("/services/SOAP/{serviceName}/wsdl")
 public class WsdlExposingResource {
 
-	private WebserviceMockSvcLayer service;
+	private RequestExecutor service;
 
 	@GET
 	@Produces(MediaType.TEXT_XML)
@@ -39,7 +39,7 @@ public class WsdlExposingResource {
 		return service.getWsdl(serviceName);
 	}
 
-	public void setWebserviceMockService(WebserviceMockSvcLayer service) {
+	public void setWebserviceMockService(RequestExecutor service) {
 		this.service = service;
 	}
 

@@ -10,7 +10,7 @@ import java.util.Collection;
 
 import net.sf.jaceko.mock.model.webservice.WebService;
 import net.sf.jaceko.mock.model.webservice.WebServices;
-import net.sf.jaceko.mock.service.MockConfigurationService;
+import net.sf.jaceko.mock.service.MockConfigurationHolder;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +20,7 @@ public class ServicesResourceTest {
 	private ServicesResource resource = new ServicesResource();
 
 	@Mock
-	private MockConfigurationService mockConfigurationService;
+	private MockConfigurationHolder mockConfigurationService;
 	
 	@Before
 	public void before() {

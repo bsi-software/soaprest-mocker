@@ -26,10 +26,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import net.sf.jaceko.mock.dom.DocumentImpl;
 import net.sf.jaceko.mock.exception.ClientFaultException;
-import net.sf.jaceko.mock.helper.XmlParser;
 import net.sf.jaceko.mock.model.request.MockResponse;
-import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
+import net.sf.jaceko.mock.service.RequestExecutor;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -44,7 +44,7 @@ public class SoapEndpointResource {
 	private static final String ENVELOPE = "Envelope";
 	private static final String INVALID_SOAP_REQUEST = "Invalid SOAP request";
 	private static final String MALFORMED_XML = "Malformed Xml";
-	private WebserviceMockSvcLayer service;
+	private RequestExecutor service;
 
 	@POST
 	@Consumes(MediaType.TEXT_XML)
@@ -66,7 +66,7 @@ public class SoapEndpointResource {
 	private String extractRequestMessageName(String request) {
 		Document reqDocument = null;
 		try {
-			reqDocument = XmlParser.parse(request, true);
+			reqDocument = new DocumentImpl(request, true);
 		} catch (Exception e) {
 			throw new ClientFaultException(MALFORMED_XML, e);
 		}
@@ -113,7 +113,7 @@ public class SoapEndpointResource {
 		return foundNode;
 	}
 
-	public void setWebserviceMockService(WebserviceMockSvcLayer service) {
+	public void setWebserviceMockService(RequestExecutor service) {
 		this.service = service;
 	}
 

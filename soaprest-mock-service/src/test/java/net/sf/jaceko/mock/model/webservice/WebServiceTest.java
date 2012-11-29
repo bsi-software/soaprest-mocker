@@ -1,4 +1,4 @@
-package net.sf.jaceko.mock.configuration;
+package net.sf.jaceko.mock.model.webservice;
 
 import static org.junit.Assert.assertThat;
 

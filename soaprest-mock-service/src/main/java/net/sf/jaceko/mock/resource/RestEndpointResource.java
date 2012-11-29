@@ -36,13 +36,13 @@ import org.apache.log4j.Logger;
 
 import net.sf.jaceko.mock.application.enums.HttpMethod;
 import net.sf.jaceko.mock.model.request.MockResponse;
-import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
+import net.sf.jaceko.mock.service.RequestExecutor;
 
 @Path("/services/REST/{serviceName}/endpoint")
 public class RestEndpointResource {
 	private static final Logger LOG = Logger.getLogger(RestEndpointResource.class);
 
-	private WebserviceMockSvcLayer svcLayer;
+	private RequestExecutor svcLayer;
 
 	@GET
 	@Produces({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -113,11 +113,7 @@ public class RestEndpointResource {
 		return Response.status(response.getCode()).entity(response.getBody()).build();
 	}
 
-	public void setRestserviceMockSvcLayer(WebserviceMockSvcLayer service) {
-		this.svcLayer = service;
-	}
-
-	public void setWebserviceMockService(WebserviceMockSvcLayer svcLayer) {
+	public void setWebserviceMockService(RequestExecutor svcLayer) {
 		this.svcLayer = svcLayer;
 	}
 

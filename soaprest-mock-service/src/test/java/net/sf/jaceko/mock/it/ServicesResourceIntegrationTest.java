@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sf.jaceko.mock.it.helper.dom.DocumentImpl;
+import net.sf.jaceko.mock.dom.DocumentImpl;
 import net.sf.jaceko.mock.it.helper.request.HttpRequestSender;
 import net.sf.jaceko.mock.model.request.MockResponse;
 

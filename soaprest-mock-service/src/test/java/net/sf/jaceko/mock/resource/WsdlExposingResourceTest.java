@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import net.sf.jaceko.mock.resource.WsdlExposingResource;
-import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
+import net.sf.jaceko.mock.service.RequestExecutor;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +16,7 @@ import org.mockito.Mock;
 public class WsdlExposingResourceTest {
 	
 	@Mock
-	private WebserviceMockSvcLayer service;
+	private RequestExecutor service;
 	
 	private WsdlExposingResource resource = new WsdlExposingResource();
 	

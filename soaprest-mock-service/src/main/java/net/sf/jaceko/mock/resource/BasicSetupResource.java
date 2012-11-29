@@ -29,13 +29,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import net.sf.jaceko.mock.model.request.MockResponse;
-import net.sf.jaceko.mock.service.WebserviceMockSvcLayer;
+import net.sf.jaceko.mock.service.MockSetupExecutor;
 
 import org.apache.commons.httpclient.HttpStatus;
 
 public abstract class BasicSetupResource {
 
-	private WebserviceMockSvcLayer service;
+	private MockSetupExecutor mockSetupExecutor;
 
 	public BasicSetupResource() {
 		super();
@@ -45,7 +45,7 @@ public abstract class BasicSetupResource {
 	@Path("/{operationId}/responses")
 	@Consumes({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response addResponse(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId, @QueryParam("code") int customResponseCode, @QueryParam("delay") int delaySec, String customResponseBody) {
-		service.addCustomResponse(serviceName, operationId, new MockResponse(customResponseBody, customResponseCode, delaySec));
+		mockSetupExecutor.addCustomResponse(serviceName, operationId, new MockResponse(customResponseBody, customResponseCode, delaySec));
 		return Response.status(HttpStatus.SC_OK).build();
 	}
 
@@ -53,19 +53,20 @@ public abstract class BasicSetupResource {
 	@Path("/{operationId}/responses/{requestInOrder}")
 	@Consumes({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response setResponse(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId, @PathParam("requestInOrder") int requestInOrder, @QueryParam("code") int customResponseCode, @QueryParam("delay") int delaySec, String customResponseBody) {
-		service.setCustomResponse(serviceName, operationId, requestInOrder, new MockResponse(customResponseBody, customResponseCode, delaySec));
+		mockSetupExecutor.setCustomResponse(serviceName, operationId, requestInOrder, new MockResponse(customResponseBody, customResponseCode, delaySec));
 		return Response.status(HttpStatus.SC_OK).build();
 	}
 
 	@POST
 	@Path("/{operationId}/init")
 	public Response initMock(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
-		service.initMock(serviceName, operationId);
+		mockSetupExecutor.initMock(serviceName, operationId);
 		return Response.status(HttpStatus.SC_OK).build();
 	}
 
-	public void setWebserviceMockService(WebserviceMockSvcLayer service) {
-		this.service = service;
+	public void setMockSetupExecutor(MockSetupExecutor mockSetupExecutor) {
+		this.mockSetupExecutor = mockSetupExecutor;
+		
 	}
 
 }

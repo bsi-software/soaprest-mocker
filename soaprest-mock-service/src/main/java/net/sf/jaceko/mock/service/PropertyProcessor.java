@@ -17,7 +17,7 @@
  *     along with SOAP/REST Mock Service; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package net.sf.jaceko.mock.configuration;
+package net.sf.jaceko.mock.service;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -38,7 +38,6 @@ import net.sf.jaceko.mock.application.enums.ServiceType;
 import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
 import net.sf.jaceko.mock.model.webservice.WebService;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
-import net.sf.jaceko.mock.service.MockConfigurationService;
 
 import org.apache.log4j.Logger;
 
@@ -91,7 +90,7 @@ public class PropertyProcessor {
 	 * @return
 	 * @throws IOException
 	 */
-	public MockConfigurationService process(Reader reader) throws IOException {
+	public MockConfigurationHolder process(Reader reader) throws IOException {
 		Properties properties = new Properties();
 		properties.load(reader);
 		Set<Object> keySet = properties.keySet();
@@ -123,7 +122,7 @@ public class PropertyProcessor {
 			}
 		}
 
-		MockConfigurationService configuration = new MockConfigurationService();
+		MockConfigurationHolder configuration = new MockConfigurationHolder();
 		configuration.setWebServices(services.values());
 
 		return configuration;
@@ -244,7 +243,7 @@ public class PropertyProcessor {
 		return -1;
 	}
 
-	public MockConfigurationService process(String fileName) throws IOException {
+	public MockConfigurationHolder process(String fileName) throws IOException {
 		String fileContents = readFileContents(fileName);
 		if (fileContents == null) {
 			throw new FileNotFoundException("Property file not found in the classpath: " + fileName);
