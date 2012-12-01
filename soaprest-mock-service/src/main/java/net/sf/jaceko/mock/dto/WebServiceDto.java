@@ -22,6 +22,8 @@ package net.sf.jaceko.mock.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -32,38 +34,31 @@ import net.sf.jaceko.mock.application.enums.ServiceType;
 import com.google.common.base.Objects;
 
 @XmlRootElement(name = "service")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class WebServiceDto {
 
-	private String endpointUri;
-	private String wsdlUri;
-	private ServiceType type;
+	@XmlAttribute(name = "name")
 	private String name;
-	private final List<OperationRefDto> operationRefs = new ArrayList<OperationRefDto>();
+
+	@XmlAttribute(name = "type")
+	private ServiceType type;
+
+	@XmlAttribute(name = "endpoint-uri")
+	private String endpointUri;
+
+	@XmlAttribute(name = "wsdl-uri")
+	private String wsdlUri;
 
 	@XmlElementWrapper(name="operations")
 	@XmlElement(name = "operation-ref")
+	private final List<OperationRefDto> operationRefs = new ArrayList<OperationRefDto>();
+
 	public List<OperationRefDto> getOperationRefs() {
 		return operationRefs;
 	}
 
-	@XmlAttribute(name = "name")
 	public String getName() {
 		return name;
-	}
-
-	@XmlAttribute(name = "type")
-	public ServiceType getType() {
-		return type;
-	}
-
-	@XmlAttribute(name = "endpoint-uri")
-	public String getEndpointUri() {
-		return endpointUri;
-	}
-
-	@XmlAttribute(name = "wsdl-uri")
-	public String getWsdlUri() {
-		return wsdlUri;
 	}
 
 	public void setName(String name) {

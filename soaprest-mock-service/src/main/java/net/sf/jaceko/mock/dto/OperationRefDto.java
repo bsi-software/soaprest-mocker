@@ -19,27 +19,22 @@
  */
 package net.sf.jaceko.mock.dto;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.common.base.Objects;
 
 @XmlRootElement(name = "operation-ref")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class OperationRefDto {
 
-	private String name;
-	private String uri;
-
 	@XmlAttribute(name = "name")
-	public String getName() {
-		return name;
-	}
+	private String name;
 
 	@XmlAttribute(name = "uri")
-	public String getUri() {
-		return uri;
-	}
-
+	private String uri;
 	
 	public void setName(String name) {
 		this.name = name;
