@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+
 public class ServicesResourceIntegrationTest {
 	private static final String SERVICES = "http://localhost:8080/mock/services";
 
@@ -30,22 +31,32 @@ public class ServicesResourceIntegrationTest {
 		MockResponse response = requestSender.sendGetRequest(SERVICES);
 		assertThat(response.getCode(), is(HttpStatus.SC_OK));
 		Document serviceResponseDoc = new DocumentImpl(response.getBody());
-		
-		assertThat(serviceResponseDoc, hasXPath("//services/service/@name", equalTo("hello-soap")));
 
-		assertThat(serviceResponseDoc, hasXPath("//services/service/@type", equalTo("SOAP")));
+		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='hello-soap']"));
+		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='hello-soap-withwsdl']"));
+		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='dummy-rest']"));
+		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='dummy-rest-notauthorized']"));
 		
-		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='hello-soap']/operations/operation/@name", equalTo("sayHello")));
+		assertThat(serviceResponseDoc, hasXPath("count(//services/service[@type='SOAP'])", equalTo("2")));
+		assertThat(serviceResponseDoc, hasXPath("count(//services/service[@type='REST'])", equalTo("2")));
+		
+		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='hello-soap']/operations/operation-ref/@name", equalTo("sayHello")));
+		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='hello-soap']/operations/operation-ref/@uri", equalTo("http://localhost:8080/mock/services/SOAP/hello-soap/operations/sayHello")));
+
 
 		
-		assertThat(serviceResponseDoc, hasXPath("//services/service/@name", equalTo("dummy-rest")));
-
-		assertThat(serviceResponseDoc, hasXPath("//services/service/@type", equalTo("REST")));
 		
-		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='dummy-rest']/operations/operation/@name", equalTo("GET")));
-		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='dummy-rest']/operations/operation/@name", equalTo("PUT")));
-		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='dummy-rest']/operations/operation/@name", equalTo("POST")));
-		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='dummy-rest']/operations/operation/@name", equalTo("DELETE")));
+		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='dummy-rest']/operations/operation-ref[@name='GET']"));
+		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='dummy-rest']/operations/operation-ref[@uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/GET']"));
+		
+		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='dummy-rest']/operations/operation-ref[@name='PUT']"));
+		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='dummy-rest']/operations/operation-ref[@uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT']"));
+		
+		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='dummy-rest']/operations/operation-ref[@name='POST']"));
+		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='dummy-rest']/operations/operation-ref[@uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/POST']"));
+		
+		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='dummy-rest']/operations/operation-ref[@name='DELETE']"));
+		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='dummy-rest']/operations/operation-ref[@uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/DELETE']"));
 
 	}
 

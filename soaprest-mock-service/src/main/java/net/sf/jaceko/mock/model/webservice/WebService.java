@@ -23,34 +23,34 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlTransient;
 
 import net.sf.jaceko.mock.application.enums.ServiceType;
 
+import com.google.common.base.Objects;
 
-@XmlRootElement(name = "service")
 public class WebService {
 
-	@XmlElement
 	private String name;
+
 	private String wsdlName;
 	private Map<Integer, WebserviceOperation> indxToOperationMap = new HashMap<Integer, WebserviceOperation>();
 	private String wsdlText;
-	
-	@XmlElement(name = "type")
+
 	private ServiceType serviceType;
 
 	public WebService() {
 		super();
 	}
-	
+
 	public WebService(String name, String wsdlText) {
 		super();
 		this.name = name;
 		this.wsdlText = wsdlText;
 	}
 
+	@XmlAttribute(name = "name")
 	public String getName() {
 		return name;
 	}
@@ -59,7 +59,7 @@ public class WebService {
 		this.name = name;
 	}
 
-
+	@XmlTransient
 	public String getWsdlName() {
 		return wsdlName;
 	}
@@ -71,7 +71,6 @@ public class WebService {
 	public Collection<WebserviceOperation> getOperations() {
 		return indxToOperationMap.values();
 	}
-
 
 	public void addOperation(int operationIndex, WebserviceOperation operation) {
 		indxToOperationMap.put(operationIndex, operation);
@@ -98,58 +97,33 @@ public class WebService {
 	}
 
 	@Override
-	public String toString() {
-		return "WebService [name=" + name + ", wsdlName=" + wsdlName + ", indxToOperationMap="
-				+ indxToOperationMap + ", wsdlText=" + wsdlText + ", serviceType=" + serviceType
-				+ "]";
+	public int hashCode(){
+		return Objects.hashCode(name, wsdlName, indxToOperationMap, wsdlText, serviceType);
 	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((indxToOperationMap == null) ? 0 : indxToOperationMap.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((serviceType == null) ? 0 : serviceType.hashCode());
-		result = prime * result + ((wsdlName == null) ? 0 : wsdlName.hashCode());
-		result = prime * result + ((wsdlText == null) ? 0 : wsdlText.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		WebService other = (WebService) obj;
-		if (indxToOperationMap == null) {
-			if (other.indxToOperationMap != null)
-				return false;
-		} else if (!indxToOperationMap.equals(other.indxToOperationMap))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (serviceType != other.serviceType)
-			return false;
-		if (wsdlName == null) {
-			if (other.wsdlName != null)
-				return false;
-		} else if (!wsdlName.equals(other.wsdlName))
-			return false;
-		if (wsdlText == null) {
-			if (other.wsdlText != null)
-				return false;
-		} else if (!wsdlText.equals(other.wsdlText))
-			return false;
-		return true;
-	}
-
 	
+	@Override
+	public boolean equals(Object object){
+		if (object instanceof WebService) {
+			WebService that = (WebService) object;
+			return Objects.equal(this.name, that.name)
+				&& Objects.equal(this.wsdlName, that.wsdlName)
+				&& Objects.equal(this.indxToOperationMap, that.indxToOperationMap)
+				&& Objects.equal(this.wsdlText, that.wsdlText)
+				&& Objects.equal(this.serviceType, that.serviceType);
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return Objects.toStringHelper(this)
+			.add("name", name)
+			.add("wsdlName", wsdlName)
+			.add("indxToOperationMap", indxToOperationMap)
+			.add("wsdlText", wsdlText)
+			.add("serviceType", serviceType)
+			.toString();
+	}
+
 
 }

@@ -17,48 +17,46 @@
  *     along with SOAP/REST Mock Service; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package net.sf.jaceko.mock.model.webservice;
+package net.sf.jaceko.mock.dto;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(namespace = "net.sf.jaceko.mock.model.webservice")
-public class WebServices {
+import com.google.common.base.Objects;
 
-	@XmlElementWrapper(name = "services")
+@XmlRootElement(name = "services")
+public class WebServicesDto {
+
+	private final List<WebServiceDto> webservicesList = new ArrayList<WebServiceDto>();
+
+	@XmlElementWrapper(name="services")
 	@XmlElement(name = "service")
-	private final Collection<WebService> servicesCollection;
-
-	public WebServices(Collection<WebService> servicesCollection) {
-		this.servicesCollection = servicesCollection;
+	public List<WebServiceDto> getWebservicesList() {
+		return webservicesList;
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((servicesCollection == null) ? 0 : servicesCollection.hashCode());
-		return result;
+		return Objects.hashCode(webservicesList);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
+		if (obj instanceof WebServicesDto) {
+			final WebServicesDto other = (WebServicesDto) obj;
+			return Objects.equal(webservicesList, other.webservicesList);
+		} else {
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		WebServices other = (WebServices) obj;
-		if (servicesCollection == null) {
-			if (other.servicesCollection != null)
-				return false;
-		} else if (!servicesCollection.equals(other.servicesCollection))
-			return false;
-		return true;
+		}
+	}
+
+	@Override
+	public String toString() {
+		return Objects.toStringHelper(this).addValue(webservicesList).toString();
 	}
 
 }
