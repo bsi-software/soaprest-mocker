@@ -33,7 +33,7 @@ import net.sf.jaceko.mock.service.RecordedRequestsHolder;
 
 public class BasicVerifictationResource {
 
-	private RecordedRequestsHolder recordedRequestsHolder;
+	protected RecordedRequestsHolder recordedRequestsHolder;
 
 	public BasicVerifictationResource() {
 		super();
@@ -58,19 +58,6 @@ public class BasicVerifictationResource {
 		return buildRequestParamsXml(recordedUrlParams);
 	}
 
-	@GET
-	@Path("/recorded-resource-ids")
-	@Produces(MediaType.TEXT_XML)
-	public String getRecordedResourceIds(@PathParam("serviceName") String serviceName, @PathParam("operationId")  String operationId) {
-		Collection<String> recordedResourceIds = recordedRequestsHolder
-				.getRecordedResourceIds(serviceName, operationId);
-		String rootElementName = "recorded-resource-ids";
-		String elementName = "recorded-resource-id";
-		boolean surroundElementTextWithCdata = false;
-		return buildListXml(recordedResourceIds, rootElementName, elementName,
-				surroundElementTextWithCdata);
-	}
-
 	private String buildRequestsXml(Collection<String> recordedRequests) {
 		return buildListXml(recordedRequests, "recorded-requests", null, false);
 	}
@@ -83,7 +70,7 @@ public class BasicVerifictationResource {
 				surroundElementTextWithCdata);
 	}
 
-	private String buildListXml(Collection<String> elementValuesList, String rootElementName, String elementName, boolean surroundElementTextWithCdata) {
+	protected String buildListXml(Collection<String> elementValuesList, String rootElementName, String elementName, boolean surroundElementTextWithCdata) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(format("<{0}>\n", rootElementName));
 		for (String urlQueryString : elementValuesList) {
