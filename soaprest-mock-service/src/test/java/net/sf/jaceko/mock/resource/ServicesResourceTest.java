@@ -3,7 +3,11 @@ package net.sf.jaceko.mock.resource;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.hasItem;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -13,14 +17,18 @@ import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.sf.jaceko.mock.application.enums.HttpMethod;
 import net.sf.jaceko.mock.application.enums.ServiceType;
+import net.sf.jaceko.mock.dto.OperationDto;
 import net.sf.jaceko.mock.dto.OperationRefDto;
+import net.sf.jaceko.mock.dto.ResourceRefDto;
 import net.sf.jaceko.mock.dto.WebServiceDto;
 import net.sf.jaceko.mock.dto.WebServicesDto;
 import net.sf.jaceko.mock.model.webservice.WebService;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
 import net.sf.jaceko.mock.service.MockConfigurationHolder;
 
+import org.jboss.resteasy.spi.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -30,28 +38,27 @@ public class ServicesResourceTest {
 
 	@Mock
 	private MockConfigurationHolder mockConfigurationService;
-	
+
 	@Mock
 	private HttpServletRequest context;
-	
+
 	@Before
 	public void before() {
 		initMocks(this);
 		resource.setMockConfigurationService(mockConfigurationService);
 	}
-	
+
 	@Test
 	public void shouldReturnWebServicesDtoContainingSoapService() throws URISyntaxException {
 		WebService service = new WebService();
 		service.setServiceType(ServiceType.SOAP);
 		service.setName("dummyService1");
-		
-		
+
 		Collection<WebService> servicesCollection = asList(service);
 		when(mockConfigurationService.getWebServices()).thenReturn(servicesCollection);
 		when(context.getServerName()).thenReturn("someserver");
 		when(context.getServerPort()).thenReturn(1234);
-		
+
 		WebServicesDto expectedWebServicesDto = new WebServicesDto();
 		WebServiceDto webServiceDto1 = new WebServiceDto();
 		webServiceDto1.setName("dummyService1");
@@ -62,19 +69,18 @@ public class ServicesResourceTest {
 
 		assertThat(resource.getWebServices(context), is(expectedWebServicesDto));
 	}
-	
+
 	@Test
 	public void shouldReturnWebServicesDtoContainingRestService() throws URISyntaxException {
 		WebService service = new WebService();
 		service.setServiceType(ServiceType.REST);
 		service.setName("dummyService2");
-		
-		
+
 		Collection<WebService> servicesCollection = asList(service);
 		when(mockConfigurationService.getWebServices()).thenReturn(servicesCollection);
 		when(context.getServerName()).thenReturn("server");
 		when(context.getServerPort()).thenReturn(5678);
-		
+
 		WebServicesDto expectedWebServicesDto = new WebServicesDto();
 		WebServiceDto webServiceDto = new WebServiceDto();
 		webServiceDto.setName("dummyService2");
@@ -84,7 +90,7 @@ public class ServicesResourceTest {
 
 		assertThat(resource.getWebServices(context), is(expectedWebServicesDto));
 	}
-	
+
 	@Test
 	public void shouldReturnEmptyWebservicesDtoObject() {
 		when(mockConfigurationService.getWebServices()).thenReturn(Collections.<WebService> emptyList());
@@ -92,11 +98,11 @@ public class ServicesResourceTest {
 	}
 
 	@Test
-	public void shouldReturn3Serices() {
+	public void shouldReturn3Services() {
 
 		WebService service1 = new WebService();
 		service1.setName("dummyService1");
-		
+
 		WebService service2 = new WebService();
 		service2.setName("dummyService2");
 
@@ -113,8 +119,6 @@ public class ServicesResourceTest {
 
 	}
 
-	
-	
 	@Test
 	public void shouldReturnWebserviceWithOperationRefernces() {
 		WebService service = new WebService();
@@ -127,8 +131,6 @@ public class ServicesResourceTest {
 		operation2.setOperationName("otherRequest");
 		service.addOperation(1, operation2);
 
-		
-		
 		Collection<WebService> servicesCollection = asList(service);
 		when(mockConfigurationService.getWebServices()).thenReturn(servicesCollection);
 		when(context.getServerName()).thenReturn("localhost");
@@ -141,11 +143,279 @@ public class ServicesResourceTest {
 		OperationRefDto operationRef2 = new OperationRefDto();
 		operationRef2.setName("otherRequest");
 		operationRef2.setUri("http://localhost:9876/mock/services/SOAP/dummyService/operations/otherRequest");
-		
-		assertThat(resource.getWebServices(context).getWebservicesList().get(0).getOperationRefs(), contains(operationRef, operationRef2));
 
+		assertThat(resource.getWebServices(context).getWebservicesList().get(0).getOperationRefs(),
+				contains(operationRef, operationRef2));
+
+	}
+
+	@Test
+	public void shouldReturnSOAPOperationDtoContainingName() {
+		WebserviceOperation operation = new WebserviceOperation();
+		operation.setOperationName("dummyRequest");
+
+		when(mockConfigurationService.getWebServiceOperation(anyString(), anyString())).thenReturn(operation);
+
+		OperationDto operationDto = resource.getOperation("SOAP", "", "", context);
+		assertThat(operationDto.getName(), is("dummyRequest"));
+	}
+
+	@Test
+	public void shouldReturnSOAPOperationDtoContaining4SetupResourceRefs() {
+
+		when(mockConfigurationService.getWebServiceOperation(anyString(), anyString())).thenReturn(new WebserviceOperation());
+
+		OperationDto operationDto = resource.getOperation("SOAP", "", "", context);
+		assertThat(operationDto.getSetupResources(), hasSize(4));
+	}
+
+	@Test
+	public void shouldReturnSOAPOperationDtoContaingInitResourceRef() {
+		when(mockConfigurationService.getWebServiceOperation("someService", "someRequest")).thenReturn(new WebserviceOperation());
+		when(context.getServerName()).thenReturn("server");
+		when(context.getServerPort()).thenReturn(9090);
+
+		ResourceRefDto initResourceRef = new ResourceRefDto(
+				"http://server:9090/mock/services/SOAP/someService/operations/someRequest/init", HttpMethod.POST,
+				"operation initialization");
+
+		OperationDto operationDto = resource.getOperation("SOAP", "someService", "someRequest", context);
+		assertThat(operationDto.getSetupResources(), hasItem(initResourceRef));
+	}
+
+	@Test
+	public void shouldReturnSOAPOperationDtoContaingAddResponseResourceRef() {
+		when(mockConfigurationService.getWebServiceOperation("someService", "someRequest")).thenReturn(new WebserviceOperation());
+		when(context.getServerName()).thenReturn("server");
+		when(context.getServerPort()).thenReturn(9090);
+
+		ResourceRefDto postResponseResourceRef = new ResourceRefDto(
+				"http://server:9090/mock/services/SOAP/someService/operations/someRequest/responses", HttpMethod.POST,
+				"add custom response");
+
+		OperationDto operationDto = resource.getOperation("SOAP", "someService", "someRequest", context);
+		assertThat(operationDto.getSetupResources(), hasItem(postResponseResourceRef));
+	}
+
+	@Test
+	public void shouldReturnSOAPOperationDtoContaingSet1stResponseResourceRef() {
+		when(mockConfigurationService.getWebServiceOperation("someService", "someRequest")).thenReturn(new WebserviceOperation());
+		when(context.getServerName()).thenReturn("server");
+		when(context.getServerPort()).thenReturn(9090);
+
+		ResourceRefDto set1stResponseResourceRef = new ResourceRefDto(
+				"http://server:9090/mock/services/SOAP/someService/operations/someRequest/responses/1", HttpMethod.PUT,
+				"set first custom response");
+
+		OperationDto operationDto = resource.getOperation("SOAP", "someService", "someRequest", context);
+		assertThat(operationDto.getSetupResources(), hasItem(set1stResponseResourceRef));
+	}
+
+	@Test
+	public void shouldReturnSOAPOperationDtoContaingSet2ndResponseResourceRef() {
+		WebserviceOperation operation = new WebserviceOperation();
+
+		when(mockConfigurationService.getWebServiceOperation("someService", "someRequest")).thenReturn(operation);
+		when(context.getServerName()).thenReturn("server");
+		when(context.getServerPort()).thenReturn(9090);
+
+		ResourceRefDto set1stResponseResourceRef = new ResourceRefDto(
+				"http://server:9090/mock/services/SOAP/someService/operations/someRequest/responses/2", HttpMethod.PUT,
+				"set second custom response");
+
+		OperationDto operationDto = resource.getOperation("SOAP", "someService", "someRequest", context);
+		assertThat(operationDto.getSetupResources(), hasItem(set1stResponseResourceRef));
+	}
+
+	@Test
+	public void shouldReturnSOAPOperationDtoContaining1VerificationResourceRef() {
+
+		when(mockConfigurationService.getWebServiceOperation(anyString(), anyString())).thenReturn(new WebserviceOperation());
+
+		OperationDto operationDto = resource.getOperation("SOAP", "", "", context);
+		assertThat(operationDto.getVerificationResources(), hasSize(1));
+	}
+
+	@Test
+	public void shouldReturnSOAPOperationDtoContaingRequestVerificationResourceRef() {
+		WebserviceOperation operation = new WebserviceOperation();
+
+		when(mockConfigurationService.getWebServiceOperation("someService", "someRequest")).thenReturn(operation);
+		when(context.getServerName()).thenReturn("server");
+		when(context.getServerPort()).thenReturn(9090);
+
+		ResourceRefDto recordedRequestsResourceRef = new ResourceRefDto(
+				"http://server:9090/mock/services/SOAP/someService/operations/someRequest/recorded-requests", HttpMethod.GET,
+				"recorded requests");
+
+		OperationDto operationDto = resource.getOperation("SOAP", "someService", "someRequest", context);
+		assertThat(operationDto.getVerificationResources(), hasItem(recordedRequestsResourceRef));
+	}
+
+	@Test(expected = NotFoundException.class)
+	public void shouldThrowExceptionIfServiceTypeUnknow() {
+		OperationDto operationDto = resource.getOperation("SOAP123", "someService", "someRequest", context);
+		assertThat(operationDto, nullValue());
+	}
+	
+	@Test
+	public void shouldReturnREST_GET_OperationDtoContaining4SetupResourceRefs() {
+
+		when(mockConfigurationService.getWebServiceOperation(anyString(), anyString())).thenReturn(new WebserviceOperation());
+
+		OperationDto operationDto = resource.getOperation("REST", "", "GET", context);
+		assertThat(operationDto.getSetupResources(), hasSize(4));
+	}
+	
+	@Test
+	public void shouldReturnREST_GET_OperationDtoContaingInitResourceRef() {
+		when(mockConfigurationService.getWebServiceOperation("service123", "GET")).thenReturn(new WebserviceOperation());
+		when(context.getServerName()).thenReturn("serverName");
+		when(context.getServerPort()).thenReturn(9191);
+
+		ResourceRefDto initResourceRef = new ResourceRefDto(
+				"http://serverName:9191/mock/services/REST/service123/operations/GET/init", HttpMethod.POST,
+				"operation initialization");
+
+		OperationDto operationDto = resource.getOperation("REST", "service123", "GET", context);
+		assertThat(operationDto.getSetupResources(), hasItem(initResourceRef));
+	}
+
+	@Test
+	public void shouldReturnREST_GET_OperationDtoContaingAddResponseResourceRef() {
+		when(mockConfigurationService.getWebServiceOperation("otherService", "GET")).thenReturn(new WebserviceOperation());
+		when(context.getServerName()).thenReturn("localhost");
+		when(context.getServerPort()).thenReturn(2134);
+
+		ResourceRefDto postResponseResourceRef = new ResourceRefDto(
+				"http://localhost:2134/mock/services/REST/otherService/operations/GET/responses", HttpMethod.POST,
+				"add custom response");
+
+		OperationDto operationDto = resource.getOperation("REST", "otherService", "GET", context);
+		assertThat(operationDto.getSetupResources(), hasItem(postResponseResourceRef));
+	}
+
+	@Test
+	public void shouldReturnREST_GET_OperationDtoContaingSet1stResponseResourceRef() {
+		when(mockConfigurationService.getWebServiceOperation("svcName", "GET")).thenReturn(new WebserviceOperation());
+		when(context.getServerName()).thenReturn("server");
+		when(context.getServerPort()).thenReturn(9090);
+
+		ResourceRefDto set1stResponseResourceRef = new ResourceRefDto(
+				"http://server:9090/mock/services/REST/svcName/operations/GET/responses/1", HttpMethod.PUT,
+				"set first custom response");
+
+		OperationDto operationDto = resource.getOperation("REST", "svcName", "GET", context);
+		assertThat(operationDto.getSetupResources(), hasItem(set1stResponseResourceRef));
+	}
+
+	@Test
+	public void shouldReturnREST_GET_OperationDtoContaingSet2ndResponseResourceRef() {
+		WebserviceOperation operation = new WebserviceOperation();
+
+		when(mockConfigurationService.getWebServiceOperation("svcName", "GET")).thenReturn(operation);
+		when(context.getServerName()).thenReturn("server");
+		when(context.getServerPort()).thenReturn(9090);
+
+		ResourceRefDto set1stResponseResourceRef = new ResourceRefDto(
+				"http://server:9090/mock/services/REST/svcName/operations/GET/responses/2", HttpMethod.PUT,
+				"set second custom response");
+
+		OperationDto operationDto = resource.getOperation("REST", "svcName", "GET", context);
+		assertThat(operationDto.getSetupResources(), hasItem(set1stResponseResourceRef));
+	}
+
+	@Test
+	public void shouldReturnREST_GET_OperationDtoContaingRequestVerificationResourceRef() {
+		when(mockConfigurationService.getWebServiceOperation("someService", "GET")).thenReturn(new WebserviceOperation());
+		when(context.getServerName()).thenReturn("server");
+		when(context.getServerPort()).thenReturn(8888);
+
+		ResourceRefDto recordedRequestsResourceRef = new ResourceRefDto(
+				"http://server:8888/mock/services/REST/someService/operations/GET/recorded-requests", HttpMethod.GET,
+				"recorded requests");
+
+		OperationDto operationDto = resource.getOperation("REST", "someService", "GET", context);
+		assertThat(operationDto.getVerificationResources(), hasItem(recordedRequestsResourceRef));
+	}
+	
+	@Test
+	public void shouldReturnREST_GET_OperationDtoContaingResourceIdsVerificationResourceRef() {
+		when(mockConfigurationService.getWebServiceOperation("someService", "GET")).thenReturn(new WebserviceOperation());
+		when(context.getServerName()).thenReturn("server");
+		when(context.getServerPort()).thenReturn(8888);
+
+		ResourceRefDto recordedRequestsResourceRef = new ResourceRefDto(
+				"http://server:8888/mock/services/REST/someService/operations/GET/recorded-resource-ids", HttpMethod.GET,
+				"recorded resource ids");
+
+		OperationDto operationDto = resource.getOperation("REST", "someService", "GET", context);
+		assertThat(operationDto.getVerificationResources(), hasItem(recordedRequestsResourceRef));
 		
 	}
+
+	@Test
+	public void shouldReturnREST_GET_OperationDtoContaingRequestParamsVerificationResourceRef() {
+		when(mockConfigurationService.getWebServiceOperation("someService", "GET")).thenReturn(new WebserviceOperation());
+		when(context.getServerName()).thenReturn("server");
+		when(context.getServerPort()).thenReturn(8888);
+
+		ResourceRefDto recordedRequestsResourceRef = new ResourceRefDto(
+				"http://server:8888/mock/services/REST/someService/operations/GET/recorded-request-params", HttpMethod.GET,
+				"recorded request parameters");
+
+		OperationDto operationDto = resource.getOperation("REST", "someService", "GET", context);
+		assertThat(operationDto.getVerificationResources(), hasItem(recordedRequestsResourceRef));
+		
+	}
+	
+	@Test
+	public void shouldReturnREST_GET_OperationDtoContaining3VerificationResourceRefs() {
+
+		when(mockConfigurationService.getWebServiceOperation(anyString(), anyString())).thenReturn(new WebserviceOperation());
+
+		OperationDto operationDto = resource.getOperation("REST", "any", "GET", context);
+		assertThat(operationDto.getVerificationResources(), hasSize(3));
+	}
+
+	@Test
+	public void shouldReturnREST_POST_OperationDtoContaingRequestVerificationResourceRef() {
+		when(mockConfigurationService.getWebServiceOperation("someService", "POST")).thenReturn(new WebserviceOperation());
+		when(context.getServerName()).thenReturn("server");
+		when(context.getServerPort()).thenReturn(8888);
+
+		ResourceRefDto recordedRequestsResourceRef = new ResourceRefDto(
+				"http://server:8888/mock/services/REST/someService/operations/POST/recorded-requests", HttpMethod.GET,
+				"recorded requests");
+
+		OperationDto operationDto = resource.getOperation("REST", "someService", "POST", context);
+		assertThat(operationDto.getVerificationResources(), hasItem(recordedRequestsResourceRef));
+	}
+	
+	@Test
+	public void shouldReturnREST_POST_OperationDtoContaingRequestParamsVerificationResourceRef() {
+		when(mockConfigurationService.getWebServiceOperation("someService", "POST")).thenReturn(new WebserviceOperation());
+		when(context.getServerName()).thenReturn("server");
+		when(context.getServerPort()).thenReturn(8888);
+
+		ResourceRefDto recordedRequestsResourceRef = new ResourceRefDto(
+				"http://server:8888/mock/services/REST/someService/operations/POST/recorded-request-params", HttpMethod.GET,
+				"recorded request parameters");
+
+		OperationDto operationDto = resource.getOperation("REST", "someService", "POST", context);
+		assertThat(operationDto.getVerificationResources(), hasItem(recordedRequestsResourceRef));
+		
+	}
+	
+	@Test
+	public void shouldReturnREST_POST_OperationDtoContaining2VerificationResourceRefs() {
+
+		when(mockConfigurationService.getWebServiceOperation(anyString(), anyString())).thenReturn(new WebserviceOperation());
+
+		OperationDto operationDto = resource.getOperation("REST", "any", "POST", context);
+		assertThat(operationDto.getVerificationResources(), hasSize(2));
+	}
+
 
 
 }

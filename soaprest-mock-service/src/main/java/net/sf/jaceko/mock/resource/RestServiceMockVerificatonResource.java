@@ -42,5 +42,23 @@ public class RestServiceMockVerificatonResource extends BasicVerifictationResour
 		return buildListXml(recordedResourceIds, rootElementName, elementName,
 				surroundElementTextWithCdata);
 	}
+	
+	@GET
+	@Path("/recorded-request-params")
+	@Produces(MediaType.TEXT_XML)
+	public String getRecordedUrlParams(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
+		Collection<String> recordedUrlParams = recordedRequestsHolder.getRecordedUrlParams(
+				serviceName, operationId);
+		return buildRequestParamsXml(recordedUrlParams);
+	}
+
+	private String buildRequestParamsXml(Collection<String> recordedUrlParams) {
+		String rootElementName = "recorded-request-params";
+		String elementName = "recorded-request-param";
+		boolean surroundElementTextWithCdata = true;
+		return buildListXml(recordedUrlParams, rootElementName, elementName,
+				surroundElementTextWithCdata);
+	}
+
 
 }

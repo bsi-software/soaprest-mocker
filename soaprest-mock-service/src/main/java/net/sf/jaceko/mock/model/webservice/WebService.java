@@ -23,9 +23,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlTransient;
-
 import net.sf.jaceko.mock.application.enums.ServiceType;
 
 import com.google.common.base.Objects;
@@ -33,7 +30,6 @@ import com.google.common.base.Objects;
 public class WebService {
 
 	private String name;
-
 	private String wsdlName;
 	private Map<Integer, WebserviceOperation> indxToOperationMap = new HashMap<Integer, WebserviceOperation>();
 	private String wsdlText;
@@ -50,7 +46,6 @@ public class WebService {
 		this.wsdlText = wsdlText;
 	}
 
-	@XmlAttribute(name = "name")
 	public String getName() {
 		return name;
 	}
@@ -59,7 +54,6 @@ public class WebService {
 		this.name = name;
 	}
 
-	@XmlTransient
 	public String getWsdlName() {
 		return wsdlName;
 	}
@@ -124,6 +118,5 @@ public class WebService {
 			.add("serviceType", serviceType)
 			.toString();
 	}
-
-
+	
 }

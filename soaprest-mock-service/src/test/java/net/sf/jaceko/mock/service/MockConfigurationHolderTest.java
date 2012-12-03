@@ -4,12 +4,10 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-
-import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
 import net.sf.jaceko.mock.model.webservice.WebService;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
-import net.sf.jaceko.mock.service.MockConfigurationHolder;
 
+import org.jboss.resteasy.spi.NotFoundException;
 import org.junit.Test;
 
 
@@ -79,18 +77,18 @@ public class MockConfigurationHolderTest {
 
 	}
 	
-	@Test(expected=ServiceNotConfiguredException.class)
+	@Test(expected=NotFoundException.class)
 	public void shouldThrowExceptionIfServiceNotFound() {
 		configuration.getWebServiceOperation("not_existing", "abc");
 	}
 
-	@Test(expected=ServiceNotConfiguredException.class)
+	@Test(expected=NotFoundException.class)
 	public void shouldThrowExceptionIfServiceNotFound2() {
 		configuration.getWebService("not_existing");
 	}
 	
 
-	@Test(expected = ServiceNotConfiguredException.class)
+	@Test(expected = NotFoundException.class)
 	public void shouldThrowExceptionIfWebserviceOperationNotFound() {
 		String serviceName = "service1";
 		String wsdlText1 = "<someWSDL/>";

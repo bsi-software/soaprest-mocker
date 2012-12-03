@@ -19,22 +19,31 @@
  */
 package net.sf.jaceko.mock.resource;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import net.sf.jaceko.mock.application.enums.HttpMethod;
 import net.sf.jaceko.mock.application.enums.ServiceType;
+import net.sf.jaceko.mock.dto.OperationDto;
 import net.sf.jaceko.mock.dto.OperationRefDto;
+import net.sf.jaceko.mock.dto.ResourceRefDto;
 import net.sf.jaceko.mock.dto.WebServiceDto;
 import net.sf.jaceko.mock.dto.WebServicesDto;
 import net.sf.jaceko.mock.model.webservice.WebService;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
 import net.sf.jaceko.mock.service.MockConfigurationHolder;
+
+import org.jboss.resteasy.spi.NotFoundException;
 
 @Path("/services")
 public class ServicesResource {
@@ -50,7 +59,7 @@ public class ServicesResource {
 			WebServiceDto webServiceDto = new WebServiceDto();
 			webServiceDto.setName(webService.getName());
 			webServiceDto.setType(webService.getServiceType());
-			String serviceUri = getServiceUri(context, webService);
+			String serviceUri = getServiceUri(context, webService.getServiceType(), webService.getName());
 			webServiceDto.setEndpointUri(getEndpointUri(serviceUri));
 			if (ServiceType.SOAP == webService.getServiceType()) {
 				webServiceDto.setWsdlUri(getWsdlUri(serviceUri));
@@ -64,11 +73,53 @@ public class ServicesResource {
 			}
 
 			webServicesDto.getWebservicesList().add(webServiceDto);
-
 		}
 
 		return webServicesDto;
 	}
+
+	@Path("/{serviceType}/{serviceName}/operations/{operationName}")
+	@GET
+	@Produces({ MediaType.APPLICATION_XML })
+	public OperationDto getOperation(@PathParam("serviceType") String serviceType,
+			@PathParam("serviceName") String serviceName, @PathParam("operationName") String operationName, @Context HttpServletRequest context) {
+		ServiceType svcType = null;
+		try {
+			svcType = ServiceType.valueOf(serviceType);
+		} catch (IllegalArgumentException e) {
+			throw new NotFoundException("Unknown service type: " + serviceType);
+		}
+		
+		WebserviceOperation webServiceOperation = mockConfigurationService.getWebServiceOperation(serviceName, operationName);
+		String operationUri = getOperationUri(getServiceUri(context, svcType, serviceName), operationName);
+
+		ResourceRefDto initResourceRef = new ResourceRefDto(operationUri, "/init", HttpMethod.POST, "operation initialization");
+		ResourceRefDto postResponseResourceRef = new ResourceRefDto(operationUri, "/responses", HttpMethod.POST, "add custom response");
+		ResourceRefDto set1stResponseResourceRef = new ResourceRefDto(operationUri, "/responses/1", HttpMethod.PUT, "set first custom response");
+		ResourceRefDto set2ndResponseResourceRef = new ResourceRefDto(operationUri, "/responses/2", HttpMethod.PUT, "set second custom response");
+		
+		ResourceRefDto recordedRequestsResourceRef = new ResourceRefDto(operationUri, "/recorded-requests", HttpMethod.GET, "recorded requests");
+
+		List<ResourceRefDto> verificationResources = newArrayList(recordedRequestsResourceRef);
+		if (svcType == ServiceType.REST) {
+			ResourceRefDto recordedRequestParams = new ResourceRefDto(operationUri, "/recorded-request-params", HttpMethod.GET, "recorded request parameters");
+			verificationResources.add(recordedRequestParams);
+
+			if (!HttpMethod.POST.toString().equals(operationName)) {
+				ResourceRefDto recordedResourceIds = new ResourceRefDto(operationUri, "/recorded-resource-ids", HttpMethod.GET, "recorded resource ids");
+				verificationResources.add(recordedResourceIds);
+			}
+		}
+		
+		OperationDto operationDto = new OperationDto();
+		operationDto.setName(webServiceOperation.getOperationName());
+		operationDto.setSetupResources(newArrayList(initResourceRef, postResponseResourceRef, set1stResponseResourceRef,
+				set2ndResponseResourceRef));
+		operationDto.setVerificationResources(verificationResources);
+
+		return operationDto;
+	}
+
 
 	private String getWsdlUri(String serviceUri) {
 		StringBuilder stringBuilder = new StringBuilder();
@@ -92,16 +143,16 @@ public class ServicesResource {
 		return stringBuilder.toString();
 	}
 
-	private String getServiceUri(HttpServletRequest context, WebService webService) {
+	private String getServiceUri(HttpServletRequest context, ServiceType serviceType, String serviceName) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("http://");
 		stringBuilder.append(context.getServerName());
 		stringBuilder.append(":");
 		stringBuilder.append(context.getServerPort());
 		stringBuilder.append("/mock/services/");
-		stringBuilder.append(webService.getServiceType());
+		stringBuilder.append(serviceType);
 		stringBuilder.append("/");
-		stringBuilder.append(webService.getName());
+		stringBuilder.append(serviceName);
 		return stringBuilder.toString();
 	}
 

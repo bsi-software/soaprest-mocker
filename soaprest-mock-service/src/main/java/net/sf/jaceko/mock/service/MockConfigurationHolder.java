@@ -23,9 +23,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
 import net.sf.jaceko.mock.model.webservice.WebService;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
+
+import org.jboss.resteasy.spi.NotFoundException;
 
 public class MockConfigurationHolder {
 
@@ -51,7 +52,7 @@ public class MockConfigurationHolder {
 			}
 		}
 
-		throw new ServiceNotConfiguredException("Undefined webservice operation: operationId:" + operationId + " of service: "
+		throw new NotFoundException("Undefined webservice operation: operationId:" + operationId + " of service: "
 				+ serviceName);
 
 	}
@@ -59,7 +60,7 @@ public class MockConfigurationHolder {
 	public WebService getWebService(String serviceName) {
 		WebService service = servicesMap.get(serviceName);
 		if (service == null) {
-			throw new ServiceNotConfiguredException("Undefined webservice:" + serviceName);
+			throw new NotFoundException("Undefined webservice:" + serviceName);
 		}
 		return service;
 

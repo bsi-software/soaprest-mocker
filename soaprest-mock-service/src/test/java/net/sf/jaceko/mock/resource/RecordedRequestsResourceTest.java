@@ -23,7 +23,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 public class RecordedRequestsResourceTest {
-	private BasicVerifictationResource resource = new RestServiceMockVerificatonResource();
+	private RestServiceMockVerificatonResource resource = new RestServiceMockVerificatonResource();
 
 	@Mock
 	private RecordedRequestsHolder recordedRequestsHolder;
