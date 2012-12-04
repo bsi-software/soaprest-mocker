@@ -58,7 +58,9 @@ public class ServicesResourceTest {
 		when(mockConfigurationService.getWebServices()).thenReturn(servicesCollection);
 		when(context.getServerName()).thenReturn("someserver");
 		when(context.getServerPort()).thenReturn(1234);
+		when(context.getContextPath()).thenReturn("/mock");
 
+		
 		WebServicesDto expectedWebServicesDto = new WebServicesDto();
 		WebServiceDto webServiceDto1 = new WebServiceDto();
 		webServiceDto1.setName("dummyService1");
@@ -80,7 +82,8 @@ public class ServicesResourceTest {
 		when(mockConfigurationService.getWebServices()).thenReturn(servicesCollection);
 		when(context.getServerName()).thenReturn("server");
 		when(context.getServerPort()).thenReturn(5678);
-
+		when(context.getContextPath()).thenReturn("/mock");
+		
 		WebServicesDto expectedWebServicesDto = new WebServicesDto();
 		WebServiceDto webServiceDto = new WebServiceDto();
 		webServiceDto.setName("dummyService2");
@@ -135,7 +138,8 @@ public class ServicesResourceTest {
 		when(mockConfigurationService.getWebServices()).thenReturn(servicesCollection);
 		when(context.getServerName()).thenReturn("localhost");
 		when(context.getServerPort()).thenReturn(9876);
-
+		when(context.getContextPath()).thenReturn("/mock");
+		
 		OperationRefDto operationRef = new OperationRefDto();
 		operationRef.setName("dummyRequest");
 		operationRef.setUri("http://localhost:9876/mock/services/SOAP/dummyService/operations/dummyRequest");
@@ -174,7 +178,8 @@ public class ServicesResourceTest {
 		when(mockConfigurationService.getWebServiceOperation("someService", "someRequest")).thenReturn(new WebserviceOperation());
 		when(context.getServerName()).thenReturn("server");
 		when(context.getServerPort()).thenReturn(9090);
-
+		when(context.getContextPath()).thenReturn("/mock");
+		
 		ResourceRefDto initResourceRef = new ResourceRefDto(
 				"http://server:9090/mock/services/SOAP/someService/operations/someRequest/init", HttpMethod.POST,
 				"operation initialization");
@@ -188,6 +193,7 @@ public class ServicesResourceTest {
 		when(mockConfigurationService.getWebServiceOperation("someService", "someRequest")).thenReturn(new WebserviceOperation());
 		when(context.getServerName()).thenReturn("server");
 		when(context.getServerPort()).thenReturn(9090);
+		when(context.getContextPath()).thenReturn("/mock");
 
 		ResourceRefDto postResponseResourceRef = new ResourceRefDto(
 				"http://server:9090/mock/services/SOAP/someService/operations/someRequest/responses", HttpMethod.POST,
@@ -202,6 +208,7 @@ public class ServicesResourceTest {
 		when(mockConfigurationService.getWebServiceOperation("someService", "someRequest")).thenReturn(new WebserviceOperation());
 		when(context.getServerName()).thenReturn("server");
 		when(context.getServerPort()).thenReturn(9090);
+		when(context.getContextPath()).thenReturn("/mock");
 
 		ResourceRefDto set1stResponseResourceRef = new ResourceRefDto(
 				"http://server:9090/mock/services/SOAP/someService/operations/someRequest/responses/1", HttpMethod.PUT,
@@ -218,6 +225,7 @@ public class ServicesResourceTest {
 		when(mockConfigurationService.getWebServiceOperation("someService", "someRequest")).thenReturn(operation);
 		when(context.getServerName()).thenReturn("server");
 		when(context.getServerPort()).thenReturn(9090);
+		when(context.getContextPath()).thenReturn("/mock");
 
 		ResourceRefDto set1stResponseResourceRef = new ResourceRefDto(
 				"http://server:9090/mock/services/SOAP/someService/operations/someRequest/responses/2", HttpMethod.PUT,
@@ -243,6 +251,7 @@ public class ServicesResourceTest {
 		when(mockConfigurationService.getWebServiceOperation("someService", "someRequest")).thenReturn(operation);
 		when(context.getServerName()).thenReturn("server");
 		when(context.getServerPort()).thenReturn(9090);
+		when(context.getContextPath()).thenReturn("/mock");
 
 		ResourceRefDto recordedRequestsResourceRef = new ResourceRefDto(
 				"http://server:9090/mock/services/SOAP/someService/operations/someRequest/recorded-requests", HttpMethod.GET,
@@ -272,6 +281,7 @@ public class ServicesResourceTest {
 		when(mockConfigurationService.getWebServiceOperation("service123", "GET")).thenReturn(new WebserviceOperation());
 		when(context.getServerName()).thenReturn("serverName");
 		when(context.getServerPort()).thenReturn(9191);
+		when(context.getContextPath()).thenReturn("/mock");
 
 		ResourceRefDto initResourceRef = new ResourceRefDto(
 				"http://serverName:9191/mock/services/REST/service123/operations/GET/init", HttpMethod.POST,
@@ -286,6 +296,7 @@ public class ServicesResourceTest {
 		when(mockConfigurationService.getWebServiceOperation("otherService", "GET")).thenReturn(new WebserviceOperation());
 		when(context.getServerName()).thenReturn("localhost");
 		when(context.getServerPort()).thenReturn(2134);
+		when(context.getContextPath()).thenReturn("/mock");
 
 		ResourceRefDto postResponseResourceRef = new ResourceRefDto(
 				"http://localhost:2134/mock/services/REST/otherService/operations/GET/responses", HttpMethod.POST,
@@ -300,6 +311,7 @@ public class ServicesResourceTest {
 		when(mockConfigurationService.getWebServiceOperation("svcName", "GET")).thenReturn(new WebserviceOperation());
 		when(context.getServerName()).thenReturn("server");
 		when(context.getServerPort()).thenReturn(9090);
+		when(context.getContextPath()).thenReturn("/mock");
 
 		ResourceRefDto set1stResponseResourceRef = new ResourceRefDto(
 				"http://server:9090/mock/services/REST/svcName/operations/GET/responses/1", HttpMethod.PUT,
@@ -316,6 +328,7 @@ public class ServicesResourceTest {
 		when(mockConfigurationService.getWebServiceOperation("svcName", "GET")).thenReturn(operation);
 		when(context.getServerName()).thenReturn("server");
 		when(context.getServerPort()).thenReturn(9090);
+		when(context.getContextPath()).thenReturn("/mock");
 
 		ResourceRefDto set1stResponseResourceRef = new ResourceRefDto(
 				"http://server:9090/mock/services/REST/svcName/operations/GET/responses/2", HttpMethod.PUT,
@@ -330,6 +343,7 @@ public class ServicesResourceTest {
 		when(mockConfigurationService.getWebServiceOperation("someService", "GET")).thenReturn(new WebserviceOperation());
 		when(context.getServerName()).thenReturn("server");
 		when(context.getServerPort()).thenReturn(8888);
+		when(context.getContextPath()).thenReturn("/mock");
 
 		ResourceRefDto recordedRequestsResourceRef = new ResourceRefDto(
 				"http://server:8888/mock/services/REST/someService/operations/GET/recorded-requests", HttpMethod.GET,
@@ -344,6 +358,7 @@ public class ServicesResourceTest {
 		when(mockConfigurationService.getWebServiceOperation("someService", "GET")).thenReturn(new WebserviceOperation());
 		when(context.getServerName()).thenReturn("server");
 		when(context.getServerPort()).thenReturn(8888);
+		when(context.getContextPath()).thenReturn("/mock");
 
 		ResourceRefDto recordedRequestsResourceRef = new ResourceRefDto(
 				"http://server:8888/mock/services/REST/someService/operations/GET/recorded-resource-ids", HttpMethod.GET,
@@ -359,6 +374,7 @@ public class ServicesResourceTest {
 		when(mockConfigurationService.getWebServiceOperation("someService", "GET")).thenReturn(new WebserviceOperation());
 		when(context.getServerName()).thenReturn("server");
 		when(context.getServerPort()).thenReturn(8888);
+		when(context.getContextPath()).thenReturn("/mock");
 
 		ResourceRefDto recordedRequestsResourceRef = new ResourceRefDto(
 				"http://server:8888/mock/services/REST/someService/operations/GET/recorded-request-params", HttpMethod.GET,
@@ -383,6 +399,7 @@ public class ServicesResourceTest {
 		when(mockConfigurationService.getWebServiceOperation("someService", "POST")).thenReturn(new WebserviceOperation());
 		when(context.getServerName()).thenReturn("server");
 		when(context.getServerPort()).thenReturn(8888);
+		when(context.getContextPath()).thenReturn("/mock");
 
 		ResourceRefDto recordedRequestsResourceRef = new ResourceRefDto(
 				"http://server:8888/mock/services/REST/someService/operations/POST/recorded-requests", HttpMethod.GET,
@@ -397,6 +414,7 @@ public class ServicesResourceTest {
 		when(mockConfigurationService.getWebServiceOperation("someService", "POST")).thenReturn(new WebserviceOperation());
 		when(context.getServerName()).thenReturn("server");
 		when(context.getServerPort()).thenReturn(8888);
+		when(context.getContextPath()).thenReturn("/mock");
 
 		ResourceRefDto recordedRequestsResourceRef = new ResourceRefDto(
 				"http://server:8888/mock/services/REST/someService/operations/POST/recorded-request-params", HttpMethod.GET,
@@ -415,7 +433,5 @@ public class ServicesResourceTest {
 		OperationDto operationDto = resource.getOperation("REST", "any", "POST", context);
 		assertThat(operationDto.getVerificationResources(), hasSize(2));
 	}
-
-
 
 }

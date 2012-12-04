@@ -81,36 +81,42 @@ public class ServicesResource {
 	@Path("/{serviceType}/{serviceName}/operations/{operationName}")
 	@GET
 	@Produces({ MediaType.APPLICATION_XML })
-	public OperationDto getOperation(@PathParam("serviceType") String serviceType,
-			@PathParam("serviceName") String serviceName, @PathParam("operationName") String operationName, @Context HttpServletRequest context) {
+	public OperationDto getOperation(@PathParam("serviceType") String serviceType, @PathParam("serviceName") String serviceName,
+			@PathParam("operationName") String operationName, @Context HttpServletRequest context) {
 		ServiceType svcType = null;
 		try {
 			svcType = ServiceType.valueOf(serviceType);
 		} catch (IllegalArgumentException e) {
 			throw new NotFoundException("Unknown service type: " + serviceType);
 		}
-		
+
 		WebserviceOperation webServiceOperation = mockConfigurationService.getWebServiceOperation(serviceName, operationName);
 		String operationUri = getOperationUri(getServiceUri(context, svcType, serviceName), operationName);
 
 		ResourceRefDto initResourceRef = new ResourceRefDto(operationUri, "/init", HttpMethod.POST, "operation initialization");
-		ResourceRefDto postResponseResourceRef = new ResourceRefDto(operationUri, "/responses", HttpMethod.POST, "add custom response");
-		ResourceRefDto set1stResponseResourceRef = new ResourceRefDto(operationUri, "/responses/1", HttpMethod.PUT, "set first custom response");
-		ResourceRefDto set2ndResponseResourceRef = new ResourceRefDto(operationUri, "/responses/2", HttpMethod.PUT, "set second custom response");
-		
-		ResourceRefDto recordedRequestsResourceRef = new ResourceRefDto(operationUri, "/recorded-requests", HttpMethod.GET, "recorded requests");
+		ResourceRefDto postResponseResourceRef = new ResourceRefDto(operationUri, "/responses", HttpMethod.POST,
+				"add custom response");
+		ResourceRefDto set1stResponseResourceRef = new ResourceRefDto(operationUri, "/responses/1", HttpMethod.PUT,
+				"set first custom response");
+		ResourceRefDto set2ndResponseResourceRef = new ResourceRefDto(operationUri, "/responses/2", HttpMethod.PUT,
+				"set second custom response");
+
+		ResourceRefDto recordedRequestsResourceRef = new ResourceRefDto(operationUri, "/recorded-requests", HttpMethod.GET,
+				"recorded requests");
 
 		List<ResourceRefDto> verificationResources = newArrayList(recordedRequestsResourceRef);
 		if (svcType == ServiceType.REST) {
-			ResourceRefDto recordedRequestParams = new ResourceRefDto(operationUri, "/recorded-request-params", HttpMethod.GET, "recorded request parameters");
+			ResourceRefDto recordedRequestParams = new ResourceRefDto(operationUri, "/recorded-request-params", HttpMethod.GET,
+					"recorded request parameters");
 			verificationResources.add(recordedRequestParams);
 
 			if (!HttpMethod.POST.toString().equals(operationName)) {
-				ResourceRefDto recordedResourceIds = new ResourceRefDto(operationUri, "/recorded-resource-ids", HttpMethod.GET, "recorded resource ids");
+				ResourceRefDto recordedResourceIds = new ResourceRefDto(operationUri, "/recorded-resource-ids", HttpMethod.GET,
+						"recorded resource ids");
 				verificationResources.add(recordedResourceIds);
 			}
 		}
-		
+
 		OperationDto operationDto = new OperationDto();
 		operationDto.setName(webServiceOperation.getOperationName());
 		operationDto.setSetupResources(newArrayList(initResourceRef, postResponseResourceRef, set1stResponseResourceRef,
@@ -119,7 +125,6 @@ public class ServicesResource {
 
 		return operationDto;
 	}
-
 
 	private String getWsdlUri(String serviceUri) {
 		StringBuilder stringBuilder = new StringBuilder();
@@ -149,7 +154,8 @@ public class ServicesResource {
 		stringBuilder.append(context.getServerName());
 		stringBuilder.append(":");
 		stringBuilder.append(context.getServerPort());
-		stringBuilder.append("/mock/services/");
+		stringBuilder.append(context.getContextPath());
+		stringBuilder.append("/services/");
 		stringBuilder.append(serviceType);
 		stringBuilder.append("/");
 		stringBuilder.append(serviceName);
