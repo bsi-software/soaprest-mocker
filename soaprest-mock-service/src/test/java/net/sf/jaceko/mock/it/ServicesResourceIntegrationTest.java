@@ -20,6 +20,13 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+/**
+ * Interation tests of the services resource returning information about configured webservice mocks. 
+ * Check the ws-mock.properties file for mock configuration
+ * 
+ * To run tests in eclipse start server typing executing mvn jetty:run
+ *
+ */
 public class ServicesResourceIntegrationTest {
 	private static final String SERVICES = "http://localhost:8080/mock/services";
 
@@ -38,7 +45,7 @@ public class ServicesResourceIntegrationTest {
 		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='dummy-rest']"));
 		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='dummy-rest-notauthorized']"));
 
-		assertThat(serviceResponseDoc, hasXPath("count(//services/service[@type='SOAP'])", equalTo("2")));
+		assertThat(serviceResponseDoc, hasXPath("count(//services/service[@type='SOAP'])", equalTo("3")));
 		assertThat(serviceResponseDoc, hasXPath("count(//services/service[@type='REST'])", equalTo("2")));
 
 		assertThat(serviceResponseDoc,
