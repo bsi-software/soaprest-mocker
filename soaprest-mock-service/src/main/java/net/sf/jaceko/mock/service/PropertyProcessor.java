@@ -41,7 +41,6 @@ import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
 
 import org.apache.log4j.Logger;
 
-
 /**
  * Parses property file
  * <p/>
@@ -68,15 +67,15 @@ public class PropertyProcessor {
 	private static final Logger LOG = Logger.getLogger(PropertyProcessor.class);
 
 	private static final String INPUT_MESSAGE = "INPUT_MESSAGE";
-	
+
 	private static final String HTTP_METHOD = "HTTP_METHOD";
 
 	private static final String DEFAULT_RESPONSE = "DEFAULT_RESPONSE";
 
 	private static final String DEFAULT_RESPONSE_CODE = "DEFAULT_RESPONSE_CODE";
-	
-	private static final String SERVICE_TYPE = "TYPE"; 
-	
+
+	private static final String SERVICE_TYPE = "TYPE";
+
 	private static final String SERVICE_NAME = "NAME";
 
 	private static final String SERVICE_WSDL = "WSDL";
@@ -84,35 +83,37 @@ public class PropertyProcessor {
 	private static final Pattern SERVICE_PATTERN = Pattern.compile("^SERVICE\\[([0-9]+)\\]$");
 	private static final Pattern OPERATION_PATTERN = Pattern.compile("^OPERATION\\[([0-9]+)\\]$");
 
+	private final WsdlProcessor wsdlProcessor = new WsdlProcessor();
+
 	/**
 	 * @param reader
 	 *            - reader pointing to configuration file of the mock service
 	 * @return
 	 * @throws IOException
 	 */
-	public MockConfigurationHolder process(Reader reader) throws IOException {
-		Properties properties = new Properties();
+	public MockConfigurationHolder process(final Reader reader) throws IOException {
+		final Properties properties = new Properties();
 		properties.load(reader);
-		Set<Object> keySet = properties.keySet();
-		Map<Integer, WebService> services = new HashMap<Integer, WebService>();
+		final Set<Object> keySet = properties.keySet();
+		final Map<Integer, WebService> services = new HashMap<Integer, WebService>();
 
-		for (Iterator<Object> iterator = keySet.iterator(); iterator.hasNext();) {
-			String propertyKey = (String) iterator.next();
-			String propertyValue = ((String) properties.get(propertyKey)).trim();
+		for (final Iterator<Object> iterator = keySet.iterator(); iterator.hasNext();) {
+			final String propertyKey = (String) iterator.next();
+			final String propertyValue = ((String) properties.get(propertyKey)).trim();
 
-			String[] propertyKeyParts = propertyKey.split("\\.");
+			final String[] propertyKeyParts = propertyKey.split("\\.");
 			if (propertyKeyParts.length >= 2) {
 
-				int serviceIndex = getServiceIndex(propertyKeyParts[0]);
+				final int serviceIndex = getServiceIndex(propertyKeyParts[0]);
 				if (serviceIndex >= 0) {
-					WebService service = getService(services, serviceIndex);
+					final WebService service = getService(services, serviceIndex);
 
-					String serviceVariable = propertyKeyParts[1];
-					int operationIndex = getOperationIndex(serviceVariable);
+					final String serviceVariable = propertyKeyParts[1];
+					final int operationIndex = getOperationIndex(serviceVariable);
 					if (operationIndex >= 0) {
 						// operation part
-						WebserviceOperation operation = getOperationFromService(service, operationIndex);
-						String operationProperty = propertyKeyParts[2];
+						final WebserviceOperation operation = getOperationFromService(service, operationIndex);
+						final String operationProperty = propertyKeyParts[2];
 						setOperationProperties(operation, operationProperty, propertyValue);
 					} else {
 						setServiceProperties(service, serviceVariable, propertyValue);
@@ -122,26 +123,32 @@ public class PropertyProcessor {
 			}
 		}
 
-		MockConfigurationHolder configuration = new MockConfigurationHolder();
+		final MockConfigurationHolder configuration = new MockConfigurationHolder();
 		configuration.setWebServices(services.values());
 
 		return configuration;
 
 	}
 
-	private void setServiceProperties(WebService service, String serviceProperty,
-			String propertyValue) {
+	private void setServiceProperties(final WebService service, final String serviceProperty, final String propertyValue) {
+		final String wsdlFileName = propertyValue;
 		if (serviceProperty.equals(SERVICE_WSDL)) {
-			service.setWsdlName(propertyValue);
-			setWsdlText(service, propertyValue);
+			final String fileText = readFileContents(wsdlFileName);
+
+			if (fileText != null) {
+				service.setWsdlText(fileText);
+				service.addOperations(wsdlProcessor.getOperationsFromWsdl(wsdlFileName, fileText));
+
+			}
+
 		} else if (serviceProperty.equals(SERVICE_NAME)) {
-			service.setName(propertyValue);
+			service.setName(wsdlFileName);
 		} else if (serviceProperty.equals(SERVICE_TYPE)) {
-			service.setServiceType(ServiceType.valueOf(propertyValue));
+			service.setServiceType(ServiceType.valueOf(wsdlFileName));
 		}
 	}
 
-	private WebService getService(Map<Integer, WebService> services, int serviceIndex) {
+	private WebService getService(final Map<Integer, WebService> services, final int serviceIndex) {
 		WebService service = services.get(serviceIndex);
 		if (service == null) {
 			service = new WebService();
@@ -150,8 +157,7 @@ public class PropertyProcessor {
 		return service;
 	}
 
-	private void setOperationProperties(WebserviceOperation operation, String operationProperty,
-			String propertyValue) {
+	private void setOperationProperties(final WebserviceOperation operation, final String operationProperty, final String propertyValue) {
 		if (operationProperty.equals(DEFAULT_RESPONSE)) {
 			operation.setDefaultResponseFile(propertyValue);
 			setDefaultResponseText(operation);
@@ -162,36 +168,28 @@ public class PropertyProcessor {
 		} else if (operationProperty.equals(HTTP_METHOD)) {
 			try {
 				operation.setOperationName(HttpMethod.valueOf(propertyValue).toString());
-			} catch (IllegalArgumentException e) {
-				throw new ServiceNotConfiguredException("Http method not recognized: "+propertyValue);
+			} catch (final IllegalArgumentException e) {
+				throw new ServiceNotConfiguredException("Http method not recognized: " + propertyValue);
 
 			}
 		}
 	}
 
-	private void setDefaultResponseText(WebserviceOperation operation) {
+	private void setDefaultResponseText(final WebserviceOperation operation) {
 
-		String fileText = readFileContents(operation.getDefaultResponseFile());
+		final String fileText = readFileContents(operation.getDefaultResponseFile());
 		if (fileText != null) {
 			operation.setDefaultResponseText(fileText);
 		}
 
 	}
 
-	private void setWsdlText(WebService soapService, String fileName) {
-		String fileText = readFileContents(fileName);
-		if (fileText != null) {
-			soapService.setWsdlText(fileText);
-		}
-	}
-
-	protected String readFileContents(String fileName) {
-		StringBuilder text = new StringBuilder();
-		String newLine = System.getProperty("line.separator");
+	protected String readFileContents(final String fileName) {
+		final StringBuilder text = new StringBuilder();
+		final String newLine = System.getProperty("line.separator");
 		Scanner scanner = null;
 		try {
-			InputStream resourceAsStream = this.getClass().getClassLoader()
-					.getResourceAsStream(fileName);
+			final InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(fileName);
 			if (resourceAsStream == null) {
 				LOG.error("File not found: " + fileName);
 				return null;
@@ -202,7 +200,7 @@ public class PropertyProcessor {
 			while (scanner.hasNextLine()) {
 				text.append(scanner.nextLine() + newLine);
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			LOG.error("Problem reading file : " + fileName, e);
 			return null;
 		} finally {
@@ -214,7 +212,7 @@ public class PropertyProcessor {
 		return text.toString();
 	}
 
-	private WebserviceOperation getOperationFromService(WebService service, int operationIndex) {
+	private WebserviceOperation getOperationFromService(final WebService service, final int operationIndex) {
 		WebserviceOperation operation = service.getOperation(operationIndex);
 		if (operation == null) {
 			operation = new WebserviceOperation();
@@ -223,32 +221,32 @@ public class PropertyProcessor {
 		return operation;
 	}
 
-	int getOperationIndex(String keyPart) {
-		Pattern pattern = OPERATION_PATTERN;
+	int getOperationIndex(final String keyPart) {
+		final Pattern pattern = OPERATION_PATTERN;
 		return extractIndex(keyPart, pattern);
 	}
 
-	int getServiceIndex(String keyPart) {
-		Pattern pattern = SERVICE_PATTERN;
+	int getServiceIndex(final String keyPart) {
+		final Pattern pattern = SERVICE_PATTERN;
 		return extractIndex(keyPart, pattern);
 	}
 
-	private int extractIndex(String keyPart, Pattern pattern) {
-		Matcher matcher = pattern.matcher(keyPart);
+	private int extractIndex(final String keyPart, final Pattern pattern) {
+		final Matcher matcher = pattern.matcher(keyPart);
 		if (matcher.find()) {
-			String indxNumberStr = matcher.group(1);
+			final String indxNumberStr = matcher.group(1);
 			return Integer.parseInt(indxNumberStr);
 		}
 
 		return -1;
 	}
 
-	public MockConfigurationHolder process(String fileName) throws IOException {
-		String fileContents = readFileContents(fileName);
+	public MockConfigurationHolder process(final String fileName) throws IOException {
+		final String fileContents = readFileContents(fileName);
 		if (fileContents == null) {
 			throw new FileNotFoundException("Property file not found in the classpath: " + fileName);
 		}
-		Reader reader = new StringReader(fileContents);
+		final Reader reader = new StringReader(fileContents);
 		return process(reader);
 	}
 

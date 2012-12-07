@@ -21,6 +21,7 @@ package net.sf.jaceko.mock.model.webservice;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.jaceko.mock.application.enums.ServiceType;
@@ -30,7 +31,6 @@ import com.google.common.base.Objects;
 public class WebService {
 
 	private String name;
-	private String wsdlName;
 	private Map<Integer, WebserviceOperation> indxToOperationMap = new HashMap<Integer, WebserviceOperation>();
 	private String wsdlText;
 
@@ -54,14 +54,6 @@ public class WebService {
 		this.name = name;
 	}
 
-	public String getWsdlName() {
-		return wsdlName;
-	}
-
-	public void setWsdlName(String wsdlName) {
-		this.wsdlName = wsdlName;
-	}
-
 	public Collection<WebserviceOperation> getOperations() {
 		return indxToOperationMap.values();
 	}
@@ -72,6 +64,13 @@ public class WebService {
 
 	public WebserviceOperation getOperation(int indx) {
 		return indxToOperationMap.get(indx);
+	}
+
+	public void addOperations(List<WebserviceOperation> webserviceOperations) {
+		int i = 0;
+		for (WebserviceOperation webserviceOperation : webserviceOperations) {
+			addOperation(i++, webserviceOperation);
+		}
 	}
 
 	public String getWsdlText() {
@@ -92,7 +91,7 @@ public class WebService {
 
 	@Override
 	public int hashCode(){
-		return Objects.hashCode(name, wsdlName, indxToOperationMap, wsdlText, serviceType);
+		return Objects.hashCode(name, indxToOperationMap, wsdlText, serviceType);
 	}
 	
 	@Override
@@ -100,7 +99,6 @@ public class WebService {
 		if (object instanceof WebService) {
 			WebService that = (WebService) object;
 			return Objects.equal(this.name, that.name)
-				&& Objects.equal(this.wsdlName, that.wsdlName)
 				&& Objects.equal(this.indxToOperationMap, that.indxToOperationMap)
 				&& Objects.equal(this.wsdlText, that.wsdlText)
 				&& Objects.equal(this.serviceType, that.serviceType);
@@ -112,11 +110,11 @@ public class WebService {
 	public String toString() {
 		return Objects.toStringHelper(this)
 			.add("name", name)
-			.add("wsdlName", wsdlName)
 			.add("indxToOperationMap", indxToOperationMap)
 			.add("wsdlText", wsdlText)
 			.add("serviceType", serviceType)
 			.toString();
 	}
+
 	
 }

@@ -11,9 +11,9 @@ import java.util.Collection;
 
 import net.sf.jaceko.mock.application.enums.ServiceType;
 import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
+import net.sf.jaceko.mock.matcher.OperationHavingNameEqualTo;
 import net.sf.jaceko.mock.model.webservice.WebService;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
-import net.sf.jaceko.mock.service.MockConfigurationHolder;
 
 import org.hamcrest.Description;
 import org.junit.Test;
@@ -24,7 +24,7 @@ public class PropertyProcessorTest {
 
 	private PropertyProcessor propertyProcessor = new PropertyProcessor() {
 		// don't read wsdl and default response files in unit tests
-		// file processing is tested in PropertyProcessorIntegrationTest
+		// file processing is tested in PropertyProcessorFileReadingTest
 		@Override
 		protected String readFileContents(String fileName) {
 			return null;
@@ -176,44 +176,19 @@ public class PropertyProcessorTest {
 
 	}
 
-	@Test
-	public void shouldReturnServiceWithWsdl() throws IOException {
-		String wsdlName = "ticketing.wsdl";
-
-		String propertyString = "SERVICE[0].NAME=ticketing\r\n" + "SERVICE[0].WSDL=" + wsdlName;
-
-		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
-		assertThat(webServices.size(), is(1));
-		assertThat(webServices, hasItem(new ServiceHavingWsdlNameEqualTo(wsdlName)));
-
-	}
-
-	@Test
-	public void shouldReturnTwoServicesWithWsdl() throws IOException {
-		String wsdlName1 = "ticketing.wsdl";
-		String wsdlName2 = "ticketing.wsdl";
-		String propertyString = "SERVICE[0].NAME=ticketing\r\n" + "SERVICE[0].WSDL=" + wsdlName1
-				+ "\r\n" + "SERVICE[1].NAME=prepay\r\n" + "SERVICE[0].WSDL=" + wsdlName2;
-
-		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
-		assertThat(webServices.size(), is(2));
-		assertThat(webServices, hasItem(new ServiceHavingWsdlNameEqualTo(wsdlName1)));
-		assertThat(webServices, hasItem(new ServiceHavingWsdlNameEqualTo(wsdlName2)));
-
-	}
-
+	
 	@Test
 	public void shouldReturnSoapServiceHavingOneOperation() throws IOException {
 		String expectedInputMessageName = "reserveRequest";
 		String propertyString = "SERVICE[0].NAME=ticketing\r\n"
-				+ "SERVICE[0].WSDL=ticketing.wsdl\r\n" + "SERVICE[0].OPERATION[0].INPUT_MESSAGE="
+				+ "SERVICE[0].OPERATION[0].INPUT_MESSAGE="
 				+ expectedInputMessageName + "\r\n";
 		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
 
 		WebService service = webServices.iterator().next();
 		Collection<WebserviceOperation> operations = service.getOperations();
 		assertThat(operations.size(), is(1));
-		assertThat(operations, hasItem(new OperationHavingOperationNameEqualTo(
+		assertThat(operations, hasItem(new OperationHavingNameEqualTo(
 				expectedInputMessageName)));
 	}
 
@@ -221,7 +196,7 @@ public class PropertyProcessorTest {
 	public void shouldReturnServiceHavingOneOperation2() throws IOException {
 		String expectedInputMessageName = "confirmRequest";
 		String propertyString = "SERVICE[0].NAME=ticketing\r\n"
-				+ "SERVICE[0].WSDL=ticketing.wsdl\r\n" + "SERVICE[0].OPERATION[0].INPUT_MESSAGE="
+				+ "SERVICE[0].OPERATION[0].INPUT_MESSAGE="
 				+ expectedInputMessageName + "\r\n";
 
 		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
@@ -229,7 +204,7 @@ public class PropertyProcessorTest {
 		WebService service = webServices.iterator().next();
 		Collection<WebserviceOperation> operations = service.getOperations();
 		assertThat(operations.size(), is(1));
-		assertThat(operations, hasItem(new OperationHavingOperationNameEqualTo(
+		assertThat(operations, hasItem(new OperationHavingNameEqualTo(
 				expectedInputMessageName)));
 	}
 
@@ -243,7 +218,7 @@ public class PropertyProcessorTest {
 		WebService service = webServices.iterator().next();
 		Collection<WebserviceOperation> operations = service.getOperations();
 		assertThat(operations.size(), is(1));
-		assertThat(operations, hasItem(new OperationHavingOperationNameEqualTo(expectedHttpMethod)));
+		assertThat(operations, hasItem(new OperationHavingNameEqualTo(expectedHttpMethod)));
 
 	}
 
@@ -259,7 +234,6 @@ public class PropertyProcessorTest {
 	@Test
 	public void shouldIgnoreUknownPropertiesOfService() throws IOException {
 		String expectedInputMessageName = "confirmRequest";
-		String wsdlName = "ticketing.wsdl";
 		String propertyString = "SERVICE[0].NAME=ticketing\r\n"
 				+ "SERVICE[0].WSDL=ticketing.wsdl\r\n" + "SERVICE[0].OPERATION[0].INPUT_MESSAGE="
 				+ expectedInputMessageName + "\r\n"
@@ -270,9 +244,8 @@ public class PropertyProcessorTest {
 		WebService service = webServices.iterator().next();
 		Collection<WebserviceOperation> operations = service.getOperations();
 		assertThat(operations.size(), is(1));
-		assertThat(operations, hasItem(new OperationHavingOperationNameEqualTo(
+		assertThat(operations, hasItem(new OperationHavingNameEqualTo(
 				expectedInputMessageName)));
-		assertThat(webServices, hasItem(new ServiceHavingWsdlNameEqualTo(wsdlName)));
 	}
 
 	@Test
@@ -288,9 +261,9 @@ public class PropertyProcessorTest {
 		WebService service = webServices.iterator().next();
 		Collection<WebserviceOperation> operations = service.getOperations();
 		assertThat(operations.size(), is(2));
-		assertThat(operations, hasItem(new OperationHavingOperationNameEqualTo(
+		assertThat(operations, hasItem(new OperationHavingNameEqualTo(
 				expectedInputMessageName)));
-		assertThat(operations, hasItem(new OperationHavingOperationNameEqualTo(
+		assertThat(operations, hasItem(new OperationHavingNameEqualTo(
 				expectedInputMessageName2)));
 	}
 
@@ -318,9 +291,9 @@ public class PropertyProcessorTest {
 				expectedResponseFile)));
 		assertThat(operations, hasItem(new OperationHavingDefaultResponseEqualTo(
 				expectedResponseFile2)));
-		assertThat(operations, hasItem(new OperationHavingOperationNameEqualTo(
+		assertThat(operations, hasItem(new OperationHavingNameEqualTo(
 				expectedInputMessageName)));
-		assertThat(operations, hasItem(new OperationHavingOperationNameEqualTo(
+		assertThat(operations, hasItem(new OperationHavingNameEqualTo(
 				expectedInputMessageName2)));
 
 	}
@@ -435,30 +408,6 @@ public class PropertyProcessorTest {
 
 	}
 
-	class OperationHavingOperationNameEqualTo extends ArgumentMatcher<WebserviceOperation> {
-		private WebserviceOperation operation;
-		private final String defaultResponse;
-
-		@Override
-		public boolean matches(Object argument) {
-			operation = (WebserviceOperation) argument;
-			return defaultResponse.equals(operation.getOperationName());
-		}
-
-		private OperationHavingOperationNameEqualTo(String defaultResponse) {
-			super();
-			this.defaultResponse = defaultResponse;
-		}
-
-		@Override
-		public void describeTo(Description description) {
-			description.appendText("operation with operationName = " + defaultResponse + " but is "
-					+ operation);
-
-		}
-
-	}
-
 	class OperationHavingDefaultResponseEqualTo extends ArgumentMatcher<WebserviceOperation> {
 		private WebserviceOperation operation;
 		private final String defaultResponse;
@@ -502,31 +451,6 @@ public class PropertyProcessorTest {
 		public void describeTo(Description description) {
 			description.appendText("operation having defaultResponseCode = " + defaultResponseCode + " but is operation having defaultResponseCode = "
 					+ operation.getDefaultResponseCode());
-		}
-
-	}
-
-	
-	class ServiceHavingWsdlNameEqualTo extends ArgumentMatcher<WebService> {
-		private WebService service;
-		private final String wsdlName;
-
-		@Override
-		public boolean matches(Object argument) {
-			service = (WebService) argument;
-			return wsdlName.equals(service.getWsdlName());
-		}
-
-		private ServiceHavingWsdlNameEqualTo(String name) {
-			super();
-			this.wsdlName = name;
-		}
-
-		@Override
-		public void describeTo(Description description) {
-			description.appendText("wsdl name should be " + wsdlName + " but is "
-					+ service.getName());
-
 		}
 
 	}
