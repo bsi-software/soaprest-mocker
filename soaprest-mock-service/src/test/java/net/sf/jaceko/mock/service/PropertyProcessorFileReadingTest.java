@@ -127,8 +127,8 @@ public class PropertyProcessorFileReadingTest {
 	}
 
 	@Test
-	public void shouldReadOperationFromWsdl2() throws IOException {
-		String wsdlName = "bibcode-query-for-unit-test.wsdl";
+	public void shouldReadOperationFromWsdl2() throws IOException, ParserConfigurationException, SAXException {
+		String wsdlName = "bookReservation.wsdl";
 
 		String propertyString = "SERVICE[0].NAME=someService\r\n" + "SERVICE[0].WSDL=" + wsdlName;
 		Reader reader = new StringReader(propertyString);
@@ -138,7 +138,10 @@ public class PropertyProcessorFileReadingTest {
 		WebService webService = webServices.iterator().next();
 		Collection<WebserviceOperation> operations = webService.getOperations();
 		assertThat(operations.size(), is(1));
-		assertThat(operations, hasItem(new OperationHavingNameEqualTo("getBibcode")));
+		assertThat(operations, hasItem(new OperationHavingNameEqualTo("Reservation")));
+		WebserviceOperation operation = operations.iterator().next();
+		DocumentImpl defaultResponseDoc = new DocumentImpl(operation.getDefaultResponseText());
+		assertThat(defaultResponseDoc, hasXPath("//Envelope/Body/ReservationResponse"));
 
 	}
 
@@ -160,11 +163,63 @@ public class PropertyProcessorFileReadingTest {
 		assertThat(operations, hasItem(new OperationHavingNameEqualTo("getResultTypes")));
 		assertThat(operations, hasItem(new OperationHavingNameEqualTo("getStatus")));
 		assertThat(operations, hasItem(new OperationHavingNameEqualTo("run")));
-		
-		
+
+	}
+
+	@Test
+	public void shouldGenerateDafaultResponseFromWsdl() throws IOException, ParserConfigurationException, SAXException {
+		String wsdlName = "hello-for-unit-tests.wsdl";
+
+		String propertyString = "SERVICE[0].NAME=hello\r\n" + "SERVICE[0].WSDL=" + wsdlName;
+		Reader reader = new StringReader(propertyString);
+
+		Collection<WebService> webServices = propertyProcessor.process(reader).getWebServices();
+		WebService webService = webServices.iterator().next();
+		Collection<WebserviceOperation> operations = webService.getOperations();
+		WebserviceOperation operation = operations.iterator().next();
+		DocumentImpl defaultResponseDoc = new DocumentImpl(operation.getDefaultResponseText());
+		assertThat(defaultResponseDoc, hasXPath("//Envelope/Body/sayHelloResponse/greeting"));
 
 	}
 	
+	@Test
+	public void shouldGenerateDafaultResponseFromWsdl2() throws IOException, ParserConfigurationException, SAXException {
+		String wsdlName = "bookReservation.wsdl";
+
+		String propertyString = "SERVICE[0].NAME=someService\r\n" + "SERVICE[0].WSDL=" + wsdlName;
+		Reader reader = new StringReader(propertyString);
+
+		Collection<WebService> webServices = propertyProcessor.process(reader).getWebServices();
+		assertThat(webServices.size(), is(1));
+		WebService webService = webServices.iterator().next();
+		Collection<WebserviceOperation> operations = webService.getOperations();
+		assertThat(operations.size(), is(1));
+		WebserviceOperation operation = operations.iterator().next();
+		DocumentImpl defaultResponseDoc = new DocumentImpl(operation.getDefaultResponseText());
+		assertThat(defaultResponseDoc, hasXPath("//Envelope/Body/ReservationResponse"));
+
+	}
+
+	
+	@Test
+	public void shouldGenerateDafaultResponseFromWsdl3() throws IOException, ParserConfigurationException, SAXException {
+		String wsdlName = "webservicex-rate-convertor.wsdl";
+
+		String propertyString = "SERVICE[0].NAME=someOtherService\r\n" + "SERVICE[0].WSDL=" + wsdlName;
+		Reader reader = new StringReader(propertyString);
+
+		Collection<WebService> webServices = propertyProcessor.process(reader).getWebServices();
+		assertThat(webServices.size(), is(1));
+		WebService webService = webServices.iterator().next();
+		Collection<WebserviceOperation> operations = webService.getOperations();
+		assertThat(operations.size(), is(1));
+		WebserviceOperation operation = operations.iterator().next();
+		DocumentImpl defaultResponseDoc = new DocumentImpl(operation.getDefaultResponseText());
+		assertThat(defaultResponseDoc, hasXPath("//Envelope/Body/ConversionRateResponse/ConversionRateResult"));
+
+	}
+
+
 	@Test
 	public void shouldProcessWsdlWithNoBindings() throws IOException {
 		String wsdlName = "nobindings.wsdl";
@@ -177,7 +232,7 @@ public class PropertyProcessorFileReadingTest {
 		WebService webService = webServices.iterator().next();
 		Collection<WebserviceOperation> operations = webService.getOperations();
 		assertThat(operations, hasSize(0));
-		
+
 	}
 
 	@Test
@@ -192,7 +247,7 @@ public class PropertyProcessorFileReadingTest {
 		WebService webService = webServices.iterator().next();
 		Collection<WebserviceOperation> operations = webService.getOperations();
 		assertThat(operations, hasSize(0));
-		
+
 	}
 
 }

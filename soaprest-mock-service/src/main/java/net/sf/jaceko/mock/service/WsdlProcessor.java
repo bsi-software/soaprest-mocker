@@ -19,12 +19,13 @@
  */
 package net.sf.jaceko.mock.service;
 
+import static com.centeractive.ws.WsdlUtils.isSoapBinding;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.text.MessageFormat.format;
 
 import java.io.StringReader;
+import java.net.MalformedURLException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +41,9 @@ import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
+
+import com.centeractive.ws.SoapContext;
+import com.centeractive.ws.SoapMessageBuilder;
 
 public class WsdlProcessor {
 	private static final Logger LOG = Logger.getLogger(WsdlProcessor.class);
@@ -61,21 +65,34 @@ public class WsdlProcessor {
 		WSDLReader wsdlReader = factory.newWSDLReader();
 		try {
 			Definition def = wsdlReader.readWSDL(null, new InputSource(new StringReader(fileText)));
+			SoapMessageBuilder soapMessageBuilder = new SoapMessageBuilder(def, fileText);
 			Map<QName, Binding> bindingsMap = def.getBindings();
 			Collection<Binding> bindings = bindingsMap.values();
-			Iterator<Binding> bindingsIterator = bindings.iterator();
-			if (bindingsIterator.hasNext()) {
-				Binding binding = bindingsIterator.next();
-				List<BindingOperation> bindingOperations = binding.getBindingOperations();
-				for (BindingOperation bindingOperation : bindingOperations) {
-					final String operationName = bindingOperation.getName();
-					final WebserviceOperation mockOperation = new WebserviceOperation();
-					mockOperation.setOperationName(operationName);
-					mockOperations.add(mockOperation);
+			for (Binding binding : bindings) {
+				if (isSoapBinding(binding)) {
+					List<BindingOperation> bindingOperations = binding.getBindingOperations();
+					for (BindingOperation bindingOperation : bindingOperations) {
+						final String operationName = bindingOperation.getName();
+						final WebserviceOperation mockOperation = new WebserviceOperation();
+						mockOperation.setOperationName(operationName);
+						
+						SoapContext context = SoapContext.builder().alwaysBuildHeaders(false).build();
+						String responseMessage = soapMessageBuilder.buildSoapMessageFromOutput(binding, bindingOperation, context);
+						mockOperation.setDefaultResponseText(responseMessage);
+						mockOperations.add(mockOperation);
+					}
+					//only first soap binding is processed
+					break;
 				}
 			}
 		} catch (WSDLException e) {
 			LOG.error(format("error processing WSDL file: {0}, {1}", wsdlFileName, e.getMessage()));
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		return mockOperations;

@@ -250,10 +250,12 @@
 					<!-- Template location -->
 					<header>src/main/resources/fileHeader.txt</header>
 					<strictCheck>true</strictCheck>
-					<include>src/**</include>
+					<include>src/main/java/net/sf/jaceko/**</include>
 					<excludes>
+						<exclude>**/com/centeractive/ws/*.java</exclude>
 						<exclude>**/*Test.java</exclude>
 						<exclude>**/*.xml</exclude>
+						<exclude>**/*.wsdl</exclude>
 						<exclude>**/*.properties</exclude>
 					</excludes>
 				</configuration>
