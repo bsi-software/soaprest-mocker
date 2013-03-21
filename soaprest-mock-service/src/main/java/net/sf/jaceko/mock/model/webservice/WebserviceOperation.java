@@ -19,6 +19,7 @@
  */
 package net.sf.jaceko.mock.model.webservice;
 
+import static java.lang.String.format;
 import static java.util.Collections.synchronizedList;
 
 import java.util.List;
@@ -85,11 +86,12 @@ public class WebserviceOperation {
 
 	public MockResponse getResponse(int requestNumber) {
 		int index = requestNumber - 1;
+		MockResponse mockResponse = null;
 		synchronized (customResponses) {
-			if (customResponses.size() < requestNumber || customResponses.get(index) == null) {
+			if (customResponses.size() < requestNumber || (mockResponse = customResponses.get(index)) == null) {
 				return new MockResponse(defaultResponseText, defaultResponseCode);
 			}
-			return customResponses.get(index);
+			return mockResponse;
 		}
 	}
 
@@ -97,15 +99,14 @@ public class WebserviceOperation {
 		customResponse.setZeroCodeTo(defaultResponseCode);
 		customResponses.set(requestNumber - 1, customResponse);
 	}
-	
+
 	public void addCustomResponse(MockResponse customResponse) {
 		customResponse.setZeroCodeTo(defaultResponseCode);
 		customResponses.add(customResponse);
-		
+
 	}
 
-
-	public synchronized void init() {
+	public void init() {
 		customResponses.clear();
 		resetInvocationNumber();
 	}
@@ -133,11 +134,10 @@ public class WebserviceOperation {
 	@Override
 	public String toString() {
 		final int maxLen = 10;
-		return String
-				.format("WebserviceOperation [operationName=%s, defaultResponseFile=%s, defaultResponseText=%s, defaultResponseCode=%s, invocationNumber=%s, customResponses=%s]",
-						operationName, defaultResponseFile, defaultResponseText, defaultResponseCode, invocationNumber,
-						customResponses != null ? customResponses.subList(0, Math.min(customResponses.size(), maxLen)) : null);
+		return format(
+				"WebserviceOperation [operationName=%s, defaultResponseFile=%s, defaultResponseText=%s, defaultResponseCode=%s, invocationNumber=%s, customResponses=%s]",
+				operationName, defaultResponseFile, defaultResponseText, defaultResponseCode, invocationNumber,
+				customResponses != null ? customResponses.subList(0, Math.min(customResponses.size(), maxLen)) : null);
 	}
-
 
 }
