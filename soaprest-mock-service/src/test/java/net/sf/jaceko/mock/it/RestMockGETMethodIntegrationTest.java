@@ -159,7 +159,7 @@ public class RestMockGETMethodIntegrationTest {
 	
 	@Test
 	public void shouldReturnDefaultResponseCode() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
-		//setting up consecutive responses on mock, without response code		
+		//setting up 1st response on mock, without response code		
 		requestSender.sendPutRequest(REST_MOCK_GET_RESPONSES + "/1", "", MediaType.TEXT_XML);
 
 		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
