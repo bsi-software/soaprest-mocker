@@ -20,12 +20,10 @@
 package net.sf.jaceko.mock.service;
 
 import static java.util.Collections.synchronizedList;
-import static java.util.Collections.synchronizedMap;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -35,10 +33,10 @@ import net.sf.jaceko.mock.model.request.MockRequest;
 public class RecordedRequestsHolder {
 	private MockConfigurationHolder configurationHolder;
 
-	private final ConcurrentMap<String, Map<String, Collection<MockRequest>>> recordedRequestsMap = new ConcurrentHashMap<String, Map<String, Collection<MockRequest>>>();
+	private final ConcurrentMap<String, ConcurrentMap<String, Collection<MockRequest>>> recordedRequestsMap = new ConcurrentHashMap<String, ConcurrentMap<String, Collection<MockRequest>>>();
 
 	public void recordRequest(String serviceName, String operationId, String requestBody, String queryString, String resourceId) {
-		Map<String, Collection<MockRequest>> requestsPerOperationMap = fetchRequestsPerOperationMap(serviceName);
+		ConcurrentMap<String, Collection<MockRequest>> requestsPerOperationMap = fetchRequestsPerOperationMap(serviceName);
 
 		Collection<MockRequest> recordedRequests = fetchRecordedRequests(operationId, requestsPerOperationMap);
 
@@ -47,25 +45,14 @@ public class RecordedRequestsHolder {
 	}
 
 	private Collection<MockRequest> fetchRecordedRequests(String operationId,
-			Map<String, Collection<MockRequest>> requestsPerOperationMap) {
-
-		synchronized (requestsPerOperationMap) {
-			Collection<MockRequest> recordedRequests = requestsPerOperationMap.get(operationId);
-			if (recordedRequests == null) {
-				recordedRequests = synchronizedList(new ArrayList<MockRequest>());
-				requestsPerOperationMap.put(operationId, recordedRequests);
-			}
-			return recordedRequests;
-		}
+			ConcurrentMap<String, Collection<MockRequest>> requestsPerOperationMap) {
+		requestsPerOperationMap.putIfAbsent(operationId, synchronizedList(new ArrayList<MockRequest>()));
+		return requestsPerOperationMap.get(operationId);
 	}
 
-	public Map<String, Collection<MockRequest>> fetchRequestsPerOperationMap(String serviceName) {
-			recordedRequestsMap.putIfAbsent(serviceName, emptyMap());
-			return recordedRequestsMap.get(serviceName);
-	}
-
-	private Map<String, Collection<MockRequest>> emptyMap() {
-		return synchronizedMap(new HashMap<String, Collection<MockRequest>>());
+	private ConcurrentMap<String, Collection<MockRequest>> fetchRequestsPerOperationMap(String serviceName) {
+		recordedRequestsMap.putIfAbsent(serviceName, new ConcurrentHashMap<String, Collection<MockRequest>>());
+		return recordedRequestsMap.get(serviceName);
 	}
 
 	public Collection<String> getRecordedRequestBodies(String serviceName, String operationId) {
@@ -113,11 +100,10 @@ public class RecordedRequestsHolder {
 		}
 		return recordedResourceIds;
 	}
-	
+
 	public void clearRecordedRequests(String serviceName, String operationId) {
 		getRecordedRequests(serviceName, operationId).clear();
 	}
-
 
 	public void setMockserviceConfiguration(MockConfigurationHolder configurationHolder) {
 		this.configurationHolder = configurationHolder;
