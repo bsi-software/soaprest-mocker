@@ -27,13 +27,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import net.sf.jaceko.mock.model.request.MockRequest;
 
 public class RecordedRequestsHolder {
 	private MockConfigurationHolder configurationHolder;
 
-	private final Map<String, Map<String, Collection<MockRequest>>> recordedRequestsMap = synchronizedMap(new HashMap<String, Map<String, Collection<MockRequest>>>());
+	private final ConcurrentMap<String, Map<String, Collection<MockRequest>>> recordedRequestsMap = new ConcurrentHashMap<String, Map<String, Collection<MockRequest>>>();
 
 	public void recordRequest(String serviceName, String operationId, String requestBody, String queryString, String resourceId) {
 		Map<String, Collection<MockRequest>> requestsPerOperationMap = fetchRequestsPerOperationMap(serviceName);
@@ -58,14 +60,8 @@ public class RecordedRequestsHolder {
 	}
 
 	public Map<String, Collection<MockRequest>> fetchRequestsPerOperationMap(String serviceName) {
-		synchronized (recordedRequestsMap) {
-			Map<String, Collection<MockRequest>> requestsPerOperationMap = recordedRequestsMap.get(serviceName);
-			if (requestsPerOperationMap == null) {
-				requestsPerOperationMap = emptyMap();
-				recordedRequestsMap.put(serviceName, requestsPerOperationMap);
-			}
-			return requestsPerOperationMap;
-		}
+			recordedRequestsMap.putIfAbsent(serviceName, emptyMap());
+			return recordedRequestsMap.get(serviceName);
 	}
 
 	private Map<String, Collection<MockRequest>> emptyMap() {
