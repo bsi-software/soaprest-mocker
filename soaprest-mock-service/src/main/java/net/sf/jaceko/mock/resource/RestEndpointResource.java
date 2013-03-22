@@ -48,7 +48,6 @@ public class RestEndpointResource {
 	@Produces({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response performGetRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest request) {
 		return performGetRequest(serviceName, request, null);
-
 	}
 
 	@GET
@@ -71,7 +70,6 @@ public class RestEndpointResource {
 				httpServletRequest.getQueryString(), null);
 		LOG.debug("serviceName: " + serviceName + ", response:" + mockResponse);
 		return buildWebserviceResponse(mockResponse);
-
 	}
 
 	@PUT
@@ -109,8 +107,8 @@ public class RestEndpointResource {
 
 	}
 
-	private Response buildWebserviceResponse(MockResponse response) {
-		return Response.status(response.getCode()).entity(response.getBody()).build();
+	private Response buildWebserviceResponse(MockResponse mockResponse) {
+		return Response.status(mockResponse.getCode()).entity(mockResponse.getBody()).type(mockResponse.getContentType()).build();
 	}
 
 	public void setWebserviceMockService(RequestExecutor svcLayer) {

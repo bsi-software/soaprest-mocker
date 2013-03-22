@@ -2,9 +2,13 @@ package net.sf.jaceko.mock.resource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import net.sf.jaceko.mock.model.request.MockResponse;
@@ -55,12 +59,17 @@ public class MockSetupResourceTest {
 
 		String serviceName = "ticketing";
 		String operationId = "POST";
-		String customResponseBody = "<dummyResponse>respTExt</dummyResponse>";
+		String customResponseBody = "[]";
 		int customResponseCode = 201;
 		int delaySec = 1;
+		MediaType mediaType = MediaType.APPLICATION_JSON_TYPE;
 
-		resource.addResponse(serviceName, operationId, customResponseCode, delaySec, customResponseBody);
-		MockResponse expectedResponse = new MockResponse(customResponseBody, customResponseCode, delaySec);
+		HttpHeaders httpHeaders = mock(HttpHeaders.class);
+		when(httpHeaders.getMediaType()).thenReturn(mediaType);
+
+		resource.addResponse(httpHeaders, serviceName, operationId, customResponseCode, delaySec, customResponseBody);
+		MockResponse expectedResponse = MockResponse.body(customResponseBody).code(customResponseCode).delaySec(delaySec)
+				.contentType(mediaType).build();
 
 		verify(mockSetupExecutor).addCustomResponse(serviceName, operationId, expectedResponse);
 
@@ -74,9 +83,14 @@ public class MockSetupResourceTest {
 		String customResponseBody = "<dummyResponse>respTExt2</dummyResponse>";
 		int customResponseCode = 200;
 		int delaySec = 2;
+		MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
 
-		resource.addResponse(serviceName, operationId, customResponseCode, delaySec, customResponseBody);
-		MockResponse expectedResponse = new MockResponse(customResponseBody, customResponseCode, delaySec);
+		HttpHeaders httpHeaders = mock(HttpHeaders.class);
+		when(httpHeaders.getMediaType()).thenReturn(mediaType);
+
+		resource.addResponse(httpHeaders, serviceName, operationId, customResponseCode, delaySec, customResponseBody);
+		MockResponse expectedResponse = MockResponse.body(customResponseBody).code(customResponseCode).contentType(mediaType)
+				.delaySec(delaySec).build();
 
 		verify(mockSetupExecutor).addCustomResponse(serviceName, operationId, expectedResponse);
 
@@ -84,7 +98,7 @@ public class MockSetupResourceTest {
 
 	@Test
 	public void setResponseShouldReturnResponseWithStatusOK() {
-		Response response = resource.setResponse("", "", 1, 0, 0, "");
+		Response response = resource.setResponse(mock(HttpHeaders.class), "", "", 1, 0, 0, "");
 		assertThat(response.getStatus(), is(HttpStatus.SC_OK));
 	}
 
@@ -96,19 +110,29 @@ public class MockSetupResourceTest {
 		String customResponseBody = "<dummyResponse>aabb</dummyResponse>";
 		int responseInOrder = 2;
 		int delaySec = 2;
+		MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
 
-		resource.setResponse(serviceName, operationId, responseInOrder, customResponseCode, delaySec, customResponseBody);
+		HttpHeaders httpHeaders = mock(HttpHeaders.class);
+		when(httpHeaders.getMediaType()).thenReturn(mediaType);
+
+		resource.setResponse(httpHeaders, serviceName, operationId, responseInOrder, customResponseCode, delaySec,
+				customResponseBody);
 		verify(mockSetupExecutor).setCustomResponse(serviceName, operationId, responseInOrder,
-				new MockResponse(customResponseBody, customResponseCode, delaySec));
+				MockResponse.body(customResponseBody).code(customResponseCode).delaySec(delaySec).contentType(mediaType).build());
 
 		serviceName = "prepayService";
 		operationId = "prepayRequest";
 		responseInOrder = 1;
 		customResponseCode = 200;
 		delaySec = 5;
-		resource.setResponse(serviceName, operationId, responseInOrder, customResponseCode, delaySec, customResponseBody);
+		mediaType = MediaType.APPLICATION_JSON_TYPE;
+
+		when(httpHeaders.getMediaType()).thenReturn(mediaType);
+
+		resource.setResponse(httpHeaders, serviceName, operationId, responseInOrder, customResponseCode, delaySec,
+				customResponseBody);
 		verify(mockSetupExecutor).setCustomResponse(serviceName, operationId, responseInOrder,
-				new MockResponse(customResponseBody, customResponseCode, delaySec));
+				MockResponse.body(customResponseBody).code(customResponseCode).delaySec(delaySec).contentType(mediaType).build());
 	}
 
 	@Test
@@ -118,11 +142,11 @@ public class MockSetupResourceTest {
 		int customResponseCode = 200;
 		String customResponseBody = "<dummyResponse>abc123</dummyResponse>";
 		int responseInOrder = 5;
-		int delaySec = 3;
 
-		resource.setResponse(serviceName, operationId, responseInOrder, customResponseCode, delaySec, customResponseBody);
+		resource.setResponse(mock(HttpHeaders.class), serviceName, operationId, responseInOrder, customResponseCode, 0,
+				customResponseBody);
 		verify(mockSetupExecutor).setCustomResponse(serviceName, operationId, responseInOrder,
-				new MockResponse(customResponseBody, customResponseCode, delaySec));
+				MockResponse.body(customResponseBody).code(customResponseCode).build());
 
 	}
 

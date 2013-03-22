@@ -1,5 +1,6 @@
 package net.sf.jaceko.mock.it;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsString;
@@ -7,6 +8,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.xml.HasXPath.hasXPath;
 import static org.junit.Assert.assertThat;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -93,8 +95,9 @@ public class RestMockPOSTMethodIntegrationTest {
 		requestSender.sendPostRequest(REST_MOCK_POST_RESPONSES, customResponseJson, MediaType.APPLICATION_JSON);
 		
 		//sending REST POST request 
-		MockResponse response = requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "", MediaType.TEXT_XML);
-		assertThat("custom response body xml", response.getBody(), is(customResponseJson));
+		MockResponse response = requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "", MediaType.APPLICATION_JSON);
+		assertThat(response.getContentType(), is(APPLICATION_JSON_TYPE));
+		assertThat("custom response body xml", response.getBody(), sameJSONAs(customResponseJson));
 
 	}	
 
@@ -184,11 +187,12 @@ public class RestMockPOSTMethodIntegrationTest {
 		requestSender.sendPutRequest(REST_MOCK_POST_RESPONSES + "/2" + "?code=200", customResponseJson2, MediaType.APPLICATION_JSON);
 
 		MockResponse response = requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "", MediaType.TEXT_XML);
-		assertThat(response.getBody(), is(customResponseJson1));
+		assertThat(response.getBody(), sameJSONAs(customResponseJson1));
+		assertThat(response.getContentType(), is(APPLICATION_JSON_TYPE));
 
 		response = requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "", MediaType.TEXT_XML);
-		assertThat(response.getBody(), is(customResponseJson2));
-
+		assertThat(response.getBody(), sameJSONAs(customResponseJson2));
+		assertThat(response.getContentType(), is(APPLICATION_JSON_TYPE));
 	}
 	
 	@Test

@@ -46,7 +46,7 @@ public class ServicesResourceIntegrationTest {
 		assertThat(serviceResponseDoc, hasXPath("//services/service[@name='dummy-rest-notauthorized']"));
 
 		assertThat(serviceResponseDoc, hasXPath("count(//services/service[@type='SOAP'])", equalTo("3")));
-		assertThat(serviceResponseDoc, hasXPath("count(//services/service[@type='REST'])", equalTo("2")));
+		assertThat(serviceResponseDoc, hasXPath("count(//services/service[@type='REST'])", equalTo("3")));
 
 		assertThat(serviceResponseDoc,
 				hasXPath("//services/service[@name='hello-soap']/operations/operation-ref/@name", equalTo("sayHello")));

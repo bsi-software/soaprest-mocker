@@ -1,5 +1,6 @@
 package net.sf.jaceko.mock.resource;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
@@ -8,10 +9,10 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import net.sf.jaceko.mock.model.request.MockResponse;
-import net.sf.jaceko.mock.resource.RestEndpointResource;
 import net.sf.jaceko.mock.service.RequestExecutor;
 
 import org.apache.commons.httpclient.HttpStatus;
@@ -19,10 +20,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-
 public class RestEndpointResourceTest {
 
-	private static final MockResponse NOT_USED_RESPONSE = new MockResponse(null, 0);
+	private static final String NOT_USED_RESPONSE_BODY = "";
+
+	private static final MockResponse NOT_USED_RESPONSE = new MockResponse();
 
 	private static final String NOT_USED_RESOURCE_ID = null;
 
@@ -32,9 +34,9 @@ public class RestEndpointResourceTest {
 
 	@Mock
 	private RequestExecutor requestExecutor;
-	
+
 	@Mock
-	private HttpServletRequest servletContext; 
+	private HttpServletRequest servletContext;
 
 	@Before
 	public void before() {
@@ -50,10 +52,9 @@ public class RestEndpointResourceTest {
 		String urlParams = "msg=abc";
 		when(servletContext.getQueryString()).thenReturn(urlParams);
 		resource.performGetRequest(serviceName, servletContext);
-		verify(requestExecutor).performRequest(serviceName, "GET", "", urlParams, null);
+		verify(requestExecutor).performRequest(serviceName, "GET", NOT_USED_RESPONSE_BODY, urlParams, null);
 	}
 
-	
 	@Test
 	public void shouldPerformGetRequestPassingResourceId() {
 		String serviceName = "restServiceName";
@@ -61,10 +62,9 @@ public class RestEndpointResourceTest {
 		String urlParams = "msg=def";
 		when(servletContext.getQueryString()).thenReturn(urlParams);
 		resource.performGetRequest(serviceName, servletContext, resourceId);
-		verify(requestExecutor).performRequest(serviceName, "GET", "", urlParams, resourceId);
+		verify(requestExecutor).performRequest(serviceName, "GET", NOT_USED_RESPONSE_BODY, urlParams, resourceId);
 	}
 
-	
 	@Test
 	public void shouldReturnGET_OKResponse() {
 		String responseReturnedByServiceLayer = "someResponseText";
@@ -72,7 +72,7 @@ public class RestEndpointResourceTest {
 		when(requestExecutor.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
 				new MockResponse(responseReturnedByServiceLayer, responseCodeReturnedByServiceLayer));
 		Response getResponse = resource.performGetRequest(NOT_USED_SERVICE_NAME, servletContext);
-		assertThat((String)getResponse.getEntity(), is(responseReturnedByServiceLayer));
+		assertThat((String) getResponse.getEntity(), is(responseReturnedByServiceLayer));
 		assertThat(getResponse.getStatus(), is(responseCodeReturnedByServiceLayer));
 	}
 
@@ -84,20 +84,20 @@ public class RestEndpointResourceTest {
 		Response getResponse = resource.performGetRequest(NOT_USED_SERVICE_NAME, servletContext);
 		assertThat(getResponse.getStatus(), is(responseCodeReturnedByServiceLayer));
 	}
-	
+
 	@Test
 	public void shouldReturnGET_OKResponseOnRequestWith_RESOURCE_ID() {
 		String responseReturnedByServiceLayer = "someResponseText";
 		int responseCodeReturnedByServiceLayer = HttpStatus.SC_OK;
 		when(requestExecutor.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
 				new MockResponse(responseReturnedByServiceLayer, responseCodeReturnedByServiceLayer));
-		
+
 		Response getResponse = resource.performGetRequest(NOT_USED_SERVICE_NAME, servletContext, NOT_USED_RESOURCE_ID);
-		assertThat((String)getResponse.getEntity(), is(responseReturnedByServiceLayer));
+		assertThat((String) getResponse.getEntity(), is(responseReturnedByServiceLayer));
 		assertThat(getResponse.getStatus(), is(responseCodeReturnedByServiceLayer));
 
 	}
-	
+
 	@Test
 	public void shouldReturnGET_FORBIDDEN_ResponseOnRequestWith_RESOURCE_ID() {
 		int responseCodeReturnedByServiceLayer = HttpStatus.SC_FORBIDDEN;
@@ -107,7 +107,27 @@ public class RestEndpointResourceTest {
 		assertThat(getResponse.getStatus(), is(responseCodeReturnedByServiceLayer));
 	}
 
+	@Test
+	public void shouldReturnJsonContentType() {
+		when(requestExecutor.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
+				MockResponse.body(NOT_USED_RESPONSE_BODY).contentType(APPLICATION_JSON_TYPE).build());
 
+		Response getResponse = resource.performGetRequest(NOT_USED_SERVICE_NAME, servletContext);
+		assertThat(getResponse.getMetadata().getFirst("Content-Type").toString(), is("application/json"));
+
+	}
+
+	@Test
+	public void shouldReturnXMLContentType() {
+		when(requestExecutor.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
+				MockResponse.body(NOT_USED_RESPONSE_BODY).contentType(MediaType.TEXT_XML_TYPE).build());
+
+		Response getResponse = resource.performGetRequest(NOT_USED_SERVICE_NAME, servletContext);
+		assertThat(getResponse.getMetadata().getFirst("Content-Type").toString(), is("text/xml"));
+
+	}
+
+	
 	@Test
 	public void shouldPerformPostRequest() {
 		String serviceName = "billdesk";
@@ -117,7 +137,7 @@ public class RestEndpointResourceTest {
 		resource.performPostRequest(serviceName, servletContext, request);
 		verify(requestExecutor).performRequest(serviceName, "POST", request, urlParams, null);
 	}
-	
+
 	@Test
 	public void shouldReturnPOST_CREATEDResponse() {
 		String responseReturnedByServiceLayer = "someResponse";
@@ -125,11 +145,11 @@ public class RestEndpointResourceTest {
 		when(requestExecutor.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
 				new MockResponse(responseReturnedByServiceLayer, responseCodeReturnedByServiceLayer));
 		Response response = resource.performPostRequest(NOT_USED_SERVICE_NAME, servletContext, null);
-		assertThat((String)response.getEntity(), is(responseReturnedByServiceLayer));
+		assertThat((String) response.getEntity(), is(responseReturnedByServiceLayer));
 		assertThat(response.getStatus(), is(responseCodeReturnedByServiceLayer));
 
 	}
-	
+
 	@Test
 	public void shouldPerformPutRequest() {
 		String serviceName = "dummyService";
@@ -137,7 +157,7 @@ public class RestEndpointResourceTest {
 		resource.performPutRequest(serviceName, request);
 		verify(requestExecutor).performRequest(serviceName, "PUT", request, null, null);
 	}
-	
+
 	@Test
 	public void shouldPerformPutRequestPassingResourceId() {
 		String serviceName = "restServiceName";
@@ -147,32 +167,31 @@ public class RestEndpointResourceTest {
 		verify(requestExecutor).performRequest(serviceName, "PUT", request, null, resourceId);
 	}
 
-
 	@Test
 	public void shouldReturnPUT_CONFLICTResponse() {
 		String responseReturnedByServiceLayer = "someResponse123";
 		when(requestExecutor.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
 				new MockResponse(responseReturnedByServiceLayer, 409));
 		Response response = resource.performPutRequest(NOT_USED_SERVICE_NAME, null);
-		assertThat((String)response.getEntity(), is(responseReturnedByServiceLayer));
+		assertThat((String) response.getEntity(), is(responseReturnedByServiceLayer));
 
 	}
-	
+
 	@Test
 	public void shouldPerformDeleteRequest() {
 		String serviceName = "dummyService";
 		resource.performDeleteRequest(serviceName);
-		verify(requestExecutor).performRequest(serviceName, "DELETE", "", null, null);
+		verify(requestExecutor).performRequest(serviceName, "DELETE", NOT_USED_RESPONSE_BODY, null, null);
 	}
-	
+
 	@Test
 	public void shouldPerformDeleteRequestPassingResourceId() {
 		String serviceName = "restServiceName";
 		String resourceId = "resId12";
 		resource.performDeleteRequest(serviceName, resourceId);
-		verify(requestExecutor).performRequest(serviceName, "DELETE", "", null, resourceId);
+		verify(requestExecutor).performRequest(serviceName, "DELETE", NOT_USED_RESPONSE_BODY, null, resourceId);
 	}
-	
+
 	@Test
 	public void shouldReturnDELETE_NO_CONTENTResponse() {
 		String responseReturnedByServiceLayer = "someResponseText";
@@ -180,22 +199,21 @@ public class RestEndpointResourceTest {
 		when(requestExecutor.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
 				new MockResponse(responseReturnedByServiceLayer, responseCodeReturnedByServiceLayer));
 		Response getResponse = resource.performDeleteRequest(NOT_USED_SERVICE_NAME);
-		assertThat((String)getResponse.getEntity(), is(responseReturnedByServiceLayer));
+		assertThat((String) getResponse.getEntity(), is(responseReturnedByServiceLayer));
 		assertThat(getResponse.getStatus(), is(responseCodeReturnedByServiceLayer));
 	}
-	
+
 	@Test
 	public void shouldReturnDELETE_NO_CONTENTResponseOnRequestWith_RESOURCE_ID() {
 		String responseReturnedByServiceLayer = "someResponseText";
 		int responseCodeReturnedByServiceLayer = HttpStatus.SC_NO_CONTENT;
 		when(requestExecutor.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
 				new MockResponse(responseReturnedByServiceLayer, responseCodeReturnedByServiceLayer));
-		
+
 		Response getResponse = resource.performDeleteRequest(NOT_USED_SERVICE_NAME, NOT_USED_RESOURCE_ID);
-		assertThat((String)getResponse.getEntity(), is(responseReturnedByServiceLayer));
+		assertThat((String) getResponse.getEntity(), is(responseReturnedByServiceLayer));
 		assertThat(getResponse.getStatus(), is(responseCodeReturnedByServiceLayer));
 
 	}
-
 
 }

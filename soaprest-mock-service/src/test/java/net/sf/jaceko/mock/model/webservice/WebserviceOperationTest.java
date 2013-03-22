@@ -1,10 +1,9 @@
 package net.sf.jaceko.mock.model.webservice;
 
+import static javax.ws.rs.core.MediaType.TEXT_XML_TYPE;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-
 import net.sf.jaceko.mock.model.request.MockResponse;
-import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Before;
@@ -24,8 +23,9 @@ public class WebserviceOperationTest {
 	
 	@Test
 	public void shouldSetupCustom1stResponse() {
-		operation.setCustomResponse(new MockResponse("adsadsa"), 1);
+		operation.setCustomResponse(MockResponse.body("adsadsa").contentType(TEXT_XML_TYPE).build(), 1);
 		assertThat(operation.getResponse(1).getBody(), is("adsadsa"));
+		assertThat(operation.getResponse(1).getContentType(), is(TEXT_XML_TYPE));
 	}
 	
 	@Test

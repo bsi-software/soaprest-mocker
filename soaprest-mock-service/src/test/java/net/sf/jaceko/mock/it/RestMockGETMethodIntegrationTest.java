@@ -55,11 +55,13 @@ public class RestMockGETMethodIntegrationTest {
 			throws ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
 		assertThat(response.getCode(), is(HttpStatus.SC_OK));
+		assertThat(response.getContentType(), is(MediaType.TEXT_XML_TYPE));
 		Document serviceResponseDoc = new DocumentImpl(response.getBody());
 		assertThat(
 				serviceResponseDoc,
 				hasXPath("//get_response_data",
 						equalTo("default REST GET response text")));
+		
 
 	}
 
@@ -81,7 +83,7 @@ public class RestMockGETMethodIntegrationTest {
 		//sending REST GET request 
 		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
 		
-		
+		assertThat(response.getContentType(), is(MediaType.TEXT_XML_TYPE));
 		Document serviceResponseDoc = new DocumentImpl(response.getBody());
 		assertThat("custom response body", serviceResponseDoc,
 				hasXPath("//custom_get_response",
@@ -100,7 +102,7 @@ public class RestMockGETMethodIntegrationTest {
 		
 		//sending REST GET request 
 		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT + "/someResourceId");
-		
+		assertThat(response.getContentType(), is(MediaType.TEXT_XML_TYPE));
 		Document serviceResponseDoc = new DocumentImpl(response.getBody());
 		assertThat("custom response body", serviceResponseDoc,
 				hasXPath("//custom_get_response",

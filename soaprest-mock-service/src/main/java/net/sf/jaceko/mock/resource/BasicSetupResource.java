@@ -25,6 +25,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -44,16 +46,30 @@ public abstract class BasicSetupResource {
 	@POST
 	@Path("/{operationId}/responses")
 	@Consumes({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response addResponse(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId, @QueryParam("code") int customResponseCode, @QueryParam("delay") int delaySec, String customResponseBody) {
-		mockSetupExecutor.addCustomResponse(serviceName, operationId, new MockResponse(customResponseBody, customResponseCode, delaySec));
+	public Response addResponse(@Context HttpHeaders headers, @PathParam("serviceName") String serviceName,
+			@PathParam("operationId") String operationId, @QueryParam("code") int customResponseCode,
+			@QueryParam("delay") int delaySec, String customResponseBody) {
+
+		mockSetupExecutor.addCustomResponse(
+				serviceName,
+				operationId,
+				MockResponse.body(customResponseBody).code(customResponseCode).contentType(headers.getMediaType())
+						.delaySec(delaySec).build());
 		return Response.status(HttpStatus.SC_OK).build();
 	}
 
 	@PUT
 	@Path("/{operationId}/responses/{requestInOrder}")
 	@Consumes({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response setResponse(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId, @PathParam("requestInOrder") int requestInOrder, @QueryParam("code") int customResponseCode, @QueryParam("delay") int delaySec, String customResponseBody) {
-		mockSetupExecutor.setCustomResponse(serviceName, operationId, requestInOrder, new MockResponse(customResponseBody, customResponseCode, delaySec));
+	public Response setResponse(@Context HttpHeaders headers, @PathParam("serviceName") String serviceName,
+			@PathParam("operationId") String operationId, @PathParam("requestInOrder") int requestInOrder,
+			@QueryParam("code") int customResponseCode, @QueryParam("delay") int delaySec, String customResponseBody) {
+		mockSetupExecutor.setCustomResponse(
+				serviceName,
+				operationId,
+				requestInOrder,
+				MockResponse.body(customResponseBody).code(customResponseCode).delaySec(delaySec)
+						.contentType(headers.getMediaType()).build());
 		return Response.status(HttpStatus.SC_OK).build();
 	}
 
@@ -66,7 +82,7 @@ public abstract class BasicSetupResource {
 
 	public void setMockSetupExecutor(MockSetupExecutor mockSetupExecutor) {
 		this.mockSetupExecutor = mockSetupExecutor;
-		
+
 	}
 
 }

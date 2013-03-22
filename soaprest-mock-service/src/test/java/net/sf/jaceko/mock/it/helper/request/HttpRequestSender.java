@@ -22,6 +22,8 @@ package net.sf.jaceko.mock.it.helper.request;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import javax.ws.rs.core.MediaType;
+
 import net.sf.jaceko.mock.model.request.MockResponse;
 
 import org.apache.http.HttpEntity;
@@ -34,6 +36,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
@@ -80,12 +83,14 @@ public class HttpRequestSender {
 	private MockResponse executeRequest(HttpRequestBase httpRequest) throws IOException, ClientProtocolException {
 		HttpResponse response = httpclient.execute(httpRequest);
 		HttpEntity entity = response.getEntity();
+		ContentType contentType = ContentType.getOrDefault(entity);
 		String body = null;
 		if (entity != null) {
 			body = EntityUtils.toString(entity);
 			entity.getContent().close();
 		}
-		return new MockResponse(body, response.getStatusLine().getStatusCode());
+		int responseCode = response.getStatusLine().getStatusCode();
+		return MockResponse.body(body).code(responseCode).contentType(MediaType.valueOf(contentType.getMimeType())).build();
 	}
 
 	public void setHttpclient(HttpClient httpclient) {
