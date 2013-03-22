@@ -133,6 +133,19 @@ public class RestMockGETMethodIntegrationTest {
 	}
 	
 	@Test
+	public void shouldReturnCustomRESTGetResponseCode() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
+		requestSender.sendPostRequest(REST_MOCK_GET_RESPONSES + "?code=401", null, MediaType.APPLICATION_JSON);
+		
+		//sending REST GET request 
+		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
+		
+		
+		assertThat("custom response code", response.getCode(), is(HttpStatus.SC_UNAUTHORIZED));
+		
+	}
+
+	
+	@Test
 	public void shouldReturnConsecutiveCustomRESTGetResponses() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		//setting up consecutive responses on mock		
 		String customResponseXML1 = "<custom_get_response>custom REST GET response text 1</custom_get_response>";

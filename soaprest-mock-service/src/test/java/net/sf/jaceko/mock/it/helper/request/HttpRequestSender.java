@@ -45,16 +45,16 @@ public class HttpRequestSender {
 
 	private HttpClient httpclient = new DefaultHttpClient();
 
-	public MockResponse sendPostRequest(String url, String requestBody, String mediaType) throws UnsupportedEncodingException, IOException,
-			ClientProtocolException {
+	public MockResponse sendPostRequest(String url, String requestBody, String mediaType) throws UnsupportedEncodingException,
+			IOException, ClientProtocolException {
 		HttpEntityEnclosingRequestBase httpRequest = new HttpPost(url);
 		addRequestBody(httpRequest, requestBody, mediaType);
 
 		return executeRequest(httpRequest);
 	}
 
-	public MockResponse sendPutRequest(String url, String requestBody, String mediaType) throws UnsupportedEncodingException, IOException,
-			ClientProtocolException {
+	public MockResponse sendPutRequest(String url, String requestBody, String mediaType) throws UnsupportedEncodingException,
+			IOException, ClientProtocolException {
 		HttpEntityEnclosingRequestBase httpRequest = new HttpPut(url);
 		addRequestBody(httpRequest, requestBody, mediaType);
 		return executeRequest(httpRequest);
@@ -63,11 +63,13 @@ public class HttpRequestSender {
 	private void addRequestBody(HttpEntityEnclosingRequestBase httpRequest, String requestBody, String mediaType)
 			throws UnsupportedEncodingException {
 		StringBuilder contenType = new StringBuilder();
-				contenType.append(mediaType);
-				contenType.append(";charset=UTF-8");
+		contenType.append(mediaType);
+		contenType.append(";charset=UTF-8");
 		httpRequest.setHeader("Content-Type", contenType.toString());
-		HttpEntity requestEntity = new StringEntity(requestBody);
-		httpRequest.setEntity(requestEntity);
+		if (requestBody != null) {
+			HttpEntity requestEntity = new StringEntity(requestBody);
+			httpRequest.setEntity(requestEntity);
+		}
 	}
 
 	public MockResponse sendGetRequest(String url) throws IOException, ClientProtocolException {
