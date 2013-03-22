@@ -33,6 +33,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.ws.rs.core.MediaType;
+
 import net.sf.jaceko.mock.application.enums.HttpMethod;
 import net.sf.jaceko.mock.application.enums.ServiceType;
 import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
@@ -49,7 +51,6 @@ import org.apache.log4j.Logger;
  * 
  * <pre>
  * SERVICE[0].NAME=ticketing 
- * SERVICE[0].WSDL=ticketing.wsdl
  * SERVICE[0].OPERATION[0].INPUT_MESSAGE=reserveRequest
  * SERVICE[0].OPERATION[0].DEFAULT_RESPONSE=reserve_response.xml
  * SERVICE[0].OPERATION[1].INPUT_MESSAGE=confirmRequest
@@ -57,8 +58,6 @@ import org.apache.log4j.Logger;
  * 
  * SERVICE[1].NAME=mptu 
  * SERVICE[1].WSDL=mptu.wsdl
- * SERVICE[1].OPERATION[0].INPUT_MESSAGE=prepayRequest
- * SERVICE[1].OPERATION[0].DEFAULT_RESPONSE=prepay_response.xml
  * 
  * </pre>
  * 
@@ -73,6 +72,8 @@ public class PropertyProcessor {
 	private static final String DEFAULT_RESPONSE = "DEFAULT_RESPONSE";
 
 	private static final String DEFAULT_RESPONSE_CODE = "DEFAULT_RESPONSE_CODE";
+
+	private static final String DEFAULT_RESPONSE_CONTENT_TYPE = "DEFAULT_RESPONSE_CONTENT_TYPE";
 
 	private static final String SERVICE_TYPE = "TYPE";
 
@@ -157,12 +158,19 @@ public class PropertyProcessor {
 		return service;
 	}
 
-	private void setOperationProperties(final WebserviceOperation operation, final String operationProperty, final String propertyValue) {
+	private void setOperationProperties(final WebserviceOperation operation, final String operationProperty,
+			final String propertyValue) {
 		if (operationProperty.equals(DEFAULT_RESPONSE)) {
 			operation.setDefaultResponseFile(propertyValue);
 			setDefaultResponseText(operation);
 		} else if (operationProperty.equals(DEFAULT_RESPONSE_CODE)) {
 			operation.setDefaultResponseCode(Integer.valueOf(propertyValue));
+		} else if (operationProperty.equals(DEFAULT_RESPONSE_CONTENT_TYPE)) {
+			try {
+				operation.setDefaultResponseContentType(MediaType.valueOf(propertyValue));
+			} catch (IllegalArgumentException e) {
+				LOG.warn("Error parsing configuration file. Illegal content type: "+ propertyValue);
+			}
 		} else if (operationProperty.equals(INPUT_MESSAGE)) {
 			operation.setOperationName(propertyValue);
 		} else if (operationProperty.equals(HTTP_METHOD)) {

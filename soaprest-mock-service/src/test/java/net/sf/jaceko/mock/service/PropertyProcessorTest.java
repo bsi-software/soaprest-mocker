@@ -9,6 +9,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Collection;
 
+import javax.ws.rs.core.MediaType;
+
 import net.sf.jaceko.mock.application.enums.ServiceType;
 import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
 import net.sf.jaceko.mock.matcher.OperationHavingNameEqualTo;
@@ -331,9 +333,27 @@ public class PropertyProcessorTest {
 				204)));
 
 	}
+
 	
 	@Test
-	public void shouldReturnServiceHavingTwoOperationsHavingDefaultResponseCodes() throws IOException {
+	public void shouldReturnTwoOperationsHavingDefaultResponseContentType() throws IOException {
+		String propertyString = "SERVICE[0].NAME=some_service\r\n"
+				+ "SERVICE[0].OPERATION[0].DEFAULT_RESPONSE_CONTENT_TYPE=application/json\r\n"
+				+ "SERVICE[0].OPERATION[1].DEFAULT_RESPONSE_CONTENT_TYPE=application/xml\r\n";
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
+
+		WebService service = webServices.iterator().next();
+		Collection<WebserviceOperation> operations = service.getOperations();
+		assertThat(operations.size(), is(2));
+		assertThat(operations, hasItem(new OperationHavingDefaultResponseContentTypeEqualTo(
+				MediaType.APPLICATION_JSON_TYPE)));
+		assertThat(operations, hasItem(new OperationHavingDefaultResponseContentTypeEqualTo(
+				MediaType.APPLICATION_XML_TYPE)));
+
+	}
+
+	@Test
+	public void shouldReturnTwoOperationsHavingDefaultResponseCodes() throws IOException {
 		String propertyString = "SERVICE[0].NAME=some_service\r\n"
 				+ "SERVICE[0].OPERATION[0].DEFAULT_RESPONSE_CODE=200\r\n"
 				+ "SERVICE[0].OPERATION[1].DEFAULT_RESPONSE_CODE=201 \r\n";
@@ -349,6 +369,34 @@ public class PropertyProcessorTest {
 
 	}
 
+	@Test
+	public void shouldReturnOperationsHavingDefaultResponseCodesSetToXMLIfNotSpecified() throws IOException {
+		String propertyString = "SERVICE[0].NAME=some_service\r\n"
+				+ "SERVICE[0].OPERATION[0].HTTP_METHOD=GET \r\n";
+
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
+		WebService service = webServices.iterator().next();
+		Collection<WebserviceOperation> operations = service.getOperations();
+		assertThat(operations.size(), is(1));
+		assertThat(operations, hasItem(new OperationHavingDefaultResponseContentTypeEqualTo(
+				MediaType.TEXT_XML_TYPE)));
+
+	}
+
+	@Test
+	public void shouldReturnOperationsHavingDefaultResponseCodesSetToXMLIfNotValidContentType() throws IOException {
+		String propertyString = "SERVICE[0].NAME=some_service\r\n"
+				+ "SERVICE[0].OPERATION[0].DEFAULT_RESPONSE_CONTENT_TYPE=NoT_Valid \r\n";
+
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
+		WebService service = webServices.iterator().next();
+		Collection<WebserviceOperation> operations = service.getOperations();
+		assertThat(operations.size(), is(1));
+		assertThat(operations, hasItem(new OperationHavingDefaultResponseContentTypeEqualTo(
+				MediaType.TEXT_XML_TYPE)));
+
+	}
+	
 	class ServiceHavingNameEqualTo extends ArgumentMatcher<WebService> {
 		private WebService service;
 		private final String name;
@@ -451,6 +499,29 @@ public class PropertyProcessorTest {
 		public void describeTo(Description description) {
 			description.appendText("operation having defaultResponseCode = " + defaultResponseCode + " but is operation having defaultResponseCode = "
 					+ operation.getDefaultResponseCode());
+		}
+
+	}
+
+	class OperationHavingDefaultResponseContentTypeEqualTo extends ArgumentMatcher<WebserviceOperation> {
+		private WebserviceOperation operation;
+		private final MediaType defaultResponseContentType;
+
+		@Override
+		public boolean matches(Object argument) {
+			operation = (WebserviceOperation) argument;
+			return defaultResponseContentType.equals(operation.getDefaultResponseContentType());
+		}
+
+		private OperationHavingDefaultResponseContentTypeEqualTo(MediaType defaultResponseContentType) {
+			super();
+			this.defaultResponseContentType = defaultResponseContentType;
+		}
+
+		@Override
+		public void describeTo(Description description) {
+			description.appendText("operation having defaultResponseContentType = " + defaultResponseContentType + " but is operation having defaultResponseContentType = "
+					+ operation.getDefaultResponseContentType());
 		}
 
 	}

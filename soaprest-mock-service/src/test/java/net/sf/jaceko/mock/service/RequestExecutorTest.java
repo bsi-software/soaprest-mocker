@@ -10,6 +10,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.Collection;
 
+import javax.ws.rs.core.MediaType;
+
 import net.sf.jaceko.mock.model.request.MockResponse;
 import net.sf.jaceko.mock.model.webservice.WebService;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
@@ -26,7 +28,7 @@ public class RequestExecutorTest {
 
 	@Mock
 	private MockConfigurationHolder configurationHolder;
-	
+
 	@Mock
 	private Delayer delayer;
 
@@ -50,7 +52,9 @@ public class RequestExecutorTest {
 		String operationId = "prepayRequest";
 		String defaultResponse = "<defaultResp>abc</defaultResp>";
 		int defaultResponseCode = 200;
-		WebserviceOperation operation = new WebserviceOperation(null, null, defaultResponse, defaultResponseCode);
+		MediaType defaultResponseContentType = MediaType.APPLICATION_JSON_TYPE;
+		WebserviceOperation operation = WebserviceOperation.defaultResponseText(defaultResponse)
+				.defaultResponseCode(defaultResponseCode).defaultResponseContentType(defaultResponseContentType).build();
 
 		when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 
@@ -58,6 +62,7 @@ public class RequestExecutorTest {
 				NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
 		assertThat(response.getBody(), is(defaultResponse));
 		assertThat(response.getCode(), is(defaultResponseCode));
+		assertThat(response.getContentType(), is(defaultResponseContentType));
 	}
 
 	@Test
@@ -66,7 +71,8 @@ public class RequestExecutorTest {
 		String serviceName = "mptu";
 		String operationId = "prepayRequest";
 		int defaultResponseCode = 403;
-		WebserviceOperation operation = new WebserviceOperation(null, null, null, defaultResponseCode);
+		WebserviceOperation operation = WebserviceOperation.defaultResponseText(null).defaultResponseCode(defaultResponseCode)
+				.build();
 
 		when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 
@@ -83,7 +89,7 @@ public class RequestExecutorTest {
 		String defaultResponse = "<defaultResp>abc</defaultResp>";
 		MockResponse expectedCustomResponse = new MockResponse("<dummyResp/>");
 
-		WebserviceOperation operation = new WebserviceOperation(null, null, defaultResponse, 0);
+		WebserviceOperation operation = WebserviceOperation.defaultResponseText(defaultResponse).build();
 		operation.setCustomResponse(expectedCustomResponse, 1);
 
 		when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
@@ -102,8 +108,7 @@ public class RequestExecutorTest {
 		String defaultResponse = "<defaultResp>abc</defaultResp>";
 		MockResponse expectedCustomResponse = new MockResponse("<dummyResp/>");
 
-		WebserviceOperation operation = new WebserviceOperation(null, null, defaultResponse, 0);
-		operation.setCustomResponse(expectedCustomResponse, 1);
+		WebserviceOperation operation = WebserviceOperation.defaultResponseText(defaultResponse).build();
 		operation.setCustomResponse(expectedCustomResponse, 1);
 
 		when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
@@ -126,7 +131,7 @@ public class RequestExecutorTest {
 		MockResponse expectedCustomResponse1 = new MockResponse("<dummyResp/>");
 		MockResponse expectedCustomResponse2 = new MockResponse("<dummyResp2/>");
 
-		WebserviceOperation operation = new WebserviceOperation(null, null, defaultResponse, 0);
+		WebserviceOperation operation = WebserviceOperation.defaultResponseText(defaultResponse).build();
 		operation.setCustomResponse(expectedCustomResponse1, 1);
 		operation.setCustomResponse(expectedCustomResponse2, 2);
 
@@ -148,7 +153,7 @@ public class RequestExecutorTest {
 		String operationId = "prepayRequest";
 
 		String defaultResponse = "<defaultResp>abc</defaultResp>";
-		WebserviceOperation operation = new WebserviceOperation(null, null, defaultResponse, 0);
+		WebserviceOperation operation = WebserviceOperation.defaultResponseText(defaultResponse).build();
 		operation.setCustomResponse(new MockResponse("<dummyResp/>"), 1);
 		operation.setCustomResponse(new MockResponse("<dummyResp2/>"), 2);
 
@@ -161,7 +166,6 @@ public class RequestExecutorTest {
 		assertThat(response.getBody(), is(defaultResponse));
 
 	}
-
 
 	@Test
 	public void shouldGetWsdlText() {
@@ -197,7 +201,7 @@ public class RequestExecutorTest {
 
 		verify(delayer).delaySec(delaySec);
 	}
-	
+
 	@Test
 	public void shouldRecordRequest() {
 

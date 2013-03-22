@@ -25,6 +25,8 @@ import static java.util.Collections.synchronizedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.ws.rs.core.MediaType;
+
 import net.sf.jaceko.mock.model.request.MockResponse;
 
 import org.apache.commons.collections.list.GrowthList;
@@ -41,14 +43,14 @@ public class WebserviceOperation {
 	private String defaultResponseFile;
 	private String defaultResponseText;
 	private int defaultResponseCode;
-	private AtomicInteger invocationNumber = new AtomicInteger(0);
+	private MediaType defaultResponseContentType = MediaType.TEXT_XML_TYPE;
+	private final AtomicInteger invocationNumber = new AtomicInteger(0);
 
 	@SuppressWarnings("unchecked")
-	private List<MockResponse> customResponses = synchronizedList(new GrowthList());
+	private final List<MockResponse> customResponses = synchronizedList(new GrowthList());
 
 	public WebserviceOperation() {
 		super();
-
 	}
 
 	public WebserviceOperation(String operationName, String defaultResponseFile, String defaultResponseText,
@@ -58,6 +60,16 @@ public class WebserviceOperation {
 		this.defaultResponseFile = defaultResponseFile;
 		this.defaultResponseText = defaultResponseText;
 		this.defaultResponseCode = defaultResponseCode;
+	}
+
+	public static WebserviceOperationBuilder name(String operationName) {
+		WebserviceOperationBuilder builder = new WebserviceOperationBuilder();
+		return builder.operationName(operationName);
+	}
+
+	public static WebserviceOperationBuilder defaultResponseText(String defaultResponseText) {
+		WebserviceOperationBuilder builder = new WebserviceOperationBuilder();
+		return builder.defaultResponseText(defaultResponseText);
 	}
 
 	public String getOperationName() {
@@ -89,7 +101,8 @@ public class WebserviceOperation {
 		MockResponse mockResponse = null;
 		synchronized (customResponses) {
 			if (customResponses.size() < requestNumber || (mockResponse = customResponses.get(index)) == null) {
-				return new MockResponse(defaultResponseText, defaultResponseCode);
+				return MockResponse.body(defaultResponseText).code(defaultResponseCode).contentType(defaultResponseContentType)
+						.build();
 			}
 			return mockResponse;
 		}
@@ -131,13 +144,68 @@ public class WebserviceOperation {
 		this.defaultResponseCode = defaultResponseCode;
 	}
 
+	public MediaType getDefaultResponseContentType() {
+		return defaultResponseContentType;
+	}
+
+	public void setDefaultResponseContentType(MediaType defaultResponseContentType) {
+		this.defaultResponseContentType = defaultResponseContentType;
+	}
+
 	@Override
 	public String toString() {
 		final int maxLen = 10;
 		return format(
-				"WebserviceOperation [operationName=%s, defaultResponseFile=%s, defaultResponseText=%s, defaultResponseCode=%s, invocationNumber=%s, customResponses=%s]",
-				operationName, defaultResponseFile, defaultResponseText, defaultResponseCode, invocationNumber,
-				customResponses != null ? customResponses.subList(0, Math.min(customResponses.size(), maxLen)) : null);
+				"WebserviceOperation [operationName=%s, defaultResponseFile=%s, defaultResponseText=%s, defaultResponseCode=%s, defaultResponseContentType=%s, invocationNumber=%s, customResponses=%s]",
+				operationName, defaultResponseFile, defaultResponseText, defaultResponseCode, defaultResponseContentType,
+				invocationNumber, customResponses != null ? customResponses.subList(0, Math.min(customResponses.size(), maxLen))
+						: null);
+	}
+
+	public static class WebserviceOperationBuilder {
+		private String operationName;
+		private String defaultResponseFile;
+		private String defaultResponseText;
+		private int defaultResponseCode;
+		private MediaType defaultResponseContentType;
+
+		public WebserviceOperationBuilder operationName(String operationName) {
+			this.operationName = operationName;
+			return this;
+		}
+
+		public WebserviceOperationBuilder defaultResponseFile(String defaultResponseFile) {
+			this.defaultResponseFile = defaultResponseFile;
+			return this;
+		}
+
+		public WebserviceOperationBuilder defaultResponseText(String defaultResponseText) {
+			this.defaultResponseText = defaultResponseText;
+			return this;
+		}
+
+		public WebserviceOperationBuilder defaultResponseCode(int defaultResponseCode) {
+			this.defaultResponseCode = defaultResponseCode;
+			return this;
+		}
+
+		public WebserviceOperationBuilder defaultResponseContentType(MediaType defaultResponseContentType) {
+			this.defaultResponseContentType = defaultResponseContentType;
+			return this;
+		}
+
+		public WebserviceOperation build() {
+			WebserviceOperation webserviceOperation = new WebserviceOperation();
+			webserviceOperation.operationName = this.operationName;
+			webserviceOperation.defaultResponseFile = this.defaultResponseFile;
+			webserviceOperation.defaultResponseText = this.defaultResponseText;
+			webserviceOperation.defaultResponseCode = this.defaultResponseCode;
+			if (this.defaultResponseContentType != null) {
+				webserviceOperation.defaultResponseContentType = this.defaultResponseContentType;
+			}
+			return webserviceOperation;
+		}
+
 	}
 
 }

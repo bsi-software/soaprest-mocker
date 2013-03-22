@@ -14,6 +14,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Collection;
 
+import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.jaceko.mock.application.enums.HttpMethod;
@@ -87,20 +88,39 @@ public class PropertyProcessorFileReadingTest {
 		MockConfigurationHolder configuration = propertyProcessor.process(mockPropertiesFileName);
 
 		Collection<WebService> services = configuration.getWebServices();
-		assertThat(services.size(), is(2));
+		assertThat(services.size(), is(5));
 		WebService soapService = configuration.getWebService("dummy_soap");
 		assertThat(soapService.getName(), is("dummy_soap"));
 		assertThat(soapService.getServiceType(), is(ServiceType.SOAP));
 		assertThat(soapService.getOperation(0).getOperationName(), is("dummySoapRequest"));
 
+		soapService = configuration.getWebService("dummy_soap_with_wsdl");
+		assertThat(soapService.getName(), is("dummy_soap_with_wsdl"));
+		assertThat(soapService.getServiceType(), is(ServiceType.SOAP));
+		assertThat(soapService.getOperation(0).getOperationName(), is("sayHello"));
 		String wsdlText = soapService.getWsdlText();
 		Document wsdlDoc = new DocumentImpl(wsdlText);
 		assertThat(wsdlDoc, hasXPath("/definitions/service/documentation", equalTo("Dummy wsdl file")));
 
-		WebService restService = configuration.getWebService("dummy_rest_get");
+		WebService restService = configuration.getWebService("dummy_rest");
 		assertThat(restService.getServiceType(), is(ServiceType.REST));
 		assertThat(restService.getOperation(0).getOperationName(), is(HttpMethod.GET.toString()));
 		assertThat(restService.getOperation(0).getDefaultResponseCode(), is(200));
+		assertThat(restService.getOperation(0).getDefaultResponseContentType(), is(MediaType.TEXT_XML_TYPE));
+
+		
+		restService = configuration.getWebService("dummy_rest_json");
+		assertThat(restService.getServiceType(), is(ServiceType.REST));
+		assertThat(restService.getOperation(0).getOperationName(), is(HttpMethod.GET.toString()));
+		assertThat(restService.getOperation(0).getDefaultResponseCode(), is(200));
+		assertThat(restService.getOperation(0).getDefaultResponseContentType(), is(MediaType.APPLICATION_JSON_TYPE));
+
+		
+		restService = configuration.getWebService("dummy_rest_xml");
+		assertThat(restService.getServiceType(), is(ServiceType.REST));
+		assertThat(restService.getOperation(0).getOperationName(), is(HttpMethod.GET.toString()));
+		assertThat(restService.getOperation(0).getDefaultResponseCode(), is(200));
+		assertThat(restService.getOperation(0).getDefaultResponseContentType(), is(MediaType.TEXT_XML_TYPE));
 
 	}
 
