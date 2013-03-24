@@ -41,10 +41,4 @@ public class WebServiceTest {
 		assertThat(service.getOperation("noyExisting"), nullValue());
 	}
 	
-	@Test
-	public void shouldThrowExceptionIfOperationHasNoId() {
-		
-	}
-
-
 }
