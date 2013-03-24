@@ -45,15 +45,13 @@ public class MockConfigurationHolder {
 
 	public WebserviceOperation getWebServiceOperation(String serviceName, String operationId) {
 		WebService service = getWebService(serviceName);
-		Collection<WebserviceOperation> operations = service.getOperations();
-		for (WebserviceOperation operation : operations) {
-			if (operation.getOperationName().equals(operationId)) {
-				return operation;
-			}
-		}
+		WebserviceOperation operation = service.getOperation(operationId);
 
-		throw new NotFoundException("Undefined webservice operation: operationId:" + operationId + " of service: "
-				+ serviceName);
+		if (operation == null) {
+			throw new NotFoundException("Undefined webservice operation: operationId:" + operationId + " of service: "
+					+ serviceName);
+		}
+		return operation;
 
 	}
 

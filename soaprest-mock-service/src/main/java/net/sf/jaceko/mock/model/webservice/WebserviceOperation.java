@@ -53,15 +53,6 @@ public class WebserviceOperation {
 		super();
 	}
 
-	public WebserviceOperation(String operationName, String defaultResponseFile, String defaultResponseText,
-			int defaultResponseCode) {
-		super();
-		this.operationName = operationName;
-		this.defaultResponseFile = defaultResponseFile;
-		this.defaultResponseText = defaultResponseText;
-		this.defaultResponseCode = defaultResponseCode;
-	}
-
 	public static WebserviceOperationBuilder name(String operationName) {
 		WebserviceOperationBuilder builder = new WebserviceOperationBuilder();
 		return builder.operationName(operationName);

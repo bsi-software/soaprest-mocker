@@ -66,6 +66,18 @@ public class WebService {
 		return indxToOperationMap.get(indx);
 	}
 
+	public WebserviceOperation getOperation(String name) {
+		Collection<WebserviceOperation> operations = getOperations();
+		for (WebserviceOperation operation : operations) {
+			if (operation.getOperationName().equals(name)) {
+				return operation;
+			}
+		}
+		return null;
+
+	}
+
+
 	public void addOperations(List<WebserviceOperation> webserviceOperations) {
 		int i = 0;
 		for (WebserviceOperation webserviceOperation : webserviceOperations) {
@@ -115,6 +127,7 @@ public class WebService {
 			.add("serviceType", serviceType)
 			.toString();
 	}
+
 
 	
 }

@@ -58,11 +58,12 @@ public class MockConfigurationHolderTest {
 
 		String operationName1 = "reserveRequest";
 		String operationName2 = "confirmRequest";
-		WebserviceOperation operation1 = new WebserviceOperation(operationName1, null, null, 0);
-		WebserviceOperation operation2 = new WebserviceOperation(operationName2, null, null, 0);
+		
+		WebserviceOperation operation1 = WebserviceOperation.name(operationName1).build();
+		WebserviceOperation operation2 = WebserviceOperation.name(operationName2).build();
 		
 		String operationName3 = "prepayRequest";
-		WebserviceOperation operation3 = new WebserviceOperation(operationName3, null, null, 0);
+		WebserviceOperation operation3 = WebserviceOperation.name(operationName3).build();
 		
 		service1.addOperation(0, operation1);
 		service1.addOperation(1, operation2);

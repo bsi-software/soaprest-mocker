@@ -141,9 +141,7 @@ public class PropertyProcessorFileReadingTest {
 		Collection<WebService> webServices = propertyProcessor.process(reader).getWebServices();
 		assertThat(webServices.size(), is(1));
 		WebService webService = webServices.iterator().next();
-		Collection<WebserviceOperation> operations = webService.getOperations();
-		assertThat(operations.size(), is(1));
-		assertThat(operations, hasItem(new OperationHavingNameEqualTo("sayHello")));
+		assertThat(webService.getOperation("sayHello"), is(new OperationHavingNameEqualTo("sayHello")));
 	}
 
 	@Test
@@ -156,10 +154,8 @@ public class PropertyProcessorFileReadingTest {
 		Collection<WebService> webServices = propertyProcessor.process(reader).getWebServices();
 		assertThat(webServices.size(), is(1));
 		WebService webService = webServices.iterator().next();
-		Collection<WebserviceOperation> operations = webService.getOperations();
-		assertThat(operations.size(), is(1));
-		assertThat(operations, hasItem(new OperationHavingNameEqualTo("Reservation")));
-		WebserviceOperation operation = operations.iterator().next();
+		WebserviceOperation operation = webService.getOperation("Reservation");
+		assertThat(operation.getOperationName(), is("Reservation"));
 		DocumentImpl defaultResponseDoc = new DocumentImpl(operation.getDefaultResponseText());
 		assertThat(defaultResponseDoc, hasXPath("//Envelope/Body/ReservationResponse"));
 
@@ -195,8 +191,7 @@ public class PropertyProcessorFileReadingTest {
 
 		Collection<WebService> webServices = propertyProcessor.process(reader).getWebServices();
 		WebService webService = webServices.iterator().next();
-		Collection<WebserviceOperation> operations = webService.getOperations();
-		WebserviceOperation operation = operations.iterator().next();
+		WebserviceOperation operation = webService.getOperations().iterator().next();
 		DocumentImpl defaultResponseDoc = new DocumentImpl(operation.getDefaultResponseText());
 		assertThat(defaultResponseDoc, hasXPath("//Envelope/Body/sayHelloResponse/greeting"));
 
