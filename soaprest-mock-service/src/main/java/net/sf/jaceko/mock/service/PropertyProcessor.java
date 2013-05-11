@@ -21,14 +21,12 @@ package net.sf.jaceko.mock.service;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,6 +38,7 @@ import net.sf.jaceko.mock.application.enums.ServiceType;
 import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
 import net.sf.jaceko.mock.model.webservice.WebService;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
+import net.sf.jaceko.mock.util.FileReader;
 
 import org.apache.log4j.Logger;
 
@@ -85,6 +84,8 @@ public class PropertyProcessor {
 	private static final Pattern OPERATION_PATTERN = Pattern.compile("^OPERATION\\[([0-9]+)\\]$");
 
 	private final WsdlProcessor wsdlProcessor = new WsdlProcessor();
+
+	private FileReader fileReader;
 
 	/**
 	 * @param reader
@@ -134,7 +135,7 @@ public class PropertyProcessor {
 	private void setServiceProperties(final WebService service, final String serviceProperty, final String propertyValue) {
 		final String wsdlFileName = propertyValue;
 		if (serviceProperty.equals(SERVICE_WSDL)) {
-			final String fileText = readFileContents(wsdlFileName);
+			final String fileText = fileReader.readFileContents(wsdlFileName);
 
 			if (fileText != null) {
 				service.setWsdlText(fileText);
@@ -185,40 +186,13 @@ public class PropertyProcessor {
 
 	private void setDefaultResponseText(final WebserviceOperation operation) {
 
-		final String fileText = readFileContents(operation.getDefaultResponseFile());
+		final String fileText = fileReader.readFileContents(operation.getDefaultResponseFile());
 		if (fileText != null) {
 			operation.setDefaultResponseText(fileText);
 		}
 
 	}
 
-	protected String readFileContents(final String fileName) {
-		final StringBuilder text = new StringBuilder();
-		final String newLine = System.getProperty("line.separator");
-		Scanner scanner = null;
-		try {
-			final InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(fileName);
-			if (resourceAsStream == null) {
-				LOG.error("File not found: " + fileName);
-				return null;
-			} else {
-				LOG.info(fileName + " found in classpath");
-			}
-			scanner = new Scanner(resourceAsStream);
-			while (scanner.hasNextLine()) {
-				text.append(scanner.nextLine() + newLine);
-			}
-		} catch (final Exception e) {
-			LOG.error("Problem reading file : " + fileName, e);
-			return null;
-		} finally {
-			if (scanner != null) {
-				scanner.close();
-			}
-		}
-
-		return text.toString();
-	}
 
 	private WebserviceOperation getOperationFromService(final WebService service, final int operationIndex) {
 		WebserviceOperation operation = service.getOperation(operationIndex);
@@ -250,12 +224,16 @@ public class PropertyProcessor {
 	}
 
 	public MockConfigurationHolder process(final String fileName) throws IOException {
-		final String fileContents = readFileContents(fileName);
+		final String fileContents = fileReader.readFileContents(fileName);
 		if (fileContents == null) {
 			throw new FileNotFoundException("Property file not found in the classpath: " + fileName);
 		}
 		final Reader reader = new StringReader(fileContents);
 		return process(reader);
+	}
+
+	public void setFileReader(FileReader fileReader) {
+		this.fileReader = fileReader;
 	}
 
 }

@@ -39,6 +39,7 @@ import net.sf.jaceko.mock.service.MockSetupExecutor;
 import net.sf.jaceko.mock.service.PropertyProcessor;
 import net.sf.jaceko.mock.service.RecordedRequestsHolder;
 import net.sf.jaceko.mock.service.RequestExecutor;
+import net.sf.jaceko.mock.util.FileReader;
 
 public class MockserviceApplication extends Application {
 	private static final String PROPERTY_FILE = "ws-mock.properties";
@@ -46,6 +47,7 @@ public class MockserviceApplication extends Application {
 	public MockserviceApplication() {
 		super();
 		PropertyProcessor propertyProcessor = new PropertyProcessor();
+		propertyProcessor.setFileReader(new FileReader());
 		MockConfigurationHolder configurationHolder = null;
 		try {
 			configurationHolder = propertyProcessor.process(PROPERTY_FILE);

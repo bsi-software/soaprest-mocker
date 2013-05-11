@@ -3,6 +3,7 @@ package net.sf.jaceko.mock.service;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.hasItem;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -16,22 +17,27 @@ import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
 import net.sf.jaceko.mock.matcher.OperationHavingNameEqualTo;
 import net.sf.jaceko.mock.model.webservice.WebService;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
+import net.sf.jaceko.mock.util.FileReader;
 
 import org.hamcrest.Description;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
+import org.mockito.Mock;
 
 
 public class PropertyProcessorTest {
 
-	private PropertyProcessor propertyProcessor = new PropertyProcessor() {
-		// don't read wsdl and default response files in unit tests
-		// file processing is tested in PropertyProcessorFileReadingTest
-		@Override
-		protected String readFileContents(String fileName) {
-			return null;
-		}
-	};
+	private PropertyProcessor propertyProcessor = new PropertyProcessor();
+	
+	@Mock
+	private FileReader fileReader;
+	
+	@Before
+	public void before() {
+		initMocks(this);
+		propertyProcessor.setFileReader(fileReader);
+	}
 
 	@Test
 	public void shouldReturnCollectionOfOneRESTService() throws IOException {

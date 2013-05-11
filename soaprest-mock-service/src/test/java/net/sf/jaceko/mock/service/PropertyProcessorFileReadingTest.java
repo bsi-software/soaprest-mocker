@@ -23,6 +23,7 @@ import net.sf.jaceko.mock.dom.DocumentImpl;
 import net.sf.jaceko.mock.matcher.OperationHavingNameEqualTo;
 import net.sf.jaceko.mock.model.webservice.WebService;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
+import net.sf.jaceko.mock.util.FileReader;
 
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -30,6 +31,10 @@ import org.xml.sax.SAXException;
 
 public class PropertyProcessorFileReadingTest {
 	private PropertyProcessor propertyProcessor = new PropertyProcessor();
+	
+	public PropertyProcessorFileReadingTest() {
+		propertyProcessor.setFileReader(new FileReader());
+	}
 
 	@Test
 	public void shouldReadWsdlContentsFromFile() throws IOException, ParserConfigurationException, SAXException {
