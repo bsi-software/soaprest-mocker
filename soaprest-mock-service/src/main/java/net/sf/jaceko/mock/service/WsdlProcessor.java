@@ -19,7 +19,6 @@
  */
 package net.sf.jaceko.mock.service;
 
-import static com.centeractive.ws.WsdlUtils.isSoapBinding;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.text.MessageFormat.format;
 
@@ -32,6 +31,8 @@ import java.util.Map;
 import javax.wsdl.Binding;
 import javax.wsdl.BindingOperation;
 import javax.wsdl.Definition;
+import javax.wsdl.Operation;
+import javax.wsdl.Part;
 import javax.wsdl.WSDLException;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
@@ -44,6 +45,7 @@ import org.xml.sax.InputSource;
 
 import com.centeractive.ws.SoapContext;
 import com.centeractive.ws.SoapMessageBuilder;
+import com.centeractive.ws.WsdlUtils;
 
 public class WsdlProcessor {
 	private static final Logger LOG = Logger.getLogger(WsdlProcessor.class);
@@ -69,12 +71,22 @@ public class WsdlProcessor {
 			Map<QName, Binding> bindingsMap = def.getBindings();
 			Collection<Binding> bindings = bindingsMap.values();
 			for (Binding binding : bindings) {
-				if (isSoapBinding(binding)) {
+				if (WsdlUtils.isSoapBinding(binding)) {
 					List<BindingOperation> bindingOperations = binding.getBindingOperations();
 					for (BindingOperation bindingOperation : bindingOperations) {
-						final String operationName = bindingOperation.getName();
+						String requestElementName = null;
+						Operation operation = bindingOperation.getOperation();
+						if (WsdlUtils.isRpc(binding)) {
+							requestElementName = operation.getName();
+						} else {
+							Map<String,Part> parts = operation.getInput().getMessage().getParts();
+							Part value = parts.entrySet().iterator().next().getValue();
+							requestElementName = value.getElementName().getLocalPart();
+						}
+						
+						
 						final WebserviceOperation mockOperation = new WebserviceOperation();
-						mockOperation.setOperationName(operationName);
+						mockOperation.setOperationName(requestElementName);
 						
 						SoapContext context = SoapContext.builder().alwaysBuildHeaders(false).build();
 						String responseMessage = soapMessageBuilder.buildSoapMessageFromOutput(binding, bindingOperation, context);
