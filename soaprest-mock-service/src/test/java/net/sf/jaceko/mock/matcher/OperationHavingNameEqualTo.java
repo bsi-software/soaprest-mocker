@@ -26,22 +26,22 @@ import org.mockito.ArgumentMatcher;
 
 public class OperationHavingNameEqualTo extends ArgumentMatcher<WebserviceOperation> {
 	private WebserviceOperation operation;
-	private final String defaultResponse;
+	private final String name;
 
 	@Override
 	public boolean matches(Object argument) {
 		operation = (WebserviceOperation) argument;
-		return defaultResponse.equals(operation.getOperationName());
+		return name.equals(operation.getOperationName());
 	}
 
-	public OperationHavingNameEqualTo(String defaultResponse) {
+	public OperationHavingNameEqualTo(String name) {
 		super();
-		this.defaultResponse = defaultResponse;
+		this.name = name;
 	}
 
 	@Override
 	public void describeTo(Description description) {
-		description.appendText("operation with operationName = " + defaultResponse + " but is "
+		description.appendText("operation with operationName = " + name + " but is "
 				+ operation);
 
 	}
