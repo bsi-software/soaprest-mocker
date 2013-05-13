@@ -31,8 +31,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.core.MediaType;
-
 import net.sf.jaceko.mock.application.enums.HttpMethod;
 import net.sf.jaceko.mock.application.enums.ServiceType;
 import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
@@ -168,7 +166,7 @@ public class PropertyProcessor {
 			operation.setDefaultResponseCode(Integer.valueOf(propertyValue));
 		} else if (operationProperty.equals(DEFAULT_RESPONSE_CONTENT_TYPE)) {
 			try {
-				operation.setDefaultResponseContentType(MediaType.valueOf(propertyValue));
+				operation.setDefaultResponseContentType(propertyValue);
 			} catch (IllegalArgumentException e) {
 				LOG.warn("Error parsing configuration file. Illegal content type: "+ propertyValue);
 			}

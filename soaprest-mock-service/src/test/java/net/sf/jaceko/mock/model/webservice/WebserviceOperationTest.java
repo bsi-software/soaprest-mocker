@@ -9,7 +9,6 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 
-
 public class WebserviceOperationTest {
 
 	private WebserviceOperation operation;
@@ -18,16 +17,14 @@ public class WebserviceOperationTest {
 	public void before() {
 		operation = new WebserviceOperation();
 	}
-	
-	
-	
+
 	@Test
 	public void shouldSetupCustom1stResponse() {
 		operation.setCustomResponse(MockResponse.body("adsadsa").contentType(TEXT_XML_TYPE).build(), 1);
 		assertThat(operation.getResponse(1).getBody(), is("adsadsa"));
-		assertThat(operation.getResponse(1).getContentType(), is(TEXT_XML_TYPE));
+		assertThat(operation.getResponse(1).getContentType(), is(TEXT_XML_TYPE.toString()));
 	}
-	
+
 	@Test
 	public void shouldSetupCustomResponseTwice() {
 		operation.setCustomResponse(new MockResponse("sadfsdsdf"), 1);
@@ -40,25 +37,25 @@ public class WebserviceOperationTest {
 	public void shouldReturnDefaultIf2ndResponseNotDefined() {
 		operation.setDefaultResponseText("defaultResp");
 		operation.setDefaultResponseCode(HttpStatus.SC_CREATED);
-		
+
 		operation.setCustomResponse(new MockResponse("sadfsdsdf"), 1);
-		
+
 		assertThat(operation.getResponse(2).getBody(), is("defaultResp"));
 		assertThat(operation.getResponse(2).getCode(), is(HttpStatus.SC_CREATED));
 	}
-	
+
 	@Test
 	public void shouldReturnDefaultResponse() {
 		operation.setDefaultResponseText("defaultResp");
 		operation.setDefaultResponseCode(HttpStatus.SC_OK);
-		
+
 		operation.setCustomResponse(new MockResponse("sadfsdsdf"), 1);
 		operation.setCustomResponse(new MockResponse("sadfsdsdf"), 1);
-		
+
 		assertThat(operation.getResponse(2).getBody(), is("defaultResp"));
 		assertThat(operation.getResponse(2).getCode(), is(HttpStatus.SC_OK));
 	}
-	
+
 	@Test
 	public void shouldReturnDefaultResponseCodeIfCodeNodeDefinedInCustomResponse() {
 		operation.setDefaultResponseCode(HttpStatus.SC_OK);
@@ -68,8 +65,6 @@ public class WebserviceOperationTest {
 		assertThat(operation.getResponse(1).getCode(), is(HttpStatus.SC_OK));
 
 	}
-
-
 
 	@Test
 	public void shouldSetupCustom2ndResponse() {
@@ -92,7 +87,7 @@ public class WebserviceOperationTest {
 		assertThat(operation.getResponse(3), is(customResponse3));
 
 	}
-	
+
 	@Test
 	public void shouldSetConsecutiveResponses() {
 		MockResponse customResponse1 = new MockResponse("sadfsadfsa1", 201);
@@ -103,13 +98,12 @@ public class WebserviceOperationTest {
 		assertThat(operation.getResponse(1), is(customResponse1));
 		assertThat(operation.getResponse(2), is(customResponse2));
 	}
-	
+
 	@Test
 	public void shouldReturnDefaultResponseOn1stCallAndCustomOn2nd() {
 		operation.setDefaultResponseText("defaultResp");
 		operation.setCustomResponse(new MockResponse("sadfsadfsa2"), 2);
-		
-		
+
 		assertThat(operation.getResponse(1).getBody(), is("defaultResp"));
 		assertThat(operation.getResponse(2).getBody(), is("sadfsadfsa2"));
 
@@ -126,8 +120,7 @@ public class WebserviceOperationTest {
 		assertThat(operation.getResponse(1).getBody(), is("defaultResp"));
 		assertThat(operation.getResponse(2).getBody(), is("defaultResp"));
 	}
-	
-	
+
 	@Test
 	public void shouldClearInvocationCount() {
 		assertThat(operation.getNextInvocationNumber(), is(1));
@@ -138,10 +131,9 @@ public class WebserviceOperationTest {
 		assertThat(operation.getNextInvocationNumber(), is(1));
 		assertThat(operation.getNextInvocationNumber(), is(2));
 		assertThat(operation.getNextInvocationNumber(), is(3));
-		
+
 	}
 
-	
 	@Test
 	public void shouldGetNextInvocationCount() {
 		assertThat(operation.getNextInvocationNumber(), is(1));

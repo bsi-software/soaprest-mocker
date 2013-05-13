@@ -43,7 +43,7 @@ public class WebserviceOperation {
 	private String defaultResponseFile;
 	private String defaultResponseText;
 	private int defaultResponseCode;
-	private MediaType defaultResponseContentType = MediaType.TEXT_XML_TYPE;
+	private String defaultResponseContentType = MediaType.TEXT_XML_TYPE.toString();
 	private final AtomicInteger invocationNumber = new AtomicInteger(0);
 
 	@SuppressWarnings("unchecked")
@@ -135,11 +135,11 @@ public class WebserviceOperation {
 		this.defaultResponseCode = defaultResponseCode;
 	}
 
-	public MediaType getDefaultResponseContentType() {
+	public String getDefaultResponseContentType() {
 		return defaultResponseContentType;
 	}
 
-	public void setDefaultResponseContentType(MediaType defaultResponseContentType) {
+	public void setDefaultResponseContentType(String defaultResponseContentType) {
 		this.defaultResponseContentType = defaultResponseContentType;
 	}
 
@@ -158,7 +158,7 @@ public class WebserviceOperation {
 		private String defaultResponseFile;
 		private String defaultResponseText;
 		private int defaultResponseCode;
-		private MediaType defaultResponseContentType;
+		private String defaultResponseContentType;
 
 		public WebserviceOperationBuilder operationName(String operationName) {
 			this.operationName = operationName;
@@ -180,7 +180,7 @@ public class WebserviceOperation {
 			return this;
 		}
 
-		public WebserviceOperationBuilder defaultResponseContentType(MediaType defaultResponseContentType) {
+		public WebserviceOperationBuilder defaultResponseContentType(String defaultResponseContentType) {
 			this.defaultResponseContentType = defaultResponseContentType;
 			return this;
 		}

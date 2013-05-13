@@ -52,7 +52,6 @@ public class RestEndpointResource {
 
 	@GET
 	@Path("/{resourceId}")
-	@Produces({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response performGetRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest request,
 			@PathParam("resourceId") String resourceId) {
 		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.GET.toString(), "", request.getQueryString(),
@@ -62,8 +61,7 @@ public class RestEndpointResource {
 	}
 
 	@POST
-	@Consumes({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Consumes({"text/*", "application/*"  })
 	public Response performPostRequest(@PathParam("serviceName") String serviceName,
 			@Context HttpServletRequest httpServletRequest, String request) {
 		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.POST.toString(), request,
@@ -73,16 +71,14 @@ public class RestEndpointResource {
 	}
 
 	@PUT
-	@Consumes({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Consumes({"text/*", "application/*"  })
 	public Response performPutRequest(@PathParam("serviceName") String serviceName, String request) {
 		return performPutRequest(serviceName, null, request);
 	}
 
 	@PUT
 	@Path("/{resourceId}")
-	@Consumes({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Consumes({"text/*", "application/*"  })
 	public Response performPutRequest(@PathParam("serviceName") String serviceName, @PathParam("resourceId") String resourceId,
 			String request) {
 		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.PUT.toString(), request, null, resourceId);
@@ -91,15 +87,12 @@ public class RestEndpointResource {
 	}
 
 	@DELETE
-	@Produces({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response performDeleteRequest(@PathParam("serviceName") String serviceName) {
 		return performDeleteRequest(serviceName, null);
-
 	}
 
 	@DELETE
 	@Path("/{resourceId}")
-	@Produces({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response performDeleteRequest(@PathParam("serviceName") String serviceName, @PathParam("resourceId") String resourceId) {
 		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.DELETE.toString(), "", null, resourceId);
 		LOG.debug("serviceName: " + serviceName + ", response:" + mockResponse);

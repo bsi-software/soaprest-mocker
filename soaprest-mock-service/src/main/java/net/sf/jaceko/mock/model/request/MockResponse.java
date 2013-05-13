@@ -25,7 +25,7 @@ public class MockResponse {
 	private String body;
 	private int code = 200;
 	private int delaySec;
-	private MediaType contentType;
+	private String contentType;
 
 	public static MockResponseBuilder body(String body) {
 		MockResponseBuilder builder = MockResponseBuilder.getInstance();
@@ -80,7 +80,7 @@ public class MockResponse {
 		return delaySec;
 	}
 
-	public MediaType getContentType() {
+	public String getContentType() {
 		return contentType;
 	}
 
@@ -88,7 +88,7 @@ public class MockResponse {
 		private String body;
 		private int code = 200;
 		private int delaySec;
-		private MediaType contentType;
+		private String contentType;
 
 		public static MockResponseBuilder getInstance() {
 			return new MockResponseBuilder();
@@ -110,6 +110,13 @@ public class MockResponse {
 		}
 
 		public MockResponseBuilder contentType(MediaType contentType) {
+			if (contentType != null) {
+				this.contentType = contentType.toString();
+			}
+			return this;
+		}
+
+		public MockResponseBuilder contentType(String contentType) {
 			this.contentType = contentType;
 			return this;
 		}
@@ -133,7 +140,7 @@ public class MockResponse {
 		this.delaySec = delaySec;
 	}
 
-	void setContentType(MediaType contentType) {
+	void setContentType(String contentType) {
 		this.contentType = contentType;
 	}
 

@@ -52,7 +52,7 @@ public class RequestExecutorTest {
 		String operationId = "prepayRequest";
 		String defaultResponse = "<defaultResp>abc</defaultResp>";
 		int defaultResponseCode = 200;
-		MediaType defaultResponseContentType = MediaType.APPLICATION_JSON_TYPE;
+		String defaultResponseContentType = MediaType.APPLICATION_JSON_TYPE.toString();
 		WebserviceOperation operation = WebserviceOperation.defaultResponseText(defaultResponse)
 				.defaultResponseCode(defaultResponseCode).defaultResponseContentType(defaultResponseContentType).build();
 

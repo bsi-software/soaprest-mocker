@@ -111,21 +111,21 @@ public class PropertyProcessorFileReadingTest {
 		assertThat(restService.getServiceType(), is(ServiceType.REST));
 		assertThat(restService.getOperation(0).getOperationName(), is(HttpMethod.GET.toString()));
 		assertThat(restService.getOperation(0).getDefaultResponseCode(), is(200));
-		assertThat(restService.getOperation(0).getDefaultResponseContentType(), is(MediaType.TEXT_XML_TYPE));
+		assertThat(restService.getOperation(0).getDefaultResponseContentType(), is(MediaType.TEXT_XML_TYPE.toString()));
 
 		
 		restService = configuration.getWebService("dummy_rest_json");
 		assertThat(restService.getServiceType(), is(ServiceType.REST));
 		assertThat(restService.getOperation(0).getOperationName(), is(HttpMethod.GET.toString()));
 		assertThat(restService.getOperation(0).getDefaultResponseCode(), is(200));
-		assertThat(restService.getOperation(0).getDefaultResponseContentType(), is(MediaType.APPLICATION_JSON_TYPE));
+		assertThat(restService.getOperation(0).getDefaultResponseContentType(), is(MediaType.APPLICATION_JSON_TYPE.toString()));
 
 		
 		restService = configuration.getWebService("dummy_rest_xml");
 		assertThat(restService.getServiceType(), is(ServiceType.REST));
 		assertThat(restService.getOperation(0).getOperationName(), is(HttpMethod.GET.toString()));
 		assertThat(restService.getOperation(0).getDefaultResponseCode(), is(200));
-		assertThat(restService.getOperation(0).getDefaultResponseContentType(), is(MediaType.TEXT_XML_TYPE));
+		assertThat(restService.getOperation(0).getDefaultResponseContentType(), is(MediaType.TEXT_XML_TYPE.toString()));
 
 	}
 

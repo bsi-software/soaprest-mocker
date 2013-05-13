@@ -389,20 +389,6 @@ public class PropertyProcessorTest {
 
 	}
 
-	@Test
-	public void shouldReturnOperationsHavingDefaultResponseCodesSetToXMLIfNotValidContentType() throws IOException {
-		String propertyString = "SERVICE[0].NAME=some_service\r\n"
-				+ "SERVICE[0].OPERATION[0].DEFAULT_RESPONSE_CONTENT_TYPE=NoT_Valid \r\n";
-
-		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
-		WebService service = webServices.iterator().next();
-		Collection<WebserviceOperation> operations = service.getOperations();
-		assertThat(operations.size(), is(1));
-		assertThat(operations, hasItem(new OperationHavingDefaultResponseContentTypeEqualTo(
-				MediaType.TEXT_XML_TYPE)));
-
-	}
-	
 	class ServiceHavingNameEqualTo extends ArgumentMatcher<WebService> {
 		private WebService service;
 		private final String name;
@@ -511,7 +497,7 @@ public class PropertyProcessorTest {
 
 	class OperationHavingDefaultResponseContentTypeEqualTo extends ArgumentMatcher<WebserviceOperation> {
 		private WebserviceOperation operation;
-		private final MediaType defaultResponseContentType;
+		private final String defaultResponseContentType;
 
 		@Override
 		public boolean matches(Object argument) {
@@ -521,7 +507,7 @@ public class PropertyProcessorTest {
 
 		private OperationHavingDefaultResponseContentTypeEqualTo(MediaType defaultResponseContentType) {
 			super();
-			this.defaultResponseContentType = defaultResponseContentType;
+			this.defaultResponseContentType = defaultResponseContentType.toString();
 		}
 
 		@Override

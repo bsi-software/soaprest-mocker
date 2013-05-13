@@ -48,7 +48,7 @@ public class RestMockGETJsonIntegrationTest {
 			SAXException {
 		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
 		assertThat(response.getCode(), is(HttpStatus.SC_OK));
-		assertThat(response.getContentType(), is(APPLICATION_JSON_TYPE));
+		assertThat(response.getContentType(), is(APPLICATION_JSON_TYPE.toString()));
 		assertThat(response.getBody(),
 				sameJSONAs("{'myArray': [{ 'name': 'John Doe', 'age': 29 },{ 'name': 'Anna Smith', 'age': 24 }]}"));
 	}
@@ -64,7 +64,7 @@ public class RestMockGETJsonIntegrationTest {
 		// sending REST GET request
 		MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
 
-		assertThat(response.getContentType(), is(MediaType.APPLICATION_JSON_TYPE));
+		assertThat(response.getContentType(), is(MediaType.APPLICATION_JSON_TYPE.toString()));
 		assertThat(response.getBody(), sameJSONAs(customResponseJson));
 	}
 
