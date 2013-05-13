@@ -25,7 +25,7 @@
 		<connection>scm:git:ssh://obarymski@git.code.sf.net/p/soaprest-mocker/code</connection>
 		<developerConnection>scm:git:ssh://obarymski@git.code.sf.net/p/soaprest-mocker/code</developerConnection>
 		<url>ssh://obarymski@git.code.sf.net/p/soaprest-mocker/code</url>
-		<tag>HEAD</tag>
+		<tag>soaprest-mock-service-1.4.0</tag>
 	</scm>
 	<developers>
 		<developer>
