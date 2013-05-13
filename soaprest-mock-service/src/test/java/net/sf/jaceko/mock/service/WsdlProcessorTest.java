@@ -25,6 +25,9 @@ public class WsdlProcessorTest {
 				fileReader.readFileContents("dataserviceJRN.wsdl"));
 		assertThat(operationsFromWsdl.size(), is(4));
 		assertThat(operationsFromWsdl, hasItem(new OperationHavingNameEqualTo("extendWindowRequestElement")));
+		assertThat(operationsFromWsdl, hasItem(new OperationHavingNameEqualTo("lockRequestElement")));
+		assertThat(operationsFromWsdl, hasItem(new OperationHavingNameEqualTo("unlockRequestElement")));
+		assertThat(operationsFromWsdl, hasItem(new OperationHavingNameEqualTo("purgeRequestElement")));
 
 	}
 	
@@ -33,6 +36,7 @@ public class WsdlProcessorTest {
 		List<WebserviceOperation> operationsFromWsdl = wsdlProcessor.getOperationsFromWsdl("hello-for-unit-tests.wsdl",
 				fileReader.readFileContents("hello-for-unit-tests.wsdl"));
 		assertThat(operationsFromWsdl.size(), is(1));
+		assertThat(operationsFromWsdl, hasItem(new OperationHavingNameEqualTo("sayHello")));
 		
 	}
 
