@@ -12,7 +12,6 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.jaceko.mock.dom.DocumentImpl;
-import net.sf.jaceko.mock.matcher.OperationHavingDefaultResponseEqualTo;
 import net.sf.jaceko.mock.matcher.OperationHavingNameEqualTo;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
 import net.sf.jaceko.mock.util.FileReader;
