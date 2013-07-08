@@ -376,7 +376,21 @@ public class PropertyProcessorTest {
 	}
 
 	@Test
-	public void shouldReturnOperationsHavingDefaultResponseCodesSetToXMLIfNotSpecified() throws IOException {
+	public void shouldReturnOperationsHavingDefaultResponseCodeSetTo200fNotSpecified() throws IOException {
+		String propertyString = "SERVICE[0].NAME=some_service\r\n"
+				+ "SERVICE[0].OPERATION[0].HTTP_METHOD=GET \r\n";
+
+		Collection<WebService> webServices = processPropertiesAndReturnWebServices(propertyString);
+		WebService service = webServices.iterator().next();
+		Collection<WebserviceOperation> operations = service.getOperations();
+		assertThat(operations.size(), is(1));
+		assertThat(operations, hasItem(new OperationHavingDefaultResponseCodeEqualTo(
+				200)));
+	}
+
+	
+	@Test
+	public void shouldReturnOperationsHavingDefaultResponseContentSetToXMLIfNotSpecified() throws IOException {
 		String propertyString = "SERVICE[0].NAME=some_service\r\n"
 				+ "SERVICE[0].OPERATION[0].HTTP_METHOD=GET \r\n";
 

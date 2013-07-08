@@ -1,11 +1,13 @@
 package net.sf.jaceko.mock.resource;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+
+import javax.ws.rs.core.Response;
 
 import net.sf.jaceko.mock.exception.ClientFaultException;
 import net.sf.jaceko.mock.model.request.MockResponse;
@@ -122,12 +124,15 @@ public class SoapEndpointResourceTest {
 		String request = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tem=\"http://tempuri.org/\">"
 				+ "<soapenv:Body><tem:dummyRequest></tem:dummyRequest></soapenv:Body></soapenv:Envelope>";
 
-		String serviceResponseBody = "<dummyResponse/>";
+		String responseBody = "<dummyResponse/>";
+		int responseCode = 500;
+		
 
 		when(service.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
-				new MockResponse(serviceResponseBody));
-		String response = resource.performRequest(serviceName, request);
-		assertThat(response, is(serviceResponseBody));
+				new MockResponse(responseBody, responseCode));
+		Response response = resource.performRequest(serviceName, request);
+		assertThat((String) response.getEntity(), is(responseBody));
+		assertThat(response.getStatus(), is(responseCode));
 
 	}
 

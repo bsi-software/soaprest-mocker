@@ -25,6 +25,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import net.sf.jaceko.mock.dom.DocumentImpl;
 import net.sf.jaceko.mock.exception.ClientFaultException;
@@ -49,18 +50,20 @@ public class SoapEndpointResource {
 	@POST
 	@Consumes(MediaType.TEXT_XML)
 	@Produces(MediaType.TEXT_XML)
-	public String performRequest(@PathParam("serviceName") String serviceName,
+	public Response performRequest(@PathParam("serviceName") String serviceName,
 			String request) {
 		LOG.debug("serviceName: " + serviceName + ", request:" + request);
 		String requestMessgageName = extractRequestMessageName(request);
 		String responseBody = null;
+		int code = 200;
 		MockResponse response = service.performRequest(serviceName, requestMessgageName,
 				request, null, null);
 		if (response != null) {
 			responseBody = response.getBody();
+			code = response.getCode();
 		}
-		LOG.debug("serviceName: " + serviceName + ", response:" + responseBody);
-		return responseBody;
+		LOG.debug("serviceName: " + serviceName + ", response:" + responseBody + " ,code: " + code);
+		return Response.status(code).entity(responseBody).type(MediaType.TEXT_XML).build();
 	}
 
 	private String extractRequestMessageName(String request) {

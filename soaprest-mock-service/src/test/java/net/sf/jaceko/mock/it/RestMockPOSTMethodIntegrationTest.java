@@ -108,7 +108,7 @@ public class RestMockPOSTMethodIntegrationTest {
 	}
 
 	@Test
-	public void shouldReturnXmlResponseBodyAndCode() throws UnsupportedEncodingException, ClientProtocolException, IOException,
+	public void shouldReturnCustomXmlResponseBodyAndCode() throws UnsupportedEncodingException, ClientProtocolException, IOException,
 			ParserConfigurationException, SAXException {
 		String customResponseXML = "<custom_post_response>not authorized</custom_post_response>";
 		requestSender.sendPostRequest(REST_MOCK_POST_RESPONSES + "?code=403", customResponseXML, MediaType.APPLICATION_XML);

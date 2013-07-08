@@ -97,7 +97,7 @@ public class WsdlProcessingIntegrationTest {
 	}
 
 	@Test
-	public void shouldReturnDefaultHellResponseGeneratedFromWsdlFile() throws ClientProtocolException, IOException,
+	public void shouldReturnDefaultHelloResponseGeneratedFromWsdlFile() throws ClientProtocolException, IOException,
 			ParserConfigurationException, SAXException {
 
 		MockResponse response = requestSender.sendPostRequest(HELLO_MOCK_ENDPOINT, HELLO_REQUEST, MediaType.TEXT_XML);

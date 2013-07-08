@@ -42,7 +42,7 @@ public class WebserviceOperation {
 	private String operationName;
 	private String defaultResponseFile;
 	private String defaultResponseText;
-	private int defaultResponseCode;
+	private int defaultResponseCode = 200;
 	private String defaultResponseContentType = MediaType.TEXT_XML_TYPE.toString();
 	private final AtomicInteger invocationNumber = new AtomicInteger(0);
 
