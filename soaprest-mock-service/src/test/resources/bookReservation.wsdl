@@ -41,7 +41,7 @@
 
           <xsd:sequence>
             <xsd:element name="Number" type="xsd:string"/>
-            <xsd:element name="Status" type="xsd:string"/>
+            <xsd:element name="Status" type="xsd:string" default="DefStatus"/>
           </xsd:sequence>
 
             </xsd:restriction>

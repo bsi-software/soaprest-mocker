@@ -1,16 +1,25 @@
 package net.sf.jaceko.mock.service;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasXPath;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.hasItem;
 
+import java.io.IOException;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
+
+import net.sf.jaceko.mock.dom.DocumentImpl;
+import net.sf.jaceko.mock.matcher.OperationHavingDefaultResponseEqualTo;
 import net.sf.jaceko.mock.matcher.OperationHavingNameEqualTo;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
 import net.sf.jaceko.mock.util.FileReader;
 
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 public class WsdlProcessorTest {
 
@@ -37,6 +46,17 @@ public class WsdlProcessorTest {
 				fileReader.readFileContents("hello-for-unit-tests.wsdl"));
 		assertThat(operationsFromWsdl.size(), is(1));
 		assertThat(operationsFromWsdl, hasItem(new OperationHavingNameEqualTo("sayHello")));
+		
+	}
+	
+	@Test
+	public void shouldFetchOperationsFromWsdlFileSettingDefaultResponse() throws ParserConfigurationException, SAXException, IOException {
+		List<WebserviceOperation> operationsFromWsdl = wsdlProcessor.getOperationsFromWsdl("hello-for-unit-tests.wsdl",
+				fileReader.readFileContents("hello-for-unit-tests.wsdl"));
+		assertThat(operationsFromWsdl.size(), is(1));
+		String defaultResponseText = operationsFromWsdl.get(0).getDefaultResponseText();
+		Document responseDoc = new DocumentImpl(defaultResponseText);
+		assertThat(responseDoc, hasXPath("//Envelope/Body/sayHelloResponse/greeting", equalTo("default greeting ABCD")));
 		
 	}
 

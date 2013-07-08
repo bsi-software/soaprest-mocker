@@ -162,7 +162,7 @@ public class PropertyProcessorFileReadingTest {
 		WebserviceOperation operation = webService.getOperation("Reservation");
 		assertThat(operation.getOperationName(), is("Reservation"));
 		DocumentImpl defaultResponseDoc = new DocumentImpl(operation.getDefaultResponseText());
-		assertThat(defaultResponseDoc, hasXPath("//Envelope/Body/ReservationResponse"));
+		assertThat(defaultResponseDoc, hasXPath("//Envelope/Body/ReservationResponse/Status", equalTo("DefStatus")));
 
 	}
 
