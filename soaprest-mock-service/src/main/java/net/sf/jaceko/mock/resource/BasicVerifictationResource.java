@@ -19,17 +19,13 @@
  */
 package net.sf.jaceko.mock.resource;
 
-import static java.text.MessageFormat.format;
+import net.sf.jaceko.mock.service.RecordedRequestsHolder;
 
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import java.util.Collection;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import net.sf.jaceko.mock.service.RecordedRequestsHolder;
+import static java.text.MessageFormat.format;
 
 public class BasicVerifictationResource {
 
@@ -42,23 +38,20 @@ public class BasicVerifictationResource {
 	@GET
 	@Path("/recorded-requests")
 	@Produces(MediaType.TEXT_XML)
-	public String getRecordedRequests(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
+	public String getRecordedRequests(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId, @DefaultValue("") @QueryParam("requestElement") String requestElement) {
 	
 		Collection<String> recordedRequests = recordedRequestsHolder.getRecordedRequestBodies(
 				serviceName, operationId);
-		return buildRequestsXml(recordedRequests);
+		return buildListXml(recordedRequests, "recorded-requests", requestElement, false);
 	}
 
 
-	private String buildRequestsXml(Collection<String> recordedRequests) {
-		return buildListXml(recordedRequests, "recorded-requests", null, false);
-	}
 
 	protected String buildListXml(Collection<String> elementValuesList, String rootElementName, String elementName, boolean surroundElementTextWithCdata) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(format("<{0}>\n", rootElementName));
 		for (String urlQueryString : elementValuesList) {
-			if (elementName != null) {
+			if (elementNameSpecified(elementName)) {
 				builder.append(format("<{0}>", elementName));
 			}
 			if (surroundElementTextWithCdata) {
@@ -68,7 +61,7 @@ public class BasicVerifictationResource {
 			if (surroundElementTextWithCdata) {
 				builder.append("]]>");
 			}
-			if (elementName != null) {
+			if (elementNameSpecified(elementName)) {
 				builder.append(format("</{0}>\n", elementName));
 			}
 	
@@ -77,7 +70,11 @@ public class BasicVerifictationResource {
 		return builder.toString();
 	}
 
-	public void setRecordedRequestsHolder(RecordedRequestsHolder recordedRequestsHolder) {
+    private boolean elementNameSpecified(String elementName) {
+        return elementName != null  && !elementName.isEmpty();
+    }
+
+    public void setRecordedRequestsHolder(RecordedRequestsHolder recordedRequestsHolder) {
 		this.recordedRequestsHolder = recordedRequestsHolder;
 	}
 

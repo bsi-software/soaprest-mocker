@@ -1,32 +1,28 @@
 package net.sf.jaceko.mock.it;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.xml.HasXPath.hasXPath;
-import static org.junit.Assert.assertThat;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Calendar;
-
-import javax.ws.rs.core.MediaType;
-import javax.xml.parsers.ParserConfigurationException;
-
 import net.sf.jaceko.mock.dom.DocumentImpl;
 import net.sf.jaceko.mock.it.helper.request.HttpRequestSender;
 import net.sf.jaceko.mock.model.request.MockResponse;
-
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import javax.ws.rs.core.MediaType;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Calendar;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.xml.HasXPath.hasXPath;
+import static org.junit.Assert.assertThat;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 /**
  * Integration tests of REST mock, POST method
@@ -42,6 +38,7 @@ public class RestMockPOSTMethodIntegrationTest {
 	private static final String REST_MOCK_POST_INIT = "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/init";
 	private static final String REST_MOCK_POST_RESPONSES = "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/responses";
 	private static final String REST_MOCK_POST_RECORDED_REQUESTS = "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/recorded-requests";
+	private static final String REST_MOCK_POST_RECORDED_REQUESTS_WITH_REQUEST_ELEMENT = "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/recorded-requests?requestElement=request";
 	private static final String REST_MOCK_POST_RECORDED_REQUEST_PARAMS = "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/recorded-request-params";
 
 	HttpRequestSender requestSender = new HttpRequestSender();
@@ -235,8 +232,21 @@ public class RestMockPOSTMethodIntegrationTest {
 		assertThat(requestUrlParamsDoc, hasXPath("//recorded-requests/dummyReq[2]", equalTo("dummyReqText2")));
 	}
 
+    @Test
+    public void shouldVerifyRecordedRequestsUsingRequestElement() throws UnsupportedEncodingException, ClientProtocolException, IOException,
+            ParserConfigurationException, SAXException {
+        requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "dummyReqText1", MediaType.APPLICATION_XML);
+        requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "dummyReqText2", MediaType.APPLICATION_XML);
+
+        MockResponse recordedRequests = requestSender.sendGetRequest(REST_MOCK_POST_RECORDED_REQUESTS_WITH_REQUEST_ELEMENT);
+        Document requestUrlParamsDoc = new DocumentImpl(recordedRequests.getBody());
+
+        assertThat(requestUrlParamsDoc, hasXPath("//recorded-requests/request[1]", equalTo("dummyReqText1")));
+        assertThat(requestUrlParamsDoc, hasXPath("//recorded-requests/request[2]", equalTo("dummyReqText2")));
+    }
+
 	@Test
-	public void shoulVerifyRecordedJsonRequest() throws UnsupportedEncodingException, ClientProtocolException, IOException,
+	public void shouldVerifyRecordedJsonRequest() throws UnsupportedEncodingException, ClientProtocolException, IOException,
 			ParserConfigurationException, SAXException {
 		String requestBody = "{\"dummyReq\": \"dummyReqText1\"}";
 		requestSender.sendPostRequest(REST_MOCK_ENDPOINT, requestBody, MediaType.APPLICATION_JSON);
@@ -248,7 +258,7 @@ public class RestMockPOSTMethodIntegrationTest {
 	}
 
 	@Test
-	public void shoulVerifyRequestParameters() throws ClientProtocolException, IOException, ParserConfigurationException,
+	public void shouldVerifyRequestParameters() throws ClientProtocolException, IOException, ParserConfigurationException,
 			SAXException {
 		requestSender.sendPostRequest(REST_MOCK_ENDPOINT + "?param=paramValue1", "", MediaType.APPLICATION_XML);
 		requestSender.sendPostRequest(REST_MOCK_ENDPOINT + "?param=paramValue2", "", MediaType.APPLICATION_XML);

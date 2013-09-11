@@ -19,10 +19,7 @@
  */
 package net.sf.jaceko.mock.resource;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.Collection;
 
@@ -59,13 +56,4 @@ public class RestServiceMockVerificatonResource extends BasicVerifictationResour
 				surroundElementTextWithCdata);
 	}
 
-
-    @GET
-    @Path("/recorded-requests")
-    @Produces(MediaType.TEXT_XML)
-    public String getRecordedRequests(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId, @PathParam("requestElement") String requestElement) {
-        Collection<String> recordedRequests = recordedRequestsHolder.getRecordedRequestBodies(
-                serviceName, operationId);
-        return buildListXml(recordedRequests, "recorded-requests", requestElement, false);
-    }
 }

@@ -44,7 +44,7 @@ public class RecordedRequestsResourceTest {
 
 		when(recordedRequestsHolder.getRecordedRequestBodies(serviceName, operationId)).thenReturn(recordedRequests);
 
-		String requestsXml = resource.getRecordedRequests(serviceName, operationId);
+		String requestsXml = resource.getRecordedRequests(serviceName, operationId, "");
 
 		Document requestsDoc = new DocumentImpl(requestsXml);
 
@@ -66,7 +66,7 @@ public class RecordedRequestsResourceTest {
 
         when(recordedRequestsHolder.getRecordedRequestBodies(serviceName, operationId)).thenReturn(recordedRequests);
 
-        String requestsXml = resource.getRecordedRequests(serviceName, operationId);
+        String requestsXml = resource.getRecordedRequests(serviceName, operationId, "");
 
         Document requestsDoc = new DocumentImpl(requestsXml);
 
@@ -104,7 +104,7 @@ public class RecordedRequestsResourceTest {
 
 		when(recordedRequestsHolder.getRecordedRequestBodies(serviceName, operationId)).thenReturn((emptyList));
 
-		String requestsXml = resource.getRecordedRequests(serviceName, operationId);
+		String requestsXml = resource.getRecordedRequests(serviceName, operationId, "");
 		Document requestsDoc = new DocumentImpl(requestsXml);
 		assertThat(requestsDoc, hasXPath("count(/recorded-requests)", equalTo("1")));
 		assertThat(requestsDoc, hasXPath("count(/recorded-requests/req)", equalTo("0")));

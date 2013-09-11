@@ -1,26 +1,24 @@
 package net.sf.jaceko.mock.it;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.xml.HasXPath.hasXPath;
-import static org.junit.Assert.assertThat;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-
-import javax.ws.rs.core.MediaType;
-import javax.xml.parsers.ParserConfigurationException;
-
 import net.sf.jaceko.mock.dom.DocumentImpl;
 import net.sf.jaceko.mock.it.helper.request.HttpRequestSender;
 import net.sf.jaceko.mock.model.request.MockResponse;
-
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import javax.ws.rs.core.MediaType;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.xml.HasXPath.hasXPath;
+import static org.junit.Assert.assertThat;
 
 /**
  * Integration tests of REST mock, PUT method
@@ -36,6 +34,7 @@ public class RestMockPUTMethodIntegrationTest {
 	private static final String REST_MOCK_PUT_INIT 				 	= "http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/init";
 	private static final String REST_MOCK_PUT_RESPONSES 			 	= "http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/responses";
 	private static final String REST_MOCK_PUT_RECORDED_REQUESTS 	 	= "http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/recorded-requests";
+	private static final String REST_MOCK_PUT_RECORDED_REQUESTS_WITH_REQUEST_ELEMENT = "http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/recorded-requests?requestElement=req";
 	private static final String REST_MOCK_PUT_RECORDED_RESOURCE_IDS 	= "http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/recorded-resource-ids";
 
 	HttpRequestSender requestSender = new HttpRequestSender();
@@ -142,7 +141,7 @@ public class RestMockPUTMethodIntegrationTest {
 	}
 
 	@Test
-	public void shoulVerifyRecordedRequests() throws UnsupportedEncodingException, ClientProtocolException, IOException,
+	public void shouldVerifyRecordedRequests() throws UnsupportedEncodingException, ClientProtocolException, IOException,
 			ParserConfigurationException, SAXException {
 		requestSender.sendPutRequest(REST_MOCK_ENDPOINT, "<dummyReq>dummyReqText1</dummyReq>", MediaType.TEXT_XML);
 		requestSender.sendPutRequest(REST_MOCK_ENDPOINT, "<dummyReq>dummyReqText2</dummyReq>", MediaType.TEXT_XML);
@@ -154,5 +153,19 @@ public class RestMockPUTMethodIntegrationTest {
 		assertThat(requestUrlParamsDoc, hasXPath("//recorded-requests/dummyReq[2]", equalTo("dummyReqText2")));
 
 	}
+
+    @Test
+    public void shouldVerifyRecordedRequestsWithCustomRequestElement() throws UnsupportedEncodingException, ClientProtocolException, IOException,
+            ParserConfigurationException, SAXException {
+        requestSender.sendPutRequest(REST_MOCK_ENDPOINT, "dummyReqText1", MediaType.TEXT_XML);
+        requestSender.sendPutRequest(REST_MOCK_ENDPOINT, "dummyReqText2", MediaType.TEXT_XML);
+
+        MockResponse recordedRequests = requestSender.sendGetRequest(REST_MOCK_PUT_RECORDED_REQUESTS_WITH_REQUEST_ELEMENT);
+        Document requestUrlParamsDoc = new DocumentImpl(recordedRequests.getBody());
+
+        assertThat(requestUrlParamsDoc, hasXPath("//recorded-requests/req[1]", equalTo("dummyReqText1")));
+        assertThat(requestUrlParamsDoc, hasXPath("//recorded-requests/req[2]", equalTo("dummyReqText2")));
+
+    }
 
 }
