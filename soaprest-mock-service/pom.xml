@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.cirrus</groupId>
 	<artifactId>soaprest-mock-service</artifactId>
-	<version>1.6.1-SNAPSHOT</version>
+	<version>1.6.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>ws-mock-service</name>
 	<description>Mock service for SOAP/REST webservices to support automated tests</description>
@@ -18,8 +18,7 @@
 	</licenses>
 	<scm>
         <developerConnection>scm:git:ssh://cirrus-dev@git.code.sf.net/u/cirrus-dev/soaprest-mocker</developerConnection>
-	  <tag>HEAD</tag>
-  </scm>
+	</scm>
 	<developers>
 		<developer>
 			<id>obarymski</id>
