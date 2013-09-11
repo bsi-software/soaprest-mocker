@@ -9,11 +9,6 @@
 	<description>Mock service for SOAP/REST webservices to support automated tests</description>
 	<url>http://maven.apache.org</url>
 
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>7</version>
-	</parent>
 	<licenses>
 		<license>
 			<name>GNU Library or Lesser General Public License version 3.0 (LGPLv3)</name>
