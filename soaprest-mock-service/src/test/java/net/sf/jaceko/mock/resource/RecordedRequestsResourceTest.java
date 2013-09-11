@@ -1,26 +1,24 @@
 package net.sf.jaceko.mock.resource;
 
+import net.sf.jaceko.mock.dom.DocumentImpl;
+import net.sf.jaceko.mock.service.RecordedRequestsHolder;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.xml.HasXPath.hasXPath;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import net.sf.jaceko.mock.dom.DocumentImpl;
-import net.sf.jaceko.mock.service.RecordedRequestsHolder;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 public class RecordedRequestsResourceTest {
 	private RestServiceMockVerificatonResource resource = new RestServiceMockVerificatonResource();
@@ -54,6 +52,48 @@ public class RecordedRequestsResourceTest {
 		assertThat(requestsDoc, hasXPath("/recorded-requests/req[1]", equalTo("dummyRequestContent1")));
 		assertThat(requestsDoc, hasXPath("/recorded-requests/req[2]", equalTo("dummyRequestContent2")));
 	}
+
+
+    @Test
+    public void shouldGetRecordedRequestsForMockedWebServiceWhenRequestsAreNotXML() throws Exception {
+        String serviceName = "ticketing";
+        String operationId = "reserve";
+
+        String req1 = "dummyRequestContent1";
+        String req2 = "dummyRequestContent2";
+
+        List<String> recordedRequests = asList(req1, req2);
+
+        when(recordedRequestsHolder.getRecordedRequestBodies(serviceName, operationId)).thenReturn(recordedRequests);
+
+        String requestsXml = resource.getRecordedRequests(serviceName, operationId);
+
+        Document requestsDoc = new DocumentImpl(requestsXml);
+
+        assertThat(requestsDoc, hasXPath("count(/recorded-requests)", equalTo("1")));
+        assertThat(requestsDoc, hasXPath("/recorded-requests", equalTo("\ndummyRequestContent1dummyRequestContent2")));
+    }
+
+    @Test
+    public void shouldGetRecordedRequestsSurroundedByProvidedElementName() throws Exception {
+        String serviceName = "ticketing";
+        String operationId = "reserve";
+        String elementToSurroundRecordedRequests = "request";
+
+        String req1 = "dummyRequestContent1";
+        String req2 = "dummyRequestContent2";
+
+        List<String> recordedRequests = asList(req1, req2);
+
+        when(recordedRequestsHolder.getRecordedRequestBodies(serviceName, operationId)).thenReturn(recordedRequests);
+
+        String requestsXml = resource.getRecordedRequests(serviceName, operationId, elementToSurroundRecordedRequests);
+
+        Document requestsDoc = new DocumentImpl(requestsXml);
+        assertThat(requestsDoc, hasXPath("count(/recorded-requests/request)", equalTo("2")));
+        assertThat(requestsDoc, hasXPath("/recorded-requests/request[1]", equalTo("dummyRequestContent1")));
+        assertThat(requestsDoc, hasXPath("/recorded-requests/request[2]", equalTo("dummyRequestContent2")));
+    }
 
 	@Test
 	public void shouldReturnEmptyListOfRecordedRequests() throws Exception {

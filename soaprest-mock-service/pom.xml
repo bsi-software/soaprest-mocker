@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sf.jaceko</groupId>
+	<groupId>com.cirrus</groupId>
 	<artifactId>soaprest-mock-service</artifactId>
 	<version>1.6.0-SNAPSHOT</version>
 	<packaging>war</packaging>
@@ -22,10 +22,8 @@
 		</license>
 	</licenses>
 	<scm>
-		<connection>scm:git:ssh://obarymski@git.code.sf.net/p/soaprest-mocker/code</connection>
-		<developerConnection>scm:git:ssh://obarymski@git.code.sf.net/p/soaprest-mocker/code</developerConnection>
-		<url>ssh://obarymski@git.code.sf.net/p/soaprest-mocker/code</url>
-		<tag>soaprest-mock-service-1.4.0</tag>
+		<connection>scm:git:ssh://cirrus-dev@git.code.sf.net/u/cirrus-dev/soaprest-mocker</connection>
+		<developerConnection>ssh://cirrus-dev@git.code.sf.net/u/cirrus-dev/soaprest-mocker</developerConnection>
 	</scm>
 	<developers>
 		<developer>
@@ -33,6 +31,10 @@
 			<name>Jacek Obarymski</name>
 			<email>jaceko@onet.eu</email>
 		</developer>
+        <developer>
+            <id>cirrus-dev</id>
+            <name>Cirrus</name>
+        </developer>
 	</developers>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
