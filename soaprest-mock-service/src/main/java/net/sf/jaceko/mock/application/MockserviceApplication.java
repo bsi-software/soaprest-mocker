@@ -33,6 +33,7 @@ import net.sf.jaceko.mock.resource.SoapEndpointResource;
 import net.sf.jaceko.mock.resource.SoapServiceMockSetupResource;
 import net.sf.jaceko.mock.resource.SoapServiceMockVerificatonResource;
 import net.sf.jaceko.mock.resource.WsdlExposingResource;
+import net.sf.jaceko.mock.resource.RestServiceResourceWithoutEndPoint;
 import net.sf.jaceko.mock.service.Delayer;
 import net.sf.jaceko.mock.service.MockConfigurationHolder;
 import net.sf.jaceko.mock.service.MockSetupExecutor;
@@ -86,6 +87,9 @@ public class MockserviceApplication extends Application {
 		RestEndpointResource mockRestEndpointResource = new RestEndpointResource();
 		mockRestEndpointResource.setWebserviceMockService(svcLayer);
 
+        RestEndpointResource mockRestServiceResourceWithoutEndPoint = new RestServiceResourceWithoutEndPoint();
+        mockRestServiceResourceWithoutEndPoint.setWebserviceMockService(svcLayer);
+
 		WsdlExposingResource wsdlExposingResource = new WsdlExposingResource();
 		wsdlExposingResource.setWebserviceMockService(svcLayer);
 		
@@ -94,6 +98,7 @@ public class MockserviceApplication extends Application {
 
 		singletons.add(mockSoapEndpointResource);
 		singletons.add(mockRestEndpointResource);
+		singletons.add(mockRestServiceResourceWithoutEndPoint);
 		singletons.add(restMockSetupResource);
 		singletons.add(restVerificationResource);
 		singletons.add(soapMockSetupResource);
