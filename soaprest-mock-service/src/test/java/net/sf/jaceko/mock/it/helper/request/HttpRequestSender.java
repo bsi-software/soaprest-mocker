@@ -21,11 +21,14 @@ package net.sf.jaceko.mock.it.helper.request;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
 import net.sf.jaceko.mock.model.request.MockResponse;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -91,8 +94,13 @@ public class HttpRequestSender {
 			body = EntityUtils.toString(entity);
 			entity.getContent().close();
 		}
-		int responseCode = response.getStatusLine().getStatusCode();
-		return MockResponse.body(body).code(responseCode).contentType(MediaType.valueOf(contentType.getMimeType())).build();
+        Map<String, String> headers = new HashMap<String, String>();
+        Header[] allHeaders = response.getAllHeaders();
+        for (Header header : allHeaders) {
+            headers.put(header.getName(), header.getValue());
+        }
+        int responseCode = response.getStatusLine().getStatusCode();
+		return MockResponse.body(body).code(responseCode).contentType(MediaType.valueOf(contentType.getMimeType())).headers(headers).build();
 	}
 
 	public void setHttpclient(HttpClient httpclient) {

@@ -35,9 +35,17 @@ import net.sf.jaceko.mock.service.MockSetupExecutor;
 
 import org.apache.commons.httpclient.HttpStatus;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
 public abstract class BasicSetupResource {
 
-	private MockSetupExecutor mockSetupExecutor;
+    private static final String HEADERS_DELIMITER = ",";
+    private static final String HEADER_DELIMITER = ":";
+    private static final int HEADER_KEY_INDEX = 0;
+    private static final int HEADER_VALUE_INDEX = 1;
+    private MockSetupExecutor mockSetupExecutor;
 
 	public BasicSetupResource() {
 		super();
@@ -48,17 +56,37 @@ public abstract class BasicSetupResource {
 	@Consumes({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response addResponse(@Context HttpHeaders headers, @PathParam("serviceName") String serviceName,
 			@PathParam("operationId") String operationId, @QueryParam("code") int customResponseCode,
-			@QueryParam("delay") int delaySec, String customResponseBody) {
+			@QueryParam("delay") int delaySec, @QueryParam("headers") String headersToPrime,
+            String customResponseBody) {
 
-		mockSetupExecutor.addCustomResponse(
-				serviceName,
-				operationId,
-				MockResponse.body(customResponseBody).code(customResponseCode).contentType(headers.getMediaType())
-						.delaySec(delaySec).build());
+        Map<String, String> headersMap = parseHeadersToPrime(headersToPrime);
+
+        mockSetupExecutor.addCustomResponse(
+                serviceName,
+                operationId,
+                MockResponse.body(customResponseBody).code(customResponseCode).contentType(headers.getMediaType())
+                        .delaySec(delaySec).headers(headersMap).build());
 		return Response.status(HttpStatus.SC_OK).build();
 	}
 
-	@PUT
+    private Map<String, String> parseHeadersToPrime(String headersToPrime) {
+        Map<String, String> headersMap = new HashMap<>();
+
+        if (headersToPrime != null) {
+            Scanner headersScanner = new Scanner(headersToPrime).useDelimiter(HEADERS_DELIMITER);
+            while (headersScanner.hasNext()) {
+                String header = headersScanner.next();
+                String[] headerPart = header.split(HEADER_DELIMITER);
+                String headerName = headerPart[HEADER_KEY_INDEX];
+                String headerValue = headerPart[HEADER_VALUE_INDEX];
+                headersMap.put(headerName, headerValue);
+            }
+        }
+
+        return headersMap;
+    }
+
+    @PUT
 	@Path("/{operationId}/responses/{requestInOrder}")
 	@Consumes({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response setResponse(@Context HttpHeaders headers, @PathParam("serviceName") String serviceName,

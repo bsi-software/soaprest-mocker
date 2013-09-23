@@ -1,6 +1,7 @@
 package net.sf.jaceko.mock.resource;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
@@ -19,6 +20,9 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RestEndpointResourceTest {
 
@@ -215,5 +219,20 @@ public class RestEndpointResourceTest {
 		assertThat(getResponse.getStatus(), is(responseCodeReturnedByServiceLayer));
 
 	}
+
+    @Test
+    public void shouldReturnCustomHeader() {
+
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("headerkey", "headervalue");
+
+        when(requestExecutor.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
+                MockResponse.body(NOT_USED_RESPONSE_BODY).headers(headers).build());
+
+        Response getResponse = resource.performGetRequest(NOT_USED_SERVICE_NAME, servletContext);
+        assertThat(String.valueOf(getResponse.getMetadata().getFirst("headerkey")), equalTo("headervalue"));
+    }
+
+
 
 }

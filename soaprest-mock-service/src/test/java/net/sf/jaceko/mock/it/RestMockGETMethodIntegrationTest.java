@@ -197,4 +197,25 @@ public class RestMockGETMethodIntegrationTest {
 
 	}
 
+    @Test
+    public void shouldReturnCustomResponseWithHeader() throws Exception {
+        requestSender.sendPostRequest(REST_MOCK_GET_RESPONSES + "?headers=X-Signature:signatureValue", "<body/>", MediaType.TEXT_XML);
+
+        // sending REST GET request
+        MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
+
+        assertThat("Expected X-Date header to be returned from mock", response.getHeader("X-Signature"), equalTo("signatureValue"));
+    }
+
+    @Test
+    public void shouldReturnCustomResponseWithMultipleHeaders() throws Exception {
+        requestSender.sendPostRequest(REST_MOCK_GET_RESPONSES + "?headers=X-Signature:signatureValue,X-Date:tomorrow", "<body/>", MediaType.TEXT_XML);
+
+        // sending REST GET request
+        MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
+
+        assertThat("Expected X-Date header to be returned from mock", response.getHeader("X-Signature"), equalTo("signatureValue"));
+        assertThat("Expected X-Date header to be returned from mock", response.getHeader("X-Date"), equalTo("tomorrow"));
+    }
+
 }

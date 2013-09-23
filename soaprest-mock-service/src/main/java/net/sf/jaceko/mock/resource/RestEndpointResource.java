@@ -38,6 +38,8 @@ import net.sf.jaceko.mock.application.enums.HttpMethod;
 import net.sf.jaceko.mock.model.request.MockResponse;
 import net.sf.jaceko.mock.service.RequestExecutor;
 
+import java.util.Map;
+
 @Path("/services/REST/{serviceName}/endpoint")
 public class RestEndpointResource {
 	private static final Logger LOG = Logger.getLogger(RestEndpointResource.class);
@@ -101,10 +103,24 @@ public class RestEndpointResource {
 	}
 
 	private Response buildWebserviceResponse(MockResponse mockResponse) {
-		return Response.status(mockResponse.getCode()).entity(mockResponse.getBody()).type(mockResponse.getContentType()).build();
+        Response.ResponseBuilder responseBuilder = Response.status(mockResponse.getCode()).entity(mockResponse.getBody()).type(mockResponse.getContentType());
+
+        addHeadersToResponse(mockResponse.getHeaders(), responseBuilder);
+
+        return responseBuilder.build();
 	}
 
-	public void setWebserviceMockService(RequestExecutor svcLayer) {
+    private void addHeadersToResponse(Map<String, String> headersToReturn, Response.ResponseBuilder responseBuilder) {
+        if (headersToReturn != null) {
+
+            for (String headerKey : headersToReturn.keySet()) {
+                String headerValue = headersToReturn.get(headerKey);
+                responseBuilder.header(headerKey, headerValue);
+            }
+        }
+    }
+
+    public void setWebserviceMockService(RequestExecutor svcLayer) {
 		this.svcLayer = svcLayer;
 	}
 

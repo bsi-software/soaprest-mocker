@@ -19,6 +19,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import java.util.HashMap;
+
 public class MockSetupResourceTest {
 
 	private BasicSetupResource resource = new RestServiceMockSetupResource();
@@ -67,7 +69,7 @@ public class MockSetupResourceTest {
 		HttpHeaders httpHeaders = mock(HttpHeaders.class);
 		when(httpHeaders.getMediaType()).thenReturn(mediaType);
 
-		resource.addResponse(httpHeaders, serviceName, operationId, customResponseCode, delaySec, customResponseBody);
+		resource.addResponse(httpHeaders, serviceName, operationId, customResponseCode, delaySec, null, customResponseBody);
 		MockResponse expectedResponse = MockResponse.body(customResponseBody).code(customResponseCode).delaySec(delaySec)
 				.contentType(mediaType).build();
 
@@ -76,25 +78,57 @@ public class MockSetupResourceTest {
 	}
 
 	@Test
-	public void shouldAddCustomResponse2() {
+	public void shouldAddCustomResponseWithHeader() {
 
 		String serviceName = "ticketing";
 		String operationId = "GET";
 		String customResponseBody = "<dummyResponse>respTExt2</dummyResponse>";
 		int customResponseCode = 200;
 		int delaySec = 2;
-		MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
+        String headersToPrime = "headername:headervalue";
+        HashMap<String, String> headersToPrimeMap = new HashMap<>();
+        headersToPrimeMap.put("headername","headervalue");
+        MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
 
-		HttpHeaders httpHeaders = mock(HttpHeaders.class);
-		when(httpHeaders.getMediaType()).thenReturn(mediaType);
+        HttpHeaders httpHeaders = mock(HttpHeaders.class);
+        when(httpHeaders.getMediaType()).thenReturn(mediaType);
 
-		resource.addResponse(httpHeaders, serviceName, operationId, customResponseCode, delaySec, customResponseBody);
+        resource.addResponse(httpHeaders, serviceName, operationId, customResponseCode, delaySec, headersToPrime, customResponseBody);
 		MockResponse expectedResponse = MockResponse.body(customResponseBody).code(customResponseCode).contentType(mediaType)
-				.delaySec(delaySec).build();
+				.delaySec(delaySec).headers(headersToPrimeMap).build();
 
 		verify(mockSetupExecutor).addCustomResponse(serviceName, operationId, expectedResponse);
 
 	}
+
+    @Test
+    public void shouldAddCustomResponseWithMultipleHeaders() {
+        //given
+        String serviceName = "ticketing";
+        String operationId = "GET";
+        String customResponseBody = "<dummyResponse>respTExt2</dummyResponse>";
+        int customResponseCode = 200;
+        int delaySec = 2;
+        String headersToPrime = "headername:headervalue,someotherheader:anothervalue";
+
+        HashMap<String, String> headersToPrimeMap = new HashMap<>();
+        headersToPrimeMap.put("headername","headervalue");
+        headersToPrimeMap.put("someotherheader","anothervalue");
+
+        MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
+
+        HttpHeaders httpHeaders = mock(HttpHeaders.class);
+        when(httpHeaders.getMediaType()).thenReturn(mediaType);
+
+        //when
+        resource.addResponse(httpHeaders, serviceName, operationId, customResponseCode, delaySec, headersToPrime, customResponseBody);
+
+        MockResponse expectedResponse = MockResponse.body(customResponseBody).code(customResponseCode).contentType(mediaType)
+                .delaySec(delaySec).headers(headersToPrimeMap).build();
+
+        verify(mockSetupExecutor).addCustomResponse(serviceName, operationId, expectedResponse);
+
+    }
 
 	@Test
 	public void setResponseShouldReturnResponseWithStatusOK() {

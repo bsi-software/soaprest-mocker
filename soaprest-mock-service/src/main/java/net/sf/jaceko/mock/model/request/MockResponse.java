@@ -19,15 +19,20 @@
  */
 package net.sf.jaceko.mock.model.request;
 
+import sun.font.LayoutPathImpl;
+
 import javax.ws.rs.core.MediaType;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MockResponse {
 	private String body;
 	private int code = 200;
 	private int delaySec;
 	private String contentType;
+    private Map<String, String> headers;
 
-	public static MockResponseBuilder body(String body) {
+    public static MockResponseBuilder body(String body) {
 		MockResponseBuilder builder = MockResponseBuilder.getInstance();
 		builder.body(body);
 		return builder.body(body);
@@ -84,13 +89,26 @@ public class MockResponse {
 		return contentType;
 	}
 
-	public static class MockResponseBuilder {
+    public void setHeaders(Map<String,String> headers) {
+        this.headers = headers;
+    }
+
+    public String getHeader(String headerName) {
+        return this.headers.get(headerName);
+    }
+
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    public static class MockResponseBuilder {
 		private String body;
 		private int code = 200;
 		private int delaySec;
 		private String contentType;
+        private Map<String, String> headers = new HashMap<>();
 
-		public static MockResponseBuilder getInstance() {
+        public static MockResponseBuilder getInstance() {
 			return new MockResponseBuilder();
 		}
 
@@ -121,16 +139,21 @@ public class MockResponse {
 			return this;
 		}
 
-		public MockResponse build() {
-			MockResponse mockResponse = new MockResponse();
-			mockResponse.setBody(body);
-			mockResponse.setCode(code);
-			mockResponse.setContentType(contentType);
-			mockResponse.setDelaySec(delaySec);
-			return mockResponse;
-		}
+        public MockResponse build() {
+            MockResponse mockResponse = new MockResponse();
+            mockResponse.setBody(body);
+            mockResponse.setCode(code);
+            mockResponse.setContentType(contentType);
+            mockResponse.setDelaySec(delaySec);
+            mockResponse.setHeaders(headers);
+            return mockResponse;
+        }
 
-	}
+        public MockResponseBuilder headers(Map<String,String> headers) {
+            this.headers = headers;
+            return this;
+        }
+    }
 
 	void setBody(String body) {
 		this.body = body;
@@ -144,46 +167,40 @@ public class MockResponse {
 		this.contentType = contentType;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((body == null) ? 0 : body.hashCode());
-		result = prime * result + code;
-		result = prime * result + ((contentType == null) ? 0 : contentType.hashCode());
-		result = prime * result + delaySec;
-		return result;
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		MockResponse other = (MockResponse) obj;
-		if (body == null) {
-			if (other.body != null)
-				return false;
-		} else if (!body.equals(other.body))
-			return false;
-		if (code != other.code)
-			return false;
-		if (contentType == null) {
-			if (other.contentType != null)
-				return false;
-		} else if (!contentType.equals(other.contentType))
-			return false;
-		if (delaySec != other.delaySec)
-			return false;
-		return true;
-	}
+        MockResponse that = (MockResponse) o;
 
-	@Override
-	public String toString() {
-		return String.format("MockResponse [body=%s, code=%s, delaySec=%s, contentType=%s]", body, code, delaySec, contentType);
-	}
+        if (code != that.code) return false;
+        if (delaySec != that.delaySec) return false;
+        if (body != null ? !body.equals(that.body) : that.body != null) return false;
+        if (contentType != null ? !contentType.equals(that.contentType) : that.contentType != null) return false;
+        if (headers != null ? !headers.equals(that.headers) : that.headers != null) return false;
 
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = body != null ? body.hashCode() : 0;
+        result = 31 * result + code;
+        result = 31 * result + delaySec;
+        result = 31 * result + (contentType != null ? contentType.hashCode() : 0);
+        result = 31 * result + (headers != null ? headers.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "MockResponse{" +
+                "body='" + body + '\'' +
+                ", code=" + code +
+                ", delaySec=" + delaySec +
+                ", contentType='" + contentType + '\'' +
+                ", headers=" + headers +
+                '}';
+    }
 }
