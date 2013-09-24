@@ -15,6 +15,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -38,6 +40,7 @@ public class RestMockPOSTMethodIntegrationTest {
 	private static final String REST_MOCK_POST_INIT = "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/init";
 	private static final String REST_MOCK_POST_RESPONSES = "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/responses";
 	private static final String REST_MOCK_POST_RECORDED_REQUESTS = "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/recorded-requests";
+	private static final String REST_MOCK_POST_RECORDED_REQUESTS_HEADERS = "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/recorded-request-headers";
 	private static final String REST_MOCK_POST_RECORDED_REQUESTS_WITH_REQUEST_ELEMENT = "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/recorded-requests?requestElement=request";
 	private static final String REST_MOCK_POST_RECORDED_REQUEST_PARAMS = "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/recorded-request-params";
 
@@ -220,7 +223,7 @@ public class RestMockPOSTMethodIntegrationTest {
 	}
 
 	@Test
-	public void shoulVerifyRecordedRequests() throws UnsupportedEncodingException, ClientProtocolException, IOException,
+	public void shouldVerifyRecordedRequests() throws UnsupportedEncodingException, ClientProtocolException, IOException,
 			ParserConfigurationException, SAXException {
 		requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "<dummyReq>dummyReqText1</dummyReq>", MediaType.APPLICATION_XML);
 		requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "<dummyReq>dummyReqText2</dummyReq>", MediaType.APPLICATION_XML);
@@ -271,5 +274,24 @@ public class RestMockPOSTMethodIntegrationTest {
 		assertThat(requestUrlParamsDoc,
 				hasXPath("//recorded-request-params/recorded-request-param[2]", equalTo("param=paramValue2")));
 	}
+
+    @Test
+    public void shouldVerifyRecordedRequestsWithHeaders() throws Exception {
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("aHeader","aValue");
+
+        // Given - We send a post request to the end point with headers
+        requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "<dummyReq>dummyReqText1</dummyReq>", MediaType.APPLICATION_XML, headers);
+
+        //When we get the recorded request headers
+        MockResponse recordedRequests = requestSender.sendGetRequest(REST_MOCK_POST_RECORDED_REQUESTS_HEADERS);
+
+        // Then the header we sent is returned
+        assertThat("Expected a response body", recordedRequests.getBody(), notNullValue());
+        Document requestUrlParamsDoc = new DocumentImpl(recordedRequests.getBody());
+
+        assertThat(recordedRequests.getCode(), equalTo(200));
+        assertThat(requestUrlParamsDoc, hasXPath("/recorded-request-headers/single-request-recorded-headers[1]/header/name[text()='aHeader']//..//value", equalTo("aValue")));
+    }
 
 }

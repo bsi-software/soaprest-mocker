@@ -19,12 +19,17 @@
  */
 package net.sf.jaceko.mock.resource;
 
+import net.sf.jaceko.mock.model.request.MockRequest;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.Collection;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.*;
 
 @Path("/services/REST/{serviceName}/operations/{operationId}")
-public class RestServiceMockVerificatonResource extends BasicVerifictationResource {
+public class RestServiceMockVerificatonResource extends BasicVerificationResource {
 
 	@GET
 	@Path("/recorded-resource-ids")
@@ -55,5 +60,77 @@ public class RestServiceMockVerificatonResource extends BasicVerifictationResour
 		return buildListXml(recordedUrlParams, rootElementName, elementName,
 				surroundElementTextWithCdata);
 	}
+
+    @GET
+    @Path("/recorded-request-headers")
+    @Produces(MediaType.TEXT_XML)
+    public RecordedRequestHeaders getRecordedRequestHeaders(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
+
+        Collection<MockRequest> recordedRequests = recordedRequestsHolder.getRecordedRequests(serviceName, operationId);
+
+        RecordedRequestHeaders recordedRequestHeaders = new RecordedRequestHeaders();
+        for (MockRequest recordedRequest : recordedRequests) {
+            recordedRequestHeaders.addRequestHeaders(recordedRequest.getHeaders());
+        }
+
+        return recordedRequestHeaders;
+    }
+
+    @XmlRootElement(name = "recorded-request-headers")
+    static class RecordedRequestHeaders {
+
+        @XmlElement(name = "single-request-recorded-headers")
+        private List<SingleRequestHeaders> recordedRequestHeader = new ArrayList<SingleRequestHeaders>();
+
+        public List<SingleRequestHeaders> getHeaders() {
+            return recordedRequestHeader;
+        }
+
+        public void addRequestHeaders(MultivaluedMap<String, String> headers) {
+
+            SingleRequestHeaders singleRequestHeaders = new SingleRequestHeaders();
+            for (String headerName : headers.keySet()) {
+                RecordedHeader recordedHeader = new RecordedHeader(headerName, headers.getFirst(headerName));
+                singleRequestHeaders.addRecordedHeader(recordedHeader);
+            }
+            recordedRequestHeader.add(singleRequestHeaders);
+        }
+    }
+
+    static class SingleRequestHeaders {
+        @XmlElement(name = "header")
+        private List<RecordedHeader> recordedHeaders = new ArrayList<RecordedHeader>();
+
+        List<RecordedHeader> getRecordedHeaders() {
+            return recordedHeaders;
+        }
+
+        public void addRecordedHeader(RecordedHeader recordedHeader) {
+            recordedHeaders.add(recordedHeader);
+        }
+    }
+
+    static class RecordedHeader {
+        @XmlElement
+        private String name;
+        @XmlElement
+        private String value;
+
+        RecordedHeader() {
+        }
+
+        RecordedHeader(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
 
 }

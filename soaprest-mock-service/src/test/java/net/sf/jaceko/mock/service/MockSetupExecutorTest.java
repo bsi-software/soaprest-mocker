@@ -97,7 +97,7 @@ public class MockSetupExecutorTest {
 		String operationId = "prepayRequest";
 
 		when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(new WebserviceOperation());
-		recordedRequestsHolder.recordRequest(serviceName, operationId, request1, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		recordedRequestsHolder.recordRequest(serviceName, operationId, request1, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, null);
 
 		Collection<String> recordedPrepayRequests = recordedRequestsHolder.getRecordedRequestBodies(serviceName, operationId);
 		assertThat(recordedPrepayRequests.size(), is(1));

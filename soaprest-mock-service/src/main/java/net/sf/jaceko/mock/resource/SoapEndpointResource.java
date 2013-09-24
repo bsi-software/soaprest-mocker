@@ -57,7 +57,7 @@ public class SoapEndpointResource {
 		String responseBody = null;
 		int code = 200;
 		MockResponse response = service.performRequest(serviceName, requestMessgageName,
-				request, null, null);
+				request, null, null, null);
 		if (response != null) {
 			responseBody = response.getBody();
 			code = response.getCode();

@@ -1,7 +1,9 @@
 package net.sf.jaceko.mock.service;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.hasItem;
 import static org.junit.matchers.JUnitMatchers.hasItems;
 import static org.mockito.Mockito.when;
@@ -9,11 +11,15 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.Collection;
 
+import net.sf.jaceko.mock.model.request.MockRequest;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
 
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+
+import javax.ws.rs.core.MultivaluedMap;
 
 public class RecordedRequestsHolderTest {
 
@@ -34,15 +40,44 @@ public class RecordedRequestsHolderTest {
 		recordedRequestsHolder.setMockserviceConfiguration(configurationHolder);
 	}
 
-	
+    @Test
+    public void shouldGetRecordedRequest() {
+        //given
+        String request1 = "<req1/>";
+        String serviceName = "mptu";
+        String operationId = "prepayRequest";
+
+        MultivaluedMap<String, String> headers = new MultivaluedMapImpl<String, String>();
+        String headerName = "aheadername";
+        String headerValue = "aheadervalue";
+        headers.putSingle(headerName, headerValue);
+
+        when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(new WebserviceOperation());
+
+        //when
+        recordedRequestsHolder.recordRequest(serviceName, operationId, request1, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, headers);
+
+        //then
+        Collection<MockRequest> recordedRequests = recordedRequestsHolder.getRecordedRequests(serviceName, operationId);
+
+        for (MockRequest recordedRequest : recordedRequests) {
+            assertThat(recordedRequest.getBody(), equalTo(request1));
+            assertThat(recordedRequest.getQueryString(), equalTo(NOT_USED_REQUEST_PARAM));
+            assertThat(recordedRequest.getResourceId(), equalTo(NOT_USED_RESOURCE_ID));
+            assertThat(recordedRequest.getHeaders(), equalTo(headers));
+        }
+
+        assertThat(recordedRequests.size(), is(1));
+    }
+
 	@Test
-	public void shouldGetRecordedRequest() {
+	public void shouldGetRecordedRequestBody() {
 
 		String request1 = "<req1/>";
 		String serviceName = "mptu";
 		String operationId = "prepayRequest";
 		when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(new WebserviceOperation());
-		recordedRequestsHolder.recordRequest(serviceName, operationId, request1, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		recordedRequestsHolder.recordRequest(serviceName, operationId, request1, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, null);
 		Collection<String> recordedRequests = recordedRequestsHolder.getRecordedRequestBodies(serviceName, operationId);
 
 		assertThat(recordedRequests.size(), is(1));
@@ -50,7 +85,7 @@ public class RecordedRequestsHolderTest {
 	}
 
 	@Test
-	public void shouldGetRecordedRequests() {
+	public void shouldGetRecordedRequestBodies() {
 
 		String serviceName = "mptu";
 		String operationId = "prepayRequest";
@@ -59,8 +94,8 @@ public class RecordedRequestsHolderTest {
 
 		when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(new WebserviceOperation());
 
-		recordedRequestsHolder.recordRequest(serviceName, operationId, request1, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
-		recordedRequestsHolder.recordRequest(serviceName, operationId, request2, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		recordedRequestsHolder.recordRequest(serviceName, operationId, request1, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, null);
+		recordedRequestsHolder.recordRequest(serviceName, operationId, request2, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, null);
 
 		Collection<String> recordedRequests = recordedRequestsHolder.getRecordedRequestBodies(serviceName, operationId);
 
@@ -68,7 +103,7 @@ public class RecordedRequestsHolderTest {
 		assertThat(recordedRequests, hasItems(request1, request2));
 
 	}
-	
+
 	@Test
 	public void shouldGetRecordedRequestParam() {
 
@@ -76,7 +111,7 @@ public class RecordedRequestsHolderTest {
 		String operationId = "POST";
 		when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(new WebserviceOperation());
 		String queryString = "msg=ABC123&ccno=dummy";
-		recordedRequestsHolder.recordRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, queryString, null);
+		recordedRequestsHolder.recordRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, queryString, null, null);
 
 		Collection<String> recordedRequestParams = recordedRequestsHolder.getRecordedUrlParams(serviceName, operationId);
 
@@ -93,8 +128,8 @@ public class RecordedRequestsHolderTest {
 		when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(new WebserviceOperation());
 		String queryString1 = "msg=ABC123&ccno=dummy";
 		String queryString2 = "msg=DEF123&ccno=dummy2&xid=something";
-		recordedRequestsHolder.recordRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, queryString1, NOT_USED_RESOURCE_ID);
-		recordedRequestsHolder.recordRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, queryString2, NOT_USED_RESOURCE_ID);
+		recordedRequestsHolder.recordRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, queryString1, NOT_USED_RESOURCE_ID, null);
+		recordedRequestsHolder.recordRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, queryString2, NOT_USED_RESOURCE_ID, null);
 
 		Collection<String> recordedRequestParams = recordedRequestsHolder.getRecordedUrlParams(serviceName, operationId);
 
@@ -111,8 +146,8 @@ public class RecordedRequestsHolderTest {
 		when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(new WebserviceOperation());
 		String resourceId1 = "id1";
 		String resourceId2 = "id2";
-		recordedRequestsHolder.recordRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, resourceId1);
-		recordedRequestsHolder.recordRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, resourceId2);
+		recordedRequestsHolder.recordRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, resourceId1, null);
+		recordedRequestsHolder.recordRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, resourceId2, null);
 
 		Collection<String> recordedResourceIds = recordedRequestsHolder.getRecordedResourceIds(serviceName, operationId);
 
@@ -139,9 +174,9 @@ public class RecordedRequestsHolderTest {
 		when(configurationHolder.getWebServiceOperation(serviceName2, operationId2)).thenReturn(new WebserviceOperation());
 		when(configurationHolder.getWebServiceOperation(serviceName2, operationId3)).thenReturn(new WebserviceOperation());
 
-		recordedRequestsHolder.recordRequest(serviceName, operationId, request1, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
-		recordedRequestsHolder.recordRequest(serviceName2, operationId2, request2, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
-		recordedRequestsHolder.recordRequest(serviceName2, operationId3, request3, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		recordedRequestsHolder.recordRequest(serviceName, operationId, request1, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, null);
+		recordedRequestsHolder.recordRequest(serviceName2, operationId2, request2, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, null);
+		recordedRequestsHolder.recordRequest(serviceName2, operationId3, request3, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, null);
 
 		Collection<String> recordedPrepayRequests = recordedRequestsHolder.getRecordedRequestBodies(serviceName, operationId);
 		assertThat(recordedPrepayRequests.size(), is(1));
@@ -165,7 +200,7 @@ public class RecordedRequestsHolderTest {
 		String operationId = "prepayRequest";
 
 		when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(new WebserviceOperation());
-		recordedRequestsHolder.recordRequest(serviceName, operationId, request1, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		recordedRequestsHolder.recordRequest(serviceName, operationId, request1, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, null);
 
 		Collection<String> recordedPrepayRequests = recordedRequestsHolder.getRecordedRequestBodies(serviceName, operationId);
 		assertThat(recordedPrepayRequests.size(), is(1));

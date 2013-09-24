@@ -23,6 +23,8 @@ import net.sf.jaceko.mock.model.request.MockResponse;
 import net.sf.jaceko.mock.model.webservice.WebService;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
 
+import javax.ws.rs.core.MultivaluedMap;
+
 public class RequestExecutor {
 	private MockConfigurationHolder configurationHolder;
 
@@ -31,11 +33,11 @@ public class RequestExecutor {
 	private RecordedRequestsHolder recordedRequestsHolder;
 
 	public MockResponse performRequest(String serviceName, String operationId, String request, String queryString,
-			String resourceId) {
+                                       String resourceId, MultivaluedMap<String, String> headers) {
 		WebserviceOperation serviceOperation = configurationHolder.getWebServiceOperation(serviceName, operationId);
 		int invocationNumber = serviceOperation.getNextInvocationNumber();
 		MockResponse response = serviceOperation.getResponse(invocationNumber);
-		recordedRequestsHolder.recordRequest(serviceName, operationId, request, queryString, resourceId);
+		recordedRequestsHolder.recordRequest(serviceName, operationId, request, queryString, resourceId, headers);
 		delayService.delaySec(response.getDelaySec());
 		return response;
 

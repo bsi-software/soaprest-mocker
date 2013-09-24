@@ -2,11 +2,14 @@ package net.sf.jaceko.mock.it;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.xml.HasXPath.hasXPath;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.ParserConfigurationException;
@@ -38,6 +41,8 @@ public class RestMockGETMethodIntegrationTest {
 	private static final String REST_MOCK_GET_RESPONSES = "http://localhost:8080/mock/services/REST/dummy-rest/operations/GET/responses";
 	private static final String REST_MOCK_GET_RECORDED_RESOURCE_IDS = "http://localhost:8080/mock/services/REST/dummy-rest/operations/GET/recorded-resource-ids";
 	private static final String REST_MOCK_GET_RECORDED_REQUEST_PARAMS = "http://localhost:8080/mock/services/REST/dummy-rest/operations/GET/recorded-request-params";
+
+    private static final String REST_MOCK_GET_RECORDED_REQUESTS_HEADERS = "http://localhost:8080/mock/services/REST/dummy-rest/operations/GET/recorded-request-headers";
 
 	HttpRequestSender requestSender = new HttpRequestSender();
 
@@ -169,7 +174,7 @@ public class RestMockGETMethodIntegrationTest {
 	}
 
 	@Test
-	public void shoulVerifyRequestParameters() throws ClientProtocolException, IOException, ParserConfigurationException,
+	public void shouldVerifyRequestParameters() throws ClientProtocolException, IOException, ParserConfigurationException,
 			SAXException {
 		requestSender.sendGetRequest(REST_MOCK_ENDPOINT + "?param=paramValue1");
 		requestSender.sendGetRequest(REST_MOCK_ENDPOINT + "?param=paramValue2");
@@ -185,7 +190,7 @@ public class RestMockGETMethodIntegrationTest {
 	}
 
 	@Test
-	public void shoulVerifyResourceIds() throws ClientProtocolException, IOException, ParserConfigurationException, SAXException {
+	public void shouldVerifyResourceIds() throws ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		requestSender.sendGetRequest(REST_MOCK_ENDPOINT + "/id123");
 		requestSender.sendGetRequest(REST_MOCK_ENDPOINT + "/id567");
 
@@ -216,6 +221,25 @@ public class RestMockGETMethodIntegrationTest {
 
         assertThat("Expected X-Date header to be returned from mock", response.getHeader("X-Signature"), equalTo("signatureValue"));
         assertThat("Expected X-Date header to be returned from mock", response.getHeader("X-Date"), equalTo("tomorrow"));
+    }
+
+    @Test
+    public void shouldVerifyRecordedRequestsWithHeaders() throws Exception {
+        // Given we've sent a get request with headers
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("aHeader","aValue");
+        requestSender.sendGetRequest(REST_MOCK_ENDPOINT, headers);
+
+        //When we get the recorded headers
+        MockResponse recordedRequestsHeaders = requestSender.sendGetRequest(REST_MOCK_GET_RECORDED_REQUESTS_HEADERS);
+
+        //Then the header sent in the Get request is returned
+        System.out.println(recordedRequestsHeaders.getBody());
+        assertThat("Expected a response body", recordedRequestsHeaders.getBody(), notNullValue());
+        Document requestUrlParamsDoc = new DocumentImpl(recordedRequestsHeaders.getBody());
+
+        assertThat(recordedRequestsHeaders.getCode(), equalTo(200));
+        assertThat(requestUrlParamsDoc, hasXPath("/recorded-request-headers/single-request-recorded-headers[1]/header/name[text()='aHeader']//..//value", equalTo("aValue")));
     }
 
 }

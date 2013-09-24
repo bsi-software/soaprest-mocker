@@ -70,7 +70,7 @@ public abstract class BasicSetupResource {
 	}
 
     private Map<String, String> parseHeadersToPrime(String headersToPrime) {
-        Map<String, String> headersMap = new HashMap<>();
+        Map<String, String> headersMap = new HashMap<String, String>();
 
         if (headersToPrime != null) {
             Scanner headersScanner = new Scanner(headersToPrime).useDelimiter(HEADERS_DELIMITER);

@@ -1,6 +1,7 @@
 package net.sf.jaceko.mock.service;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.hasItem;
 import static org.mockito.Matchers.anyString;
@@ -11,11 +12,14 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import java.util.Collection;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 
+import net.sf.jaceko.mock.model.request.MockRequest;
 import net.sf.jaceko.mock.model.request.MockResponse;
 import net.sf.jaceko.mock.model.webservice.WebService;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
 
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -59,7 +63,7 @@ public class RequestExecutorTest {
 		when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 
 		MockResponse response = requestExeutor.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY,
-				NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+				NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, null);
 		assertThat(response.getBody(), is(defaultResponse));
 		assertThat(response.getCode(), is(defaultResponseCode));
 		assertThat(response.getContentType(), is(defaultResponseContentType));
@@ -77,7 +81,7 @@ public class RequestExecutorTest {
 		when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 
 		MockResponse response = requestExeutor.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY,
-				NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+				NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, null);
 		assertThat(response.getCode(), is(defaultResponseCode));
 	}
 
@@ -95,7 +99,7 @@ public class RequestExecutorTest {
 		when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 
 		MockResponse response = requestExeutor.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY,
-				NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+				NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, null);
 		assertThat(response, is(expectedCustomResponse));
 
 	}
@@ -114,10 +118,10 @@ public class RequestExecutorTest {
 		when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 
 		requestExeutor.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM,
-				NOT_USED_RESOURCE_ID);
+				NOT_USED_RESOURCE_ID, null);
 
 		MockResponse response = requestExeutor.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY,
-				NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+				NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, null);
 		assertThat(response.getBody(), is(defaultResponse));
 
 	}
@@ -138,10 +142,10 @@ public class RequestExecutorTest {
 		when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(operation);
 
 		requestExeutor.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM,
-				NOT_USED_RESOURCE_ID);
+				NOT_USED_RESOURCE_ID, null);
 
 		MockResponse response = requestExeutor.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY,
-				NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+				NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, null);
 		assertThat(response, is(expectedCustomResponse2));
 
 	}
@@ -162,7 +166,7 @@ public class RequestExecutorTest {
 		operation.init();
 
 		MockResponse response = requestExeutor.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY,
-				NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+				NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, null);
 		assertThat(response.getBody(), is(defaultResponse));
 
 	}
@@ -184,7 +188,7 @@ public class RequestExecutorTest {
 	@Test
 	public void shouldDelayByZeroSecByDefault() {
 		when(configurationHolder.getWebServiceOperation(anyString(), anyString())).thenReturn(new WebserviceOperation());
-		requestExeutor.performRequest("", "", "", NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		requestExeutor.performRequest("", "", "", NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, null);
 
 		verify(delayer).delaySec(0);
 	}
@@ -197,7 +201,7 @@ public class RequestExecutorTest {
 		operation.setCustomResponse(customResponse, 1);
 
 		when(configurationHolder.getWebServiceOperation(anyString(), anyString())).thenReturn(operation);
-		requestExeutor.performRequest("", "", "", NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		requestExeutor.performRequest("", "", "", NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, null);
 
 		verify(delayer).delaySec(delaySec);
 	}
@@ -209,11 +213,35 @@ public class RequestExecutorTest {
 		String serviceName = "mptu";
 		String operationId = "prepayRequest";
 		when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(new WebserviceOperation());
-		requestExeutor.performRequest(serviceName, operationId, request1, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID);
+		requestExeutor.performRequest(serviceName, operationId, request1, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, null);
 		Collection<String> recordedRequests = recordedRequestsHolder.getRecordedRequestBodies(serviceName, operationId);
 
 		assertThat(recordedRequests.size(), is(1));
 		assertThat(recordedRequests, hasItem(request1));
 	}
+
+    @Test
+    public void shouldRecordRequestHeaders() {
+        //given
+        String serviceName = "mptu";
+        String operationId = "prepayRequest";
+
+        MultivaluedMap<String, String> headers = new MultivaluedMapImpl<String, String>();
+        String headerName = "aheadername";
+        String headerValue = "aheadervalue";
+        headers.putSingle(headerName, headerValue);
+
+        when(configurationHolder.getWebServiceOperation(serviceName, operationId)).thenReturn(new WebserviceOperation());
+
+        //when
+        requestExeutor.performRequest(serviceName, operationId, NOT_USED_REQUEST_BODY, NOT_USED_REQUEST_PARAM, NOT_USED_RESOURCE_ID, headers);
+
+        //then
+        Collection<MockRequest> recordedRequests = recordedRequestsHolder.getRecordedRequests(serviceName, operationId);
+
+        assertThat(recordedRequests.size(), equalTo(1));
+        assertThat(recordedRequests.iterator().next().getHeaders(), equalTo(headers));
+
+    }
 
 }

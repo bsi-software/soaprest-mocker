@@ -29,19 +29,22 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import net.sf.jaceko.mock.model.request.MockRequest;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+
+import javax.ws.rs.core.MultivaluedMap;
 
 public class RecordedRequestsHolder {
 	private MockConfigurationHolder configurationHolder;
 
 	private final ConcurrentMap<String, ConcurrentMap<String, Collection<MockRequest>>> recordedRequestsMap = new ConcurrentHashMap<String, ConcurrentMap<String, Collection<MockRequest>>>();
 
-	public void recordRequest(String serviceName, String operationId, String requestBody, String queryString, String resourceId) {
+	public void recordRequest(String serviceName, String operationId, String requestBody, String queryString, String resourceId, MultivaluedMap headers) {
 		ConcurrentMap<String, Collection<MockRequest>> requestsPerOperationMap = fetchRequestsPerOperationMap(serviceName);
 
 		Collection<MockRequest> recordedRequests = fetchRecordedRequests(operationId, requestsPerOperationMap);
 
-		MockRequest request = new MockRequest(requestBody, queryString, resourceId);
-		recordedRequests.add(request);
+		MockRequest request = new MockRequest(requestBody, queryString, resourceId, headers);
+        recordedRequests.add(request);
 	}
 
 	private Collection<MockRequest> fetchRecordedRequests(String operationId,

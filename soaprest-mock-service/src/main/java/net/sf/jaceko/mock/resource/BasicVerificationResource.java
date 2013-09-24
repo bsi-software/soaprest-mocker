@@ -27,11 +27,11 @@ import java.util.Collection;
 
 import static java.text.MessageFormat.format;
 
-public class BasicVerifictationResource {
+public class BasicVerificationResource {
 
 	protected RecordedRequestsHolder recordedRequestsHolder;
 
-	public BasicVerifictationResource() {
+	public BasicVerificationResource() {
 		super();
 	}
 

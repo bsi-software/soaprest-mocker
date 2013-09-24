@@ -19,70 +19,92 @@
  */
 package net.sf.jaceko.mock.it.helper.request;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ws.rs.core.MediaType;
-
 import net.sf.jaceko.mock.model.request.MockResponse;
-
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import javax.ws.rs.core.MediaType;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+
 public class HttpRequestSender {
 
 	private HttpClient httpclient = new DefaultHttpClient();
 
-	public MockResponse sendPostRequest(String url, String requestBody, String mediaType) throws UnsupportedEncodingException,
+
+    public MockResponse sendPostRequest(String url, String requestBody, String mediaType) throws UnsupportedEncodingException,
+            IOException, ClientProtocolException {
+        return sendPostRequest(url, requestBody, mediaType, new HashMap<String, String>());
+    }
+
+	public MockResponse sendPostRequest(String url, String requestBody, String mediaType, Map<String, String> headers) throws UnsupportedEncodingException,
 			IOException, ClientProtocolException {
 		HttpEntityEnclosingRequestBase httpRequest = new HttpPost(url);
 		addRequestBody(httpRequest, requestBody, mediaType);
 
-		return executeRequest(httpRequest);
+		return executeRequest(httpRequest, headers);
 	}
 
-	public MockResponse sendPutRequest(String url, String requestBody, String mediaType) throws UnsupportedEncodingException,
+    public MockResponse sendPutRequest(String url, String requestBody, String mediaType) throws UnsupportedEncodingException,
+            IOException, ClientProtocolException {
+
+        return sendPutRequest(url, requestBody, mediaType, new HashMap<String, String>());
+    }
+
+	public MockResponse sendPutRequest(String url, String requestBody, String mediaType, Map<String, String> headers) throws UnsupportedEncodingException,
 			IOException, ClientProtocolException {
 		HttpEntityEnclosingRequestBase httpRequest = new HttpPut(url);
 		addRequestBody(httpRequest, requestBody, mediaType);
-		return executeRequest(httpRequest);
+		return executeRequest(httpRequest, headers);
 	}
 
 	private void addRequestBody(HttpEntityEnclosingRequestBase httpRequest, String requestBody, String mediaType)
 			throws UnsupportedEncodingException {
-		StringBuilder contenType = new StringBuilder();
-		contenType.append(mediaType);
-		contenType.append(";charset=UTF-8");
-		httpRequest.setHeader("Content-Type", contenType.toString());
+		StringBuilder contentType = new StringBuilder();
+		contentType.append(mediaType);
+		contentType.append(";charset=UTF-8");
+		httpRequest.setHeader("Content-Type", contentType.toString());
 		if (requestBody != null) {
 			HttpEntity requestEntity = new StringEntity(requestBody);
 			httpRequest.setEntity(requestEntity);
 		}
 	}
 
-	public MockResponse sendGetRequest(String url) throws IOException, ClientProtocolException {
+	public MockResponse sendGetRequest(String url, Map<String, String> headers) throws IOException, ClientProtocolException {
 		HttpGet httpGet = new HttpGet(url);
-		return executeRequest(httpGet);
+		return executeRequest(httpGet, headers);
 	}
 
-	public MockResponse sendDeleteRequest(String url) throws ClientProtocolException, IOException {
+    public MockResponse sendGetRequest(String url) throws IOException, ClientProtocolException {
+        HttpGet httpGet = new HttpGet(url);
+        return executeRequest(httpGet, new HashMap<String, String>());
+    }
+
+    private MockResponse executeRequest(HttpRequestBase httpRequest, Map<String, String> headers) throws IOException {
+        for (String headername : headers.keySet()) {
+            httpRequest.addHeader(headername, headers.get(headername));
+        }
+        return executeRequest(httpRequest);
+    }
+
+    public MockResponse sendDeleteRequest(String url) throws ClientProtocolException, IOException {
 		HttpDelete httpDelete = new HttpDelete(url);
-		return executeRequest(httpDelete);
+		return executeRequest(httpDelete, new HashMap<String, String>());
+	}
+
+    public MockResponse sendDeleteRequest(String url, Map<String, String> headers) throws ClientProtocolException, IOException {
+		HttpDelete httpDelete = new HttpDelete(url);
+		return executeRequest(httpDelete, headers);
 	}
 
 	private MockResponse executeRequest(HttpRequestBase httpRequest) throws IOException, ClientProtocolException {

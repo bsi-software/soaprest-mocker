@@ -1,19 +1,23 @@
 package net.sf.jaceko.mock.resource;
 
 import net.sf.jaceko.mock.dom.DocumentImpl;
+import net.sf.jaceko.mock.model.request.MockRequest;
 import net.sf.jaceko.mock.service.RecordedRequestsHolder;
+import org.apache.commons.collections.map.MultiValueMap;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Arrays.asList;
+import static net.sf.jaceko.mock.resource.RestServiceMockVerificatonResource.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.xml.HasXPath.hasXPath;
@@ -151,5 +155,32 @@ public class RecordedRequestsResourceTest {
 		assertThat(requestsDoc, hasXPath("/recorded-resource-ids/recorded-resource-id[2]", equalTo(resourceId2)));
 
 	}
+
+    @Test
+    public void shouldGetRecordedRequestHeaders() {
+        //given
+        String serviceName = "someRESRService";
+        String operationId = "GET";
+
+        MultivaluedMap<String, String> headers = new MultivaluedMapImpl<String, String>();
+        String headerName = "adamHeader";
+        String headerValue = "dougalValue";
+        headers.putSingle(headerName, headerValue);
+
+        Collection<MockRequest> mockRequests = new HashSet<MockRequest>();
+        mockRequests.add(new MockRequest(null, null, null, headers));
+        when(recordedRequestsHolder.getRecordedRequests(serviceName, operationId)).thenReturn(mockRequests);
+
+        //when
+        RecordedRequestHeaders recordedRequestHeaders = resource.getRecordedRequestHeaders(serviceName, operationId);
+
+        //then
+        List<SingleRequestHeaders> singleRequestHeaders = recordedRequestHeaders.getHeaders();
+        List<RecordedHeader> recordedHeaders = singleRequestHeaders.get(0).getRecordedHeaders();
+
+        assertThat(recordedHeaders.size(), equalTo(1));
+        assertThat(recordedHeaders.get(0).getName(), equalTo(headerName));
+        assertThat(recordedHeaders.get(0).getValue(), equalTo(headerValue));
+    }
 
 }

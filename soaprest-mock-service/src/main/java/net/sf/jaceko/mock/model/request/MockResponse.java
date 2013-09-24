@@ -106,7 +106,7 @@ public class MockResponse {
 		private int code = 200;
 		private int delaySec;
 		private String contentType;
-        private Map<String, String> headers = new HashMap<>();
+        private Map<String, String> headers = new HashMap<String, String>();
 
         public static MockResponseBuilder getInstance() {
 			return new MockResponseBuilder();

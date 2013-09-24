@@ -2,11 +2,14 @@ package net.sf.jaceko.mock.it;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.xml.HasXPath.hasXPath;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.ParserConfigurationException;
@@ -32,11 +35,11 @@ public class RestMockDELETEMethodIntegrationTest {
 
 	//mocked endpoints configured in ws-mock.properties
 	private static String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/services/REST/dummy-rest/endpoint";
-	
-	
-	
+
 	private static final String REST_MOCK_DELETE_SETUP_INIT			 	= "http://localhost:8080/mock/services/REST/dummy-rest/operations/DELETE/init";
 	private static final String REST_MOCK_DELETE_RESPONSES 			 	= "http://localhost:8080/mock/services/REST/dummy-rest/operations/DELETE/responses";
+
+    private static final String REST_MOCK_DELETE_RECORDED_REQUESTS_HEADERS = "http://localhost:8080/mock/services/REST/dummy-rest/operations/DELETE/recorded-request-headers";
 	
 	HttpRequestSender requestSender = new HttpRequestSender();
 	
@@ -98,7 +101,6 @@ public class RestMockDELETEMethodIntegrationTest {
 		
 	}
 
-	
 	@Test
 	public void shouldReturnConsecutiveCustomRESTDeleteResponses() throws UnsupportedEncodingException, ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		//setting up consecutive responses on mock		
@@ -143,6 +145,23 @@ public class RestMockDELETEMethodIntegrationTest {
 		assertThat("default response code", response.getCode(), is(HttpStatus.SC_OK));
 	}
 
+    @Test
+    public void shouldVerifyRecordedRequestsWithHeaders() throws Exception {
+        // Given we've sent a get request with headers
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("aHeader","aValue");
+        requestSender.sendDeleteRequest(REST_MOCK_ENDPOINT, headers);
 
+        //When we get the recorded headers
+        MockResponse recordedRequestsHeaders = requestSender.sendGetRequest(REST_MOCK_DELETE_RECORDED_REQUESTS_HEADERS);
+
+        //Then the header sent in the Get request is returned
+        System.out.println(recordedRequestsHeaders.getBody());
+        assertThat("Expected a response body", recordedRequestsHeaders.getBody(), notNullValue());
+        Document requestUrlParamsDoc = new DocumentImpl(recordedRequestsHeaders.getBody());
+
+        assertThat(recordedRequestsHeaders.getCode(), equalTo(200));
+        assertThat(requestUrlParamsDoc, hasXPath("/recorded-request-headers/single-request-recorded-headers[1]/header/name[text()='aHeader']//..//value", equalTo("aValue")));
+    }
 
 }

@@ -86,7 +86,7 @@ public class MockSetupResourceTest {
 		int customResponseCode = 200;
 		int delaySec = 2;
         String headersToPrime = "headername:headervalue";
-        HashMap<String, String> headersToPrimeMap = new HashMap<>();
+        HashMap<String, String> headersToPrimeMap = new HashMap<String, String>();
         headersToPrimeMap.put("headername","headervalue");
         MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
 
@@ -111,7 +111,7 @@ public class MockSetupResourceTest {
         int delaySec = 2;
         String headersToPrime = "headername:headervalue,someotherheader:anothervalue";
 
-        HashMap<String, String> headersToPrimeMap = new HashMap<>();
+        HashMap<String, String> headersToPrimeMap = new HashMap<String, String>();
         headersToPrimeMap.put("headername","headervalue");
         headersToPrimeMap.put("someotherheader","anothervalue");
 

@@ -2,16 +2,17 @@ package net.sf.jaceko.mock.resource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import net.sf.jaceko.mock.exception.ClientFaultException;
 import net.sf.jaceko.mock.model.request.MockResponse;
-import net.sf.jaceko.mock.resource.SoapEndpointResource;
 import net.sf.jaceko.mock.service.RequestExecutor;
 
 import org.junit.Before;
@@ -44,7 +45,7 @@ public class SoapEndpointResourceTest {
 
 		resource.performRequest(serviceName, request);
 
-		verify(service).performRequest(serviceName, inputMessageName, request, null, null);
+		verify(service).performRequest(serviceName, inputMessageName, request, null, null, null);
 
 	}
 	
@@ -53,7 +54,7 @@ public class SoapEndpointResourceTest {
 		String serviceName = "ticketing";
 		
 		String request = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:book=\"http://www.bookmyshow.com/\">\r\n" + 
-				"   <soapenv:Header/>\r\n" + 
+				"   <soapenv:RecordedHeader/>\r\n" +
 				"   <soapenv:Body>\r\n" + 
 				"      <book:objExecute>\r\n" + 
 				"         <book:strAppCode>TESTAPP</book:strAppCode>\r\n" + 
@@ -66,7 +67,7 @@ public class SoapEndpointResourceTest {
 
 		resource.performRequest(serviceName, request);
 
-		verify(service).performRequest(serviceName, "objExecute", request, null, null);
+		verify(service).performRequest(serviceName, "objExecute", request, null, null, null);
 
 	}
 
@@ -128,7 +129,7 @@ public class SoapEndpointResourceTest {
 		int responseCode = 500;
 		
 
-		when(service.performRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(
+		when(service.performRequest(anyString(), anyString(), anyString(), anyString(), anyString(), any(MultivaluedMap.class))).thenReturn(
 				new MockResponse(responseBody, responseCode));
 		Response response = resource.performRequest(serviceName, request);
 		assertThat((String) response.getEntity(), is(responseBody));

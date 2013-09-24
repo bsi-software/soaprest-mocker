@@ -22,6 +22,6 @@ package net.sf.jaceko.mock.resource;
 import javax.ws.rs.Path;
 
 @Path("/services/SOAP/{serviceName}/operations/{operationId}")
-public class SoapServiceMockVerificatonResource extends BasicVerifictationResource {
+public class SoapServiceMockVerificatonResource extends BasicVerificationResource {
 
 }

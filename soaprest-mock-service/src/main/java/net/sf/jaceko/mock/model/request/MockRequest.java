@@ -19,17 +19,23 @@
  */
 package net.sf.jaceko.mock.model.request;
 
+
+
+import javax.ws.rs.core.MultivaluedMap;
+
 public class MockRequest {
 
 	private String resourceId;
 	private String body;
 	private String queryString;
+    private MultivaluedMap<String, String> headers;
 
-	public MockRequest(String body, String queryString, String resourceId) {
+    public MockRequest(String body, String queryString, String resourceId, MultivaluedMap<String, String> headers) {
 		super();
 		this.body = body;
 		this.queryString = queryString;
 		this.resourceId = resourceId;
+        this.headers = headers;
 	}
 
 	public String getBody() {
@@ -44,4 +50,7 @@ public class MockRequest {
 		return queryString;
 	}
 
+    public MultivaluedMap<String, String> getHeaders() {
+        return headers;
+    }
 }

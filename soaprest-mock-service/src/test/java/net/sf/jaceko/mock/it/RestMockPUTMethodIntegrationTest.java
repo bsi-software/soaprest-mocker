@@ -14,9 +14,12 @@ import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.xml.HasXPath.hasXPath;
 import static org.junit.Assert.assertThat;
 
@@ -36,6 +39,8 @@ public class RestMockPUTMethodIntegrationTest {
 	private static final String REST_MOCK_PUT_RECORDED_REQUESTS 	 	= "http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/recorded-requests";
 	private static final String REST_MOCK_PUT_RECORDED_REQUESTS_WITH_REQUEST_ELEMENT = "http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/recorded-requests?requestElement=req";
 	private static final String REST_MOCK_PUT_RECORDED_RESOURCE_IDS 	= "http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/recorded-resource-ids";
+
+    private static final String REST_MOCK_PUT_RECORDED_REQUESTS_HEADERS = "http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/recorded-request-headers";
 
 	HttpRequestSender requestSender = new HttpRequestSender();
 
@@ -92,7 +97,7 @@ public class RestMockPUTMethodIntegrationTest {
 	}
 
 	@Test
-	public void shoulVerifyResourceIds() throws ClientProtocolException, IOException, ParserConfigurationException, SAXException {
+	public void shouldVerifyResourceIds() throws ClientProtocolException, IOException, ParserConfigurationException, SAXException {
 		requestSender.sendPutRequest(REST_MOCK_ENDPOINT + "/id1", "", MediaType.TEXT_XML);
 		requestSender.sendPutRequest(REST_MOCK_ENDPOINT + "/id2", "", MediaType.TEXT_XML);
 
@@ -166,6 +171,25 @@ public class RestMockPUTMethodIntegrationTest {
         assertThat(requestUrlParamsDoc, hasXPath("//recorded-requests/req[1]", equalTo("dummyReqText1")));
         assertThat(requestUrlParamsDoc, hasXPath("//recorded-requests/req[2]", equalTo("dummyReqText2")));
 
+    }
+
+    @Test
+    public void shouldVerifyRecordedRequestsWithHeaders() throws Exception {
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("aHeader","aValue");
+
+        // Given - We send a post request to the end point with headers
+        requestSender.sendPutRequest(REST_MOCK_ENDPOINT, "<dummyReq>dummyReqText1</dummyReq>", MediaType.APPLICATION_XML, headers);
+
+        //When we get the recorded request headers
+        MockResponse recordedRequests = requestSender.sendGetRequest(REST_MOCK_PUT_RECORDED_REQUESTS_HEADERS);
+
+        // Then the header we sent is returned
+        assertThat("Expected a response body", recordedRequests.getBody(), notNullValue());
+        Document requestUrlParamsDoc = new DocumentImpl(recordedRequests.getBody());
+
+        assertThat(recordedRequests.getCode(), equalTo(200));
+        assertThat(requestUrlParamsDoc, hasXPath("/recorded-request-headers/single-request-recorded-headers[1]/header/name[text()='aHeader']//..//value", equalTo("aValue")));
     }
 
 }
