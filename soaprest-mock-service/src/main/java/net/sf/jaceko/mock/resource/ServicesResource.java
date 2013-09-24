@@ -110,6 +110,10 @@ public class ServicesResource {
 					"recorded request parameters");
 			verificationResources.add(recordedRequestParams);
 
+            ResourceRefDto recordedRequestHeaders = new ResourceRefDto(operationUri, "/recorded-request-headers", HttpMethod.GET,
+                    "recorded request headers");
+            verificationResources.add(recordedRequestHeaders);
+
 			if (!HttpMethod.POST.toString().equals(operationName)) {
 				ResourceRefDto recordedResourceIds = new ResourceRefDto(operationUri, "/recorded-resource-ids", HttpMethod.GET,
 						"recorded resource ids");

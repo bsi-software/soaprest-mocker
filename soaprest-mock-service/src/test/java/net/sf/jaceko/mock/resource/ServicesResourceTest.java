@@ -384,14 +384,30 @@ public class ServicesResourceTest {
 		assertThat(operationDto.getVerificationResources(), hasItem(recordedRequestsResourceRef));
 		
 	}
+
+    @Test
+    public void shouldReturnREST_GET_OperationDtoContaingRequestHeadersVerificationResourceRef() {
+        when(mockConfigurationService.getWebServiceOperation("someService", "GET")).thenReturn(new WebserviceOperation());
+        when(context.getServerName()).thenReturn("server");
+        when(context.getServerPort()).thenReturn(8888);
+        when(context.getContextPath()).thenReturn("/mock");
+
+        ResourceRefDto recordedRequestsResourceRef = new ResourceRefDto(
+                "http://server:8888/mock/services/REST/someService/operations/GET/recorded-request-headers", HttpMethod.GET,
+                "recorded request headers");
+
+        OperationDto operationDto = resource.getOperation("REST", "someService", "GET", context);
+        assertThat(operationDto.getVerificationResources(), hasItem(recordedRequestsResourceRef));
+
+    }
 	
 	@Test
-	public void shouldReturnREST_GET_OperationDtoContaining3VerificationResourceRefs() {
+	public void shouldReturnREST_GET_OperationDtoContaining4VerificationResourceRefs() {
 
 		when(mockConfigurationService.getWebServiceOperation(anyString(), anyString())).thenReturn(new WebserviceOperation());
 
 		OperationDto operationDto = resource.getOperation("REST", "any", "GET", context);
-		assertThat(operationDto.getVerificationResources(), hasSize(3));
+		assertThat(operationDto.getVerificationResources(), hasSize(4));
 	}
 
 	@Test
@@ -424,14 +440,30 @@ public class ServicesResourceTest {
 		assertThat(operationDto.getVerificationResources(), hasItem(recordedRequestsResourceRef));
 		
 	}
+
+    @Test
+    public void shouldReturnREST_POST_OperationDtoContaingRequestHeadersVerificationResourceRef() {
+        when(mockConfigurationService.getWebServiceOperation("someService", "POST")).thenReturn(new WebserviceOperation());
+        when(context.getServerName()).thenReturn("server");
+        when(context.getServerPort()).thenReturn(8888);
+        when(context.getContextPath()).thenReturn("/mock");
+
+        ResourceRefDto recordedRequestsResourceRef = new ResourceRefDto(
+                "http://server:8888/mock/services/REST/someService/operations/POST/recorded-request-headers", HttpMethod.GET,
+                "recorded request headers");
+
+        OperationDto operationDto = resource.getOperation("REST", "someService", "POST", context);
+        assertThat(operationDto.getVerificationResources(), hasItem(recordedRequestsResourceRef));
+
+    }
 	
 	@Test
-	public void shouldReturnREST_POST_OperationDtoContaining2VerificationResourceRefs() {
+	public void shouldReturnREST_POST_OperationDtoContaining3VerificationResourceRefs() {
 
 		when(mockConfigurationService.getWebServiceOperation(anyString(), anyString())).thenReturn(new WebserviceOperation());
 
 		OperationDto operationDto = resource.getOperation("REST", "any", "POST", context);
-		assertThat(operationDto.getVerificationResources(), hasSize(2));
+		assertThat(operationDto.getVerificationResources(), hasSize(3));
 	}
 
 }
