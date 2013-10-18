@@ -1,29 +1,27 @@
 package net.sf.jaceko.mock.it;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.xml.HasXPath.hasXPath;
-import static org.junit.Assert.assertThat;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ws.rs.core.MediaType;
-import javax.xml.parsers.ParserConfigurationException;
-
 import net.sf.jaceko.mock.dom.DocumentImpl;
 import net.sf.jaceko.mock.it.helper.request.HttpRequestSender;
 import net.sf.jaceko.mock.model.request.MockResponse;
-
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import javax.ws.rs.core.MediaType;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.xml.HasXPath.hasXPath;
+import static org.junit.Assert.assertThat;
 
 /**
  * Integration tests of REST mock, GET method
@@ -204,7 +202,7 @@ public class RestMockGETMethodIntegrationTest {
 
     @Test
     public void shouldReturnCustomResponseWithHeader() throws Exception {
-        requestSender.sendPostRequest(REST_MOCK_GET_RESPONSES + "?headers=X-Signature:signatureValue", "<body/>", MediaType.TEXT_XML);
+        requestSender.sendPostRequest(REST_MOCK_GET_RESPONSES + "?headers=X-Signature::signatureValue", "<body/>", MediaType.TEXT_XML);
 
         // sending REST GET request
         MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);
@@ -214,7 +212,7 @@ public class RestMockGETMethodIntegrationTest {
 
     @Test
     public void shouldReturnCustomResponseWithMultipleHeaders() throws Exception {
-        requestSender.sendPostRequest(REST_MOCK_GET_RESPONSES + "?headers=X-Signature:signatureValue,X-Date:tomorrow", "<body/>", MediaType.TEXT_XML);
+        requestSender.sendPostRequest(REST_MOCK_GET_RESPONSES + "?headers=X-Signature::signatureValue,,X-Date::tomorrow", "<body/>", MediaType.TEXT_XML);
 
         // sending REST GET request
         MockResponse response = requestSender.sendGetRequest(REST_MOCK_ENDPOINT);

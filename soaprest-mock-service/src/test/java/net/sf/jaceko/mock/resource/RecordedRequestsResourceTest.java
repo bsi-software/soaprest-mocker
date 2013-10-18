@@ -3,7 +3,6 @@ package net.sf.jaceko.mock.resource;
 import net.sf.jaceko.mock.dom.DocumentImpl;
 import net.sf.jaceko.mock.model.request.MockRequest;
 import net.sf.jaceko.mock.service.RecordedRequestsHolder;
-import org.apache.commons.collections.map.MultiValueMap;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +13,10 @@ import org.xml.sax.SAXException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
 import static java.util.Arrays.asList;
 import static net.sf.jaceko.mock.resource.RestServiceMockVerificatonResource.*;
@@ -49,12 +51,14 @@ public class RecordedRequestsResourceTest {
 		when(recordedRequestsHolder.getRecordedRequestBodies(serviceName, operationId)).thenReturn(recordedRequests);
 
 		String requestsXml = resource.getRecordedRequests(serviceName, operationId, "");
+        requestsXml = requestsXml.replace("<![CDATA[","").replace("]]>", "");
 
 		Document requestsDoc = new DocumentImpl(requestsXml);
 
 		assertThat(requestsDoc, hasXPath("count(/recorded-requests/req)", equalTo("2")));
 		assertThat(requestsDoc, hasXPath("/recorded-requests/req[1]", equalTo("dummyRequestContent1")));
 		assertThat(requestsDoc, hasXPath("/recorded-requests/req[2]", equalTo("dummyRequestContent2")));
+//        assertThat(requestsDoc, equals("/recorded-requests/req[2]", equalTo("dummyRequestContent2")));
 	}
 
 

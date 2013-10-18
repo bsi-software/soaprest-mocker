@@ -147,7 +147,8 @@ public class RestMockPUTMethodWithoutIntegrationTest {
 		requestSender.sendPutRequest(REST_MOCK_ENDPOINT, "<dummyReq>dummyReqText2</dummyReq>", MediaType.TEXT_XML);
 
 		MockResponse recordedRequests = requestSender.sendGetRequest(REST_MOCK_PUT_RECORDED_REQUESTS);
-		Document requestUrlParamsDoc = new DocumentImpl(recordedRequests.getBody());
+        String body = recordedRequests.getBody().replace("<![CDATA[","").replace("]]>", "");
+        Document requestUrlParamsDoc = new DocumentImpl(body);
 
 		assertThat(requestUrlParamsDoc, hasXPath("//recorded-requests/dummyReq[1]", equalTo("dummyReqText1")));
 		assertThat(requestUrlParamsDoc, hasXPath("//recorded-requests/dummyReq[2]", equalTo("dummyReqText2")));

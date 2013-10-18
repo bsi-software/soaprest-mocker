@@ -1,27 +1,25 @@
 package net.sf.jaceko.mock.it;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.xml.HasXPath.hasXPath;
-import static org.junit.Assert.assertThat;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.text.MessageFormat;
-
-import javax.ws.rs.core.MediaType;
-import javax.xml.parsers.ParserConfigurationException;
-
 import net.sf.jaceko.mock.dom.DocumentImpl;
 import net.sf.jaceko.mock.it.helper.request.HttpRequestSender;
 import net.sf.jaceko.mock.model.request.MockResponse;
-
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import javax.ws.rs.core.MediaType;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.xml.HasXPath.hasXPath;
+import static org.junit.Assert.assertThat;
 
 public class SoapMockIntegrationTest {
 
@@ -121,7 +119,8 @@ public class SoapMockIntegrationTest {
 		requestSender.sendPostRequest(SOAP_MOCK_ENDPOINT, MessageFormat.format(REQUEST, "Peter"), MediaType.TEXT_XML);
 
 		MockResponse recordedRequests = requestSender.sendGetRequest(SOAP_MOCK_RECORDED_REQUESTS);
-		Document requestUrlParamsDoc = new DocumentImpl(recordedRequests.getBody());
+        String body = recordedRequests.getBody().replace("<![CDATA[","").replace("]]>", "");
+        Document requestUrlParamsDoc = new DocumentImpl(body);
 
 		assertThat(requestUrlParamsDoc, hasXPath("//recorded-requests/Envelope[1]/Body/sayHello/firstName", equalTo("Jacek")));
 

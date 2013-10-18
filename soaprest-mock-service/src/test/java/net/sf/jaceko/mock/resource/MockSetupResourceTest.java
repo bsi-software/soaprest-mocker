@@ -1,25 +1,21 @@
 package net.sf.jaceko.mock.resource;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import net.sf.jaceko.mock.model.request.MockResponse;
 import net.sf.jaceko.mock.service.MockSetupExecutor;
-
 import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.HashMap;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class MockSetupResourceTest {
 
@@ -85,7 +81,7 @@ public class MockSetupResourceTest {
 		String customResponseBody = "<dummyResponse>respTExt2</dummyResponse>";
 		int customResponseCode = 200;
 		int delaySec = 2;
-        String headersToPrime = "headername:headervalue";
+        String headersToPrime = "headername::headervalue";
         HashMap<String, String> headersToPrimeMap = new HashMap<String, String>();
         headersToPrimeMap.put("headername","headervalue");
         MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
@@ -109,7 +105,7 @@ public class MockSetupResourceTest {
         String customResponseBody = "<dummyResponse>respTExt2</dummyResponse>";
         int customResponseCode = 200;
         int delaySec = 2;
-        String headersToPrime = "headername:headervalue,someotherheader:anothervalue";
+        String headersToPrime = "headername::headervalue,,someotherheader::anothervalue";
 
         HashMap<String, String> headersToPrimeMap = new HashMap<String, String>();
         headersToPrimeMap.put("headername","headervalue");

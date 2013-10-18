@@ -42,7 +42,7 @@ public class BasicVerificationResource {
 	
 		Collection<String> recordedRequests = recordedRequestsHolder.getRecordedRequestBodies(
 				serviceName, operationId);
-		return buildListXml(recordedRequests, "recorded-requests", requestElement, false);
+		return buildListXml(recordedRequests, "recorded-requests", requestElement, true);
 	}
 
 

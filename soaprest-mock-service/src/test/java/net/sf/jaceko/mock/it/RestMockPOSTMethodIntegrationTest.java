@@ -229,7 +229,8 @@ public class RestMockPOSTMethodIntegrationTest {
 		requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "<dummyReq>dummyReqText2</dummyReq>", MediaType.APPLICATION_XML);
 
 		MockResponse recordedRequests = requestSender.sendGetRequest(REST_MOCK_POST_RECORDED_REQUESTS);
-		Document requestUrlParamsDoc = new DocumentImpl(recordedRequests.getBody());
+        String body = recordedRequests.getBody().replace("<![CDATA[","").replace("]]>", "");
+        Document requestUrlParamsDoc = new DocumentImpl(body);
 
 		assertThat(requestUrlParamsDoc, hasXPath("//recorded-requests/dummyReq[1]", equalTo("dummyReqText1")));
 		assertThat(requestUrlParamsDoc, hasXPath("//recorded-requests/dummyReq[2]", equalTo("dummyReqText2")));
@@ -242,7 +243,8 @@ public class RestMockPOSTMethodIntegrationTest {
         requestSender.sendPostRequest(REST_MOCK_ENDPOINT, "dummyReqText2", MediaType.APPLICATION_XML);
 
         MockResponse recordedRequests = requestSender.sendGetRequest(REST_MOCK_POST_RECORDED_REQUESTS_WITH_REQUEST_ELEMENT);
-        Document requestUrlParamsDoc = new DocumentImpl(recordedRequests.getBody());
+        String body = recordedRequests.getBody().replace("<![CDATA[","").replace("]]>", "");
+        Document requestUrlParamsDoc = new DocumentImpl(body);
 
         assertThat(requestUrlParamsDoc, hasXPath("//recorded-requests/request[1]", equalTo("dummyReqText1")));
         assertThat(requestUrlParamsDoc, hasXPath("//recorded-requests/request[2]", equalTo("dummyReqText2")));
