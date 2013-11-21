@@ -146,6 +146,29 @@ public class RestMockPUTMethodIntegrationTest {
 	}
 
 	@Test
+	public void shouldReturnConsecutiveCustomRESTPostResponsesWithHeaders() throws UnsupportedEncodingException, ClientProtocolException,
+			IOException, ParserConfigurationException, SAXException {
+		// setting up consecutive responses on mock
+		String customResponseXML1 = "<custom_put_response>custom REST PUT response text 1</custom_put_response>";
+        requestSender.sendPutRequest(REST_MOCK_PUT_RESPONSES + "/1?headers=X-Date::some%20day", customResponseXML1, MediaType.TEXT_XML);
+
+		String customResponseXML2 = "<custom_put_response>custom REST PUT response text 2</custom_put_response>";
+		requestSender.sendPutRequest(REST_MOCK_PUT_RESPONSES + "/2?headers=X-Date::date1,,X-Signature::signature", customResponseXML2, MediaType.TEXT_XML);
+
+		MockResponse response = requestSender.sendPutRequest(REST_MOCK_ENDPOINT, "", MediaType.TEXT_XML);
+		Document serviceResponseDoc = new DocumentImpl(response.getBody());
+
+		assertThat(serviceResponseDoc, hasXPath("//custom_put_response", equalTo("custom REST PUT response text 1")));
+        assertThat("Expected header not returned from mock", response.getHeader("X-Date"), equalTo("some day"));
+
+		response = requestSender.sendPutRequest(REST_MOCK_ENDPOINT, "", MediaType.TEXT_XML);
+		serviceResponseDoc = new DocumentImpl(response.getBody());
+		assertThat(serviceResponseDoc, hasXPath("//custom_put_response", equalTo("custom REST PUT response text 2")));
+        assertThat("Expected header not returned from mock", response.getHeader("X-Date"), equalTo("date1"));
+        assertThat("Expected header not returned from mock", response.getHeader("X-Signature"), equalTo("signature"));
+    }
+
+	@Test
 	public void shouldVerifyRecordedRequests() throws UnsupportedEncodingException, ClientProtocolException, IOException,
 			ParserConfigurationException, SAXException {
 		requestSender.sendPutRequest(REST_MOCK_ENDPOINT, "<dummyReq>dummyReqText1</dummyReq>", MediaType.TEXT_XML);

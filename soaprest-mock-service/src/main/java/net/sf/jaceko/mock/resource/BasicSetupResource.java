@@ -84,12 +84,14 @@ public abstract class BasicSetupResource {
 	@Consumes({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response setResponse(@Context HttpHeaders headers, @PathParam("serviceName") String serviceName,
 			@PathParam("operationId") String operationId, @PathParam("requestInOrder") int requestInOrder,
-			@QueryParam("code") int customResponseCode, @QueryParam("delay") int delaySec, String customResponseBody) {
+			@QueryParam("code") int customResponseCode, @QueryParam("delay") int delaySec,  @QueryParam("headers") String headersToPrime, String customResponseBody) {
+        Map<String, String> headersMap = parseHeadersToPrime(headersToPrime);
 		mockSetupExecutor.setCustomResponse(
 				serviceName,
 				operationId,
 				requestInOrder,
 				MockResponse.body(customResponseBody).code(customResponseCode).delaySec(delaySec)
+                        .headers(headersMap)
 						.contentType(headers.getMediaType()).build());
 		return Response.status(HttpStatus.SC_OK).build();
 	}

@@ -11,6 +11,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -128,7 +129,7 @@ public class MockSetupResourceTest {
 
 	@Test
 	public void setResponseShouldReturnResponseWithStatusOK() {
-		Response response = resource.setResponse(mock(HttpHeaders.class), "", "", 1, 0, 0, "");
+		Response response = resource.setResponse(mock(HttpHeaders.class), "", "", 1, 0, 0, null, "");
 		assertThat(response.getStatus(), is(HttpStatus.SC_OK));
 	}
 
@@ -145,10 +146,14 @@ public class MockSetupResourceTest {
 		HttpHeaders httpHeaders = mock(HttpHeaders.class);
 		when(httpHeaders.getMediaType()).thenReturn(mediaType);
 
-		resource.setResponse(httpHeaders, serviceName, operationId, responseInOrder, customResponseCode, delaySec,
+        String headersToPrime = "X-Date::date1,,X-Signature::signature1";
+        resource.setResponse(httpHeaders, serviceName, operationId, responseInOrder, customResponseCode, delaySec, headersToPrime,
 				customResponseBody);
+        Map<String,String> expectedHeaders = new HashMap<String, String>();
+        expectedHeaders.put("X-Date", "date1");
+        expectedHeaders.put("X-Signature", "signature1");
 		verify(mockSetupExecutor).setCustomResponse(serviceName, operationId, responseInOrder,
-				MockResponse.body(customResponseBody).code(customResponseCode).delaySec(delaySec).contentType(mediaType).build());
+				MockResponse.body(customResponseBody).code(customResponseCode).delaySec(delaySec).headers(expectedHeaders).contentType(mediaType).build());
 
 		serviceName = "prepayService";
 		operationId = "prepayRequest";
@@ -159,10 +164,15 @@ public class MockSetupResourceTest {
 
 		when(httpHeaders.getMediaType()).thenReturn(mediaType);
 
-		resource.setResponse(httpHeaders, serviceName, operationId, responseInOrder, customResponseCode, delaySec,
+        headersToPrime = "X-Date::date2,,X-Signature::signature2";
+
+		resource.setResponse(httpHeaders, serviceName, operationId, responseInOrder, customResponseCode, delaySec,headersToPrime,
 				customResponseBody);
-		verify(mockSetupExecutor).setCustomResponse(serviceName, operationId, responseInOrder,
-				MockResponse.body(customResponseBody).code(customResponseCode).delaySec(delaySec).contentType(mediaType).build());
+        Map<String,String> expectedHeaders2 = new HashMap<String, String>();
+        expectedHeaders2.put("X-Date", "date2");
+        expectedHeaders2.put("X-Signature", "signature2");
+        verify(mockSetupExecutor).setCustomResponse(serviceName, operationId, responseInOrder,
+                MockResponse.body(customResponseBody).code(customResponseCode).delaySec(delaySec).headers(expectedHeaders2).contentType(mediaType).build());
 	}
 
 	@Test
@@ -172,11 +182,15 @@ public class MockSetupResourceTest {
 		int customResponseCode = 200;
 		String customResponseBody = "<dummyResponse>abc123</dummyResponse>";
 		int responseInOrder = 5;
+        String headersToPrime = "X-Date::date5,,X-Signature::signature5";
+        Map<String,String> expectedHeaders = new HashMap<String, String>();
+        expectedHeaders.put("X-Date", "date5");
+        expectedHeaders.put("X-Signature", "signature5");
 
-		resource.setResponse(mock(HttpHeaders.class), serviceName, operationId, responseInOrder, customResponseCode, 0,
+		resource.setResponse(mock(HttpHeaders.class), serviceName, operationId, responseInOrder, customResponseCode, 0, headersToPrime,
 				customResponseBody);
 		verify(mockSetupExecutor).setCustomResponse(serviceName, operationId, responseInOrder,
-				MockResponse.body(customResponseBody).code(customResponseCode).build());
+				MockResponse.body(customResponseBody).code(customResponseCode).headers(expectedHeaders).build());
 
 	}
 
