@@ -22,6 +22,8 @@ package net.sf.jaceko.mock.resource;
 import net.sf.jaceko.mock.model.request.MockResponse;
 import net.sf.jaceko.mock.service.MockSetupExecutor;
 import org.apache.commons.httpclient.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -32,7 +34,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+
 public abstract class BasicSetupResource {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BasicSetupResource.class);
 
     private static final String HEADERS_DELIMITER = ",,";
     private static final String HEADER_DELIMITER = "::";
@@ -51,6 +56,9 @@ public abstract class BasicSetupResource {
 			@PathParam("operationId") String operationId, @QueryParam("code") int customResponseCode,
 			@QueryParam("delay") int delaySec, @QueryParam("headers") String headersToPrime,
             String customResponseBody) {
+
+        LOGGER.debug("Received Mocking request serviceName {}, operationId {}, code {}, customResponseCode {}, delay {}, header {}, customResponseBody {}",
+                serviceName,operationId,customResponseCode,customResponseCode,delaySec,headersToPrime);
 
         Map<String, String> headersMap = parseHeadersToPrime(headersToPrime);
 
@@ -85,6 +93,10 @@ public abstract class BasicSetupResource {
 	public Response setResponse(@Context HttpHeaders headers, @PathParam("serviceName") String serviceName,
 			@PathParam("operationId") String operationId, @PathParam("requestInOrder") int requestInOrder,
 			@QueryParam("code") int customResponseCode, @QueryParam("delay") int delaySec,  @QueryParam("headers") String headersToPrime, String customResponseBody) {
+
+        LOGGER.debug("Received Mocking request requestOrder {}, serviceName {}, operationId {}, code {}, customResponseCode {}, delay {}, header {}, customResponseBody {}",
+                requestInOrder, serviceName,operationId,customResponseCode,customResponseCode,delaySec,headersToPrime);
+
         Map<String, String> headersMap = parseHeadersToPrime(headersToPrime);
 		mockSetupExecutor.setCustomResponse(
 				serviceName,
@@ -99,6 +111,9 @@ public abstract class BasicSetupResource {
 	@POST
 	@Path("/{operationId}/init")
 	public Response initMock(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
+
+        LOGGER.debug("Received init request serviceName {}, operationId {}", serviceName, operationId);
+
 		mockSetupExecutor.initMock(serviceName, operationId);
 		return Response.status(HttpStatus.SC_OK).build();
 	}

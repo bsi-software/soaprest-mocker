@@ -20,6 +20,8 @@
 package net.sf.jaceko.mock.resource;
 
 import net.sf.jaceko.mock.service.RecordedRequestsHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -31,15 +33,18 @@ public class BasicVerificationResource {
 
 	protected RecordedRequestsHolder recordedRequestsHolder;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(BasicSetupResource.class);
+
 	public BasicVerificationResource() {
 		super();
 	}
 
-	@GET
+    @GET
 	@Path("/recorded-requests")
 	@Produces(MediaType.TEXT_XML)
 	public String getRecordedRequests(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId, @DefaultValue("") @QueryParam("requestElement") String requestElement) {
-	
+
+        LOGGER.debug("recorded-request: serviceName {} operationId {}, requestElement {}", serviceName, operationId, requestElement);
 		Collection<String> recordedRequests = recordedRequestsHolder.getRecordedRequestBodies(
 				serviceName, operationId);
 		return buildListXml(recordedRequests, "recorded-requests", requestElement, true);

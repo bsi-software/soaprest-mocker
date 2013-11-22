@@ -20,6 +20,8 @@
 package net.sf.jaceko.mock.resource;
 
 import net.sf.jaceko.mock.model.request.MockRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -30,6 +32,7 @@ import java.util.*;
 
 @Path("/services/REST/{serviceName}/operations/{operationId}")
 public class RestServiceMockVerificatonResource extends BasicVerificationResource {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BasicSetupResource.class);
 
 	@GET
 	@Path("/recorded-resource-ids")
@@ -39,6 +42,7 @@ public class RestServiceMockVerificatonResource extends BasicVerificationResourc
 				.getRecordedResourceIds(serviceName, operationId);
 		String rootElementName = "recorded-resource-ids";
 		String elementName = "recorded-resource-id";
+        LOGGER.debug("recorded-resource-ids request: serviceName {} operationId {}", serviceName, operationId);
 		boolean surroundElementTextWithCdata = false;
 		return buildListXml(recordedResourceIds, rootElementName, elementName,
 				surroundElementTextWithCdata);
@@ -48,6 +52,7 @@ public class RestServiceMockVerificatonResource extends BasicVerificationResourc
 	@Path("/recorded-request-params")
 	@Produces(MediaType.TEXT_XML)
 	public String getRecordedUrlParams(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
+        LOGGER.debug("recorded-request-params request: serviceName {} operationId {}", serviceName, operationId);
 		Collection<String> recordedUrlParams = recordedRequestsHolder.getRecordedUrlParams(
 				serviceName, operationId);
 		return buildRequestParamsXml(recordedUrlParams);
@@ -66,6 +71,7 @@ public class RestServiceMockVerificatonResource extends BasicVerificationResourc
     @Produces(MediaType.TEXT_XML)
     public RecordedRequestHeaders getRecordedRequestHeaders(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
 
+        LOGGER.debug("recorded-request-headers request: serviceName {} operationId {}", serviceName, operationId);
         Collection<MockRequest> recordedRequests = recordedRequestsHolder.getRecordedRequests(serviceName, operationId);
 
         RecordedRequestHeaders recordedRequestHeaders = new RecordedRequestHeaders();
