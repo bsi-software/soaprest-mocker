@@ -35,6 +35,7 @@ import net.sf.jaceko.mock.application.enums.HttpMethod;
 import net.sf.jaceko.mock.application.enums.ServiceType;
 import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
 import net.sf.jaceko.mock.model.webservice.WebService;
+import net.sf.jaceko.mock.model.webservice.WebserviceCustomResponse;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
 import net.sf.jaceko.mock.util.FileReader;
 
@@ -43,21 +44,23 @@ import org.apache.log4j.Logger;
 /**
  * Parses property file
  * <p/>
- * 
+ *
  * example property file:
- * 
+ *
  * <pre>
- * SERVICE[0].NAME=ticketing 
+ * SERVICE[0].NAME=ticketing
  * SERVICE[0].OPERATION[0].INPUT_MESSAGE=reserveRequest
  * SERVICE[0].OPERATION[0].DEFAULT_RESPONSE=reserve_response.xml
  * SERVICE[0].OPERATION[1].INPUT_MESSAGE=confirmRequest
  * SERVICE[0].OPERATION[1].DEFAULT_RESPONSE=confirm_response.xml
- * 
- * SERVICE[1].NAME=mptu 
+ * SERVICE[0].OPERATION[1].CUSTOM_RESPONSE[0].SEARCHSTRING=bla123
+ * SERVICE[0].OPERATION[1].CUSTOM_RESPONSE[0].RESPONSE=confirm_bla123_response.xml
+ *
+ * SERVICE[1].NAME=mptu
  * SERVICE[1].WSDL=mptu.wsdl
- * 
+ *
  * </pre>
- * 
+ *
  */
 public class PropertyProcessor {
 	private static final Logger LOG = Logger.getLogger(PropertyProcessor.class);
@@ -72,6 +75,10 @@ public class PropertyProcessor {
 
 	private static final String DEFAULT_RESPONSE_CONTENT_TYPE = "DEFAULT_RESPONSE_CONTENT_TYPE";
 
+	private static final String CUSTOM_RESPONSE_SEARCHSTRING = "SEARCHSTRING";
+
+	private static final String CUSTOM_RESPONSE_RESPONSE = "RESPONSE";
+	
 	private static final String SERVICE_TYPE = "TYPE";
 
 	private static final String SERVICE_NAME = "NAME";
@@ -80,6 +87,7 @@ public class PropertyProcessor {
 
 	private static final Pattern SERVICE_PATTERN = Pattern.compile("^SERVICE\\[([0-9]+)\\]$");
 	private static final Pattern OPERATION_PATTERN = Pattern.compile("^OPERATION\\[([0-9]+)\\]$");
+	private static final Pattern CUSTOM_RESPONSE_PATTERN = Pattern.compile("^CUSTOM_RESPONSE\\[([0-9]+)\\]$");
 
 	private final WsdlProcessor wsdlProcessor = new WsdlProcessor();
 
@@ -113,8 +121,19 @@ public class PropertyProcessor {
 					if (operationIndex >= 0) {
 						// operation part
 						final WebserviceOperation operation = getOperationFromService(service, operationIndex);
+
 						final String operationProperty = propertyKeyParts[2];
-						setOperationProperties(operation, operationProperty, propertyValue);
+						final int customResponseIndex = getCustomResponseIndex(operationProperty);
+						if (customResponseIndex >= 0) {
+							// custom response part
+							final WebserviceCustomResponse customResponse = getCustomResponseFromOperation(operation, operationIndex);
+
+							final String customResponseProperty = propertyKeyParts[3];
+							setCustomResponseProperties(customResponse, customResponseProperty, propertyValue);
+						}
+						else {
+							setOperationProperties(operation, operationProperty, propertyValue);
+						}
 					} else {
 						setServiceProperties(service, serviceVariable, propertyValue);
 					}
@@ -191,6 +210,25 @@ public class PropertyProcessor {
 
 	}
 
+	private void setCustomResponseProperties(final WebserviceCustomResponse customResponse, final String customResponseProperty,
+			final String propertyValue) {
+		if (customResponseProperty.equals(CUSTOM_RESPONSE_SEARCHSTRING)) {
+			customResponse.setSearchString(propertyValue);
+		} else if (customResponseProperty.equals(CUSTOM_RESPONSE_RESPONSE)) {
+			customResponse.setResponseFile(propertyValue);
+			setCustomResponseText(customResponse);
+		}
+	}
+
+	private void setCustomResponseText(final WebserviceCustomResponse customResponse) {
+
+		final String fileText = fileReader.readFileContents(customResponse.getResponseFile());
+		if (fileText != null) {
+			customResponse.setResponseText(fileText);
+		}
+
+	}
+
 
 	private WebserviceOperation getOperationFromService(final WebService service, final int operationIndex) {
 		WebserviceOperation operation = service.getOperation(operationIndex);
@@ -201,6 +239,15 @@ public class PropertyProcessor {
 		return operation;
 	}
 
+	private WebserviceCustomResponse getCustomResponseFromOperation(WebserviceOperation operation, int operationIndex) {
+		WebserviceCustomResponse customResponse = operation.getCustomResponse(operationIndex);
+		if (customResponse == null) {
+			customResponse = new WebserviceCustomResponse();
+			operation.addCustomResponse(operationIndex, customResponse);
+		}
+		return customResponse;
+	}
+
 	int getOperationIndex(final String keyPart) {
 		final Pattern pattern = OPERATION_PATTERN;
 		return extractIndex(keyPart, pattern);
@@ -208,6 +255,11 @@ public class PropertyProcessor {
 
 	int getServiceIndex(final String keyPart) {
 		final Pattern pattern = SERVICE_PATTERN;
+		return extractIndex(keyPart, pattern);
+	}
+
+	int getCustomResponseIndex(final String keyPart) {
+		final Pattern pattern = CUSTOM_RESPONSE_PATTERN;
 		return extractIndex(keyPart, pattern);
 	}
 

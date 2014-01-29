@@ -33,10 +33,10 @@ public class RequestExecutor {
 	private RecordedRequestsHolder recordedRequestsHolder;
 
 	public MockResponse performRequest(String serviceName, String operationId, String request, String queryString,
-                                       String resourceId, MultivaluedMap<String, String> headers) {
+																			String resourceId, MultivaluedMap<String, String> headers) {
 		WebserviceOperation serviceOperation = configurationHolder.getWebServiceOperation(serviceName, operationId);
 		int invocationNumber = serviceOperation.getNextInvocationNumber();
-		MockResponse response = serviceOperation.getResponse(invocationNumber);
+		MockResponse response = serviceOperation.getResponse(invocationNumber, request);
 		recordedRequestsHolder.recordRequest(serviceName, operationId, request, queryString, resourceId, headers);
 		delayService.delaySec(response.getDelaySec());
 		return response;

@@ -22,7 +22,10 @@ package net.sf.jaceko.mock.model.webservice;
 import static java.lang.String.format;
 import static java.util.Collections.synchronizedList;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.ws.rs.core.MediaType;
@@ -46,6 +49,7 @@ public class WebserviceOperation {
 	private String defaultResponseContentType = MediaType.TEXT_XML_TYPE.toString();
 	private final AtomicInteger invocationNumber = new AtomicInteger(0);
 
+	private Map<Integer, WebserviceCustomResponse> indxToCustomResponseMap = new HashMap<Integer, WebserviceCustomResponse>();
 	@SuppressWarnings("unchecked")
 	private final List<MockResponse> customResponses = synchronizedList(new GrowthList());
 
@@ -87,15 +91,42 @@ public class WebserviceOperation {
 		this.defaultResponseText = defaultResponseText;
 	}
 
+	public Collection<WebserviceCustomResponse> getCustomResponses() {
+		return indxToCustomResponseMap.values();
+	}
+
+	public void addCustomResponse(int operationIndex, WebserviceCustomResponse operation) {
+		indxToCustomResponseMap.put(operationIndex, operation);
+	}
+
+	public WebserviceCustomResponse getCustomResponse(int indx) {
+		return indxToCustomResponseMap.get(indx);
+	}
+
 	public MockResponse getResponse(int requestNumber) {
-		int index = requestNumber - 1;
-		MockResponse mockResponse = null;
-		synchronized (customResponses) {
-			if (customResponses.size() < requestNumber || (mockResponse = customResponses.get(index)) == null) {
-				return MockResponse.body(defaultResponseText).code(defaultResponseCode).contentType(defaultResponseContentType)
-						.build();
+		return getResponse(requestNumber, null);
+	}
+
+	public MockResponse getResponse(int requestNumber, String request) {
+		if(request == null || indxToCustomResponseMap.isEmpty()) {
+			int index = requestNumber - 1;
+			MockResponse mockResponse = null;
+			synchronized (customResponses) {
+				if (customResponses.size() < requestNumber || (mockResponse = customResponses.get(index)) == null) {
+					return MockResponse.body(defaultResponseText).code(defaultResponseCode).contentType(defaultResponseContentType)
+							.build();
+				}
+				return mockResponse;
 			}
-			return mockResponse;
+		} else {
+			for (WebserviceCustomResponse customResponse : indxToCustomResponseMap.values()) {
+				if(request.contains(customResponse.getSearchString())) {
+					return MockResponse.body(customResponse.getResponseText()).code(defaultResponseCode).contentType(defaultResponseContentType)
+							.build();
+				}
+			}
+			return MockResponse.body(defaultResponseText).code(defaultResponseCode).contentType(defaultResponseContentType)
+					.build();
 		}
 	}
 
@@ -159,6 +190,7 @@ public class WebserviceOperation {
 		private String defaultResponseText;
 		private int defaultResponseCode;
 		private String defaultResponseContentType;
+		private Map<Integer, WebserviceCustomResponse> indxToCustomResponseMap;
 
 		public WebserviceOperationBuilder operationName(String operationName) {
 			this.operationName = operationName;
@@ -185,6 +217,11 @@ public class WebserviceOperation {
 			return this;
 		}
 
+		public WebserviceOperationBuilder indxToCustomResponseMap(Map<Integer, WebserviceCustomResponse> indxToCustomResponseMap) {
+			this.indxToCustomResponseMap = indxToCustomResponseMap;
+			return this;
+		}
+
 		public WebserviceOperation build() {
 			WebserviceOperation webserviceOperation = new WebserviceOperation();
 			webserviceOperation.operationName = this.operationName;
@@ -193,6 +230,9 @@ public class WebserviceOperation {
 			webserviceOperation.defaultResponseCode = this.defaultResponseCode;
 			if (this.defaultResponseContentType != null) {
 				webserviceOperation.defaultResponseContentType = this.defaultResponseContentType;
+			}
+			if (this.indxToCustomResponseMap != null) {
+				webserviceOperation.indxToCustomResponseMap = this.indxToCustomResponseMap;
 			}
 			return webserviceOperation;
 		}
