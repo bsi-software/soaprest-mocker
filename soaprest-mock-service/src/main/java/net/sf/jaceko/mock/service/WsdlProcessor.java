@@ -24,6 +24,7 @@ import static java.text.MessageFormat.format;
 
 import java.io.StringReader;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
+import net.sf.jaceko.mock.util.FileReader;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
@@ -66,7 +68,8 @@ public class WsdlProcessor {
 
 		WSDLReader wsdlReader = factory.newWSDLReader();
 		try {
-			Definition def = wsdlReader.readWSDL(null, new InputSource(new StringReader(fileText)));
+			final URL resource = FileReader.class.getClassLoader().getResource(wsdlFileName);
+			Definition def = wsdlReader.readWSDL(resource.toURI().getRawPath(), new InputSource(new StringReader(fileText)));
 			SoapMessageBuilder soapMessageBuilder = new SoapMessageBuilder(def, fileText);
 			Map<QName, Binding> bindingsMap = def.getBindings();
 			Collection<Binding> bindings = bindingsMap.values();
