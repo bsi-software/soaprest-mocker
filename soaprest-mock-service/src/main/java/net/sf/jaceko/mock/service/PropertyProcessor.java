@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 import net.sf.jaceko.mock.application.enums.HttpMethod;
 import net.sf.jaceko.mock.application.enums.ServiceType;
 import net.sf.jaceko.mock.exception.ServiceNotConfiguredException;
+import net.sf.jaceko.mock.model.request.MockResponse;
 import net.sf.jaceko.mock.model.webservice.WebService;
 import net.sf.jaceko.mock.model.webservice.WebserviceCustomResponse;
 import net.sf.jaceko.mock.model.webservice.WebserviceOperation;
@@ -78,6 +79,8 @@ public class PropertyProcessor {
 	private static final String CUSTOM_RESPONSE_SEARCHSTRING = "SEARCHSTRING";
 
 	private static final String CUSTOM_RESPONSE_RESPONSE = "RESPONSE";
+
+	private static final String SEQUENCE_RESPONSE_RESPONSE = "RESPONSE";
 	
 	private static final String SERVICE_TYPE = "TYPE";
 
@@ -88,6 +91,7 @@ public class PropertyProcessor {
 	private static final Pattern SERVICE_PATTERN = Pattern.compile("^SERVICE\\[([0-9]+)\\]$");
 	private static final Pattern OPERATION_PATTERN = Pattern.compile("^OPERATION\\[([0-9]+)\\]$");
 	private static final Pattern CUSTOM_RESPONSE_PATTERN = Pattern.compile("^CUSTOM_RESPONSE\\[([0-9]+)\\]$");
+	private static final Pattern SEQUENCE_RESPONSE_PATTERN = Pattern.compile("^SEQUENCE_RESPONSE\\[([0-9]+)\\]$");;
 
 	private final WsdlProcessor wsdlProcessor = new WsdlProcessor();
 
@@ -124,14 +128,17 @@ public class PropertyProcessor {
 
 						final String operationProperty = propertyKeyParts[2];
 						final int customResponseIndex = getCustomResponseIndex(operationProperty);
+						final int sequenceResponseIndex = getSequenceResponseIndex(operationProperty);
 						if (customResponseIndex >= 0) {
 							// custom response part
 							final WebserviceCustomResponse customResponse = getCustomResponseFromOperation(operation, operationIndex);
 
 							final String customResponseProperty = propertyKeyParts[3];
 							setCustomResponseProperties(customResponse, customResponseProperty, propertyValue);
-						}
-						else {
+						} else if(sequenceResponseIndex >= 0) {
+							final String sequenceResponseProperty = propertyKeyParts[3];
+							setSequenceResponseProperties(operation, sequenceResponseProperty, sequenceResponseIndex, propertyValue);
+						} else {
 							setOperationProperties(operation, operationProperty, propertyValue);
 						}
 					} else {
@@ -210,8 +217,7 @@ public class PropertyProcessor {
 
 	}
 
-	private void setCustomResponseProperties(final WebserviceCustomResponse customResponse, final String customResponseProperty,
-			final String propertyValue) {
+	private void setCustomResponseProperties(final WebserviceCustomResponse customResponse, final String customResponseProperty, final String propertyValue) {
 		if (customResponseProperty.equals(CUSTOM_RESPONSE_SEARCHSTRING)) {
 			customResponse.setSearchString(propertyValue);
 		} else if (customResponseProperty.equals(CUSTOM_RESPONSE_RESPONSE)) {
@@ -226,7 +232,23 @@ public class PropertyProcessor {
 		if (fileText != null) {
 			customResponse.setResponseText(fileText);
 		}
+	}
 
+	private void setSequenceResponseProperties(WebserviceOperation operation, String sequenceResponseProperty, int sequenceNumber, String propertyValue) {
+		if (sequenceResponseProperty.equals(SEQUENCE_RESPONSE_RESPONSE)) {
+			operation.setResponseInSequences(true);
+			setSequenceResponseText(operation, sequenceNumber, propertyValue);
+		}
+	}
+
+	private static final int ZERO_BASED_TO_ONE_BASED_INDEX = 1;
+	private void setSequenceResponseText(final WebserviceOperation operation, final int sequenceNumber, final String sequenceResponseFile) {
+
+		final String fileText = fileReader.readFileContents(sequenceResponseFile);
+		if (fileText != null) {
+			MockResponse mockResponse = MockResponse.body(fileText).code(operation.getDefaultResponseCode()).contentType(operation.getDefaultResponseContentType()).build();
+			operation.setCustomResponse(mockResponse, sequenceNumber + ZERO_BASED_TO_ONE_BASED_INDEX);
+		}
 	}
 
 
@@ -263,6 +285,11 @@ public class PropertyProcessor {
 		return extractIndex(keyPart, pattern);
 	}
 
+	int getSequenceResponseIndex(final String keyPart) {
+		final Pattern pattern = SEQUENCE_RESPONSE_PATTERN;
+		return extractIndex(keyPart, pattern);
+	}
+	
 	private int extractIndex(final String keyPart, final Pattern pattern) {
 		final Matcher matcher = pattern.matcher(keyPart);
 		if (matcher.find()) {

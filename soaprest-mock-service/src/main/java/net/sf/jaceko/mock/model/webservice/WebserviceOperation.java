@@ -52,6 +52,7 @@ public class WebserviceOperation {
 	private Map<Integer, WebserviceCustomResponse> indxToCustomResponseMap = new HashMap<Integer, WebserviceCustomResponse>();
 	@SuppressWarnings("unchecked")
 	private final List<MockResponse> customResponses = synchronizedList(new GrowthList());
+	private boolean responseInSequences = false;
 
 	public WebserviceOperation() {
 		super();
@@ -109,7 +110,12 @@ public class WebserviceOperation {
 
 	public MockResponse getResponse(int requestNumber, String request) {
 		if(request == null || indxToCustomResponseMap.isEmpty()) {
-			int index = requestNumber - 1;
+			int index;
+			if(responseInSequences) {
+				index = requestNumber % customResponses.size();
+			} else {
+				index = requestNumber - 1;
+			}
 			MockResponse mockResponse = null;
 			synchronized (customResponses) {
 				if (customResponses.size() < requestNumber || (mockResponse = customResponses.get(index)) == null) {
@@ -138,9 +144,16 @@ public class WebserviceOperation {
 	public void addCustomResponse(MockResponse customResponse) {
 		customResponse.setZeroCodeTo(defaultResponseCode);
 		customResponses.add(customResponse);
-
 	}
-
+	
+	public boolean isResponseInSequences() {
+		return responseInSequences;
+	}
+	
+	public void setResponseInSequences(boolean responseInSequences) {
+		this.responseInSequences = responseInSequences;
+	}
+	
 	public void init() {
 		customResponses.clear();
 		resetInvocationNumber();
