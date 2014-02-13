@@ -6,7 +6,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.xml.HasXPath.hasXPath;
 import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItem;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

@@ -4,7 +4,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasXPath;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItem;
 
 import java.io.IOException;
 import java.util.List;

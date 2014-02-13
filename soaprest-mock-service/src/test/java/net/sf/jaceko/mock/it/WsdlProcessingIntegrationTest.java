@@ -11,7 +11,7 @@ import java.io.UnsupportedEncodingException;
 import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Test;
 import org.w3c.dom.Document;

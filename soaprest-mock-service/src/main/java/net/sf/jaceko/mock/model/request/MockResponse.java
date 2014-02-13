@@ -19,75 +19,73 @@
  */
 package net.sf.jaceko.mock.model.request;
 
-import sun.font.LayoutPathImpl;
-
 import javax.ws.rs.core.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MockResponse {
-	private String body;
-	private int code = 200;
-	private int delaySec;
-	private String contentType;
+  private String body;
+  private int code = 200;
+  private int delaySec;
+  private String contentType;
     private Map<String, String> headers;
 
     public static MockResponseBuilder body(String body) {
-		MockResponseBuilder builder = MockResponseBuilder.getInstance();
-		builder.body(body);
-		return builder.body(body);
-	}
+    MockResponseBuilder builder = MockResponseBuilder.getInstance();
+    builder.body(body);
+    return builder.body(body);
+  }
 
-	public MockResponse(String body, int code, int delaySec) {
-		super();
-		this.body = body;
-		this.code = code;
-		this.delaySec = delaySec;
-	}
+  public MockResponse(String body, int code, int delaySec) {
+    super();
+    this.body = body;
+    this.code = code;
+    this.delaySec = delaySec;
+  }
 
-	public MockResponse(int delaySec) {
-		super();
-		this.delaySec = delaySec;
-	}
+  public MockResponse(int delaySec) {
+    super();
+    this.delaySec = delaySec;
+  }
 
-	public MockResponse(String body) {
-		super();
-		this.body = body;
-	}
+  public MockResponse(String body) {
+    super();
+    this.body = body;
+  }
 
-	public MockResponse(String body, int code) {
-		this.body = body;
-		this.code = code;
-	}
+  public MockResponse(String body, int code) {
+    this.body = body;
+    this.code = code;
+  }
 
-	public MockResponse() {
-	}
+  public MockResponse() {
+  }
 
-	public String getBody() {
-		return body;
-	}
+  public String getBody() {
+    return body;
+  }
 
-	public int getCode() {
-		return code;
-	}
+  public int getCode() {
+    return code;
+  }
 
-	public void setCode(int code) {
-		this.code = code;
-	}
+  public void setCode(int code) {
+    this.code = code;
+  }
 
-	public void setZeroCodeTo(int code) {
-		if (this.code == 0) {
-			setCode(code);
-		}
-	}
+  public void setZeroCodeTo(int code) {
+    if (this.code == 0) {
+      setCode(code);
+    }
+  }
 
-	public int getDelaySec() {
-		return delaySec;
-	}
+  public int getDelaySec() {
+    return delaySec;
+  }
 
-	public String getContentType() {
-		return contentType;
-	}
+  public String getContentType() {
+    return contentType;
+  }
 
     public void setHeaders(Map<String,String> headers) {
         this.headers = headers;
@@ -102,42 +100,42 @@ public class MockResponse {
     }
 
     public static class MockResponseBuilder {
-		private String body;
-		private int code = 200;
-		private int delaySec;
-		private String contentType;
+    private String body;
+    private int code = 200;
+    private int delaySec;
+    private String contentType;
         private Map<String, String> headers = new HashMap<String, String>();
 
         public static MockResponseBuilder getInstance() {
-			return new MockResponseBuilder();
-		}
+      return new MockResponseBuilder();
+    }
 
-		public MockResponseBuilder body(String body) {
-			this.body = body;
-			return this;
-		}
+    public MockResponseBuilder body(String body) {
+      this.body = body;
+      return this;
+    }
 
-		public MockResponseBuilder code(int code) {
-			this.code = code;
-			return this;
-		}
+    public MockResponseBuilder code(int code) {
+      this.code = code;
+      return this;
+    }
 
-		public MockResponseBuilder delaySec(int delaySec) {
-			this.delaySec = delaySec;
-			return this;
-		}
+    public MockResponseBuilder delaySec(int delaySec) {
+      this.delaySec = delaySec;
+      return this;
+    }
 
-		public MockResponseBuilder contentType(MediaType contentType) {
-			if (contentType != null) {
-				this.contentType = contentType.toString();
-			}
-			return this;
-		}
+    public MockResponseBuilder contentType(MediaType contentType) {
+      if (contentType != null) {
+        this.contentType = contentType.toString();
+      }
+      return this;
+    }
 
-		public MockResponseBuilder contentType(String contentType) {
-			this.contentType = contentType;
-			return this;
-		}
+    public MockResponseBuilder contentType(String contentType) {
+      this.contentType = contentType;
+      return this;
+    }
 
         public MockResponse build() {
             MockResponse mockResponse = new MockResponse();
@@ -155,17 +153,17 @@ public class MockResponse {
         }
     }
 
-	void setBody(String body) {
-		this.body = body;
-	}
+  void setBody(String body) {
+    this.body = body;
+  }
 
-	void setDelaySec(int delaySec) {
-		this.delaySec = delaySec;
-	}
+  void setDelaySec(int delaySec) {
+    this.delaySec = delaySec;
+  }
 
-	void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
+  void setContentType(String contentType) {
+    this.contentType = contentType;
+  }
 
     @Override
     public boolean equals(Object o) {

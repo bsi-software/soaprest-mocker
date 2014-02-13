@@ -3,7 +3,7 @@ package net.sf.jaceko.mock.it;
 import net.sf.jaceko.mock.dom.DocumentImpl;
 import net.sf.jaceko.mock.it.helper.request.HttpRequestSender;
 import net.sf.jaceko.mock.model.request.MockResponse;
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Before;
 import org.junit.Test;

@@ -29,87 +29,86 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import net.sf.jaceko.mock.model.request.MockRequest;
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
 import javax.ws.rs.core.MultivaluedMap;
 
 public class RecordedRequestsHolder {
-	private MockConfigurationHolder configurationHolder;
+  private MockConfigurationHolder configurationHolder;
 
-	private final ConcurrentMap<String, ConcurrentMap<String, Collection<MockRequest>>> recordedRequestsMap = new ConcurrentHashMap<String, ConcurrentMap<String, Collection<MockRequest>>>();
+  private final ConcurrentMap<String, ConcurrentMap<String, Collection<MockRequest>>> recordedRequestsMap = new ConcurrentHashMap<String, ConcurrentMap<String, Collection<MockRequest>>>();
 
-	public void recordRequest(String serviceName, String operationId, String requestBody, String queryString, String resourceId, MultivaluedMap headers) {
-		ConcurrentMap<String, Collection<MockRequest>> requestsPerOperationMap = fetchRequestsPerOperationMap(serviceName);
+  public void recordRequest(String serviceName, String operationId, String requestBody, String queryString, String resourceId, MultivaluedMap headers) {
+    ConcurrentMap<String, Collection<MockRequest>> requestsPerOperationMap = fetchRequestsPerOperationMap(serviceName);
 
-		Collection<MockRequest> recordedRequests = fetchRecordedRequests(operationId, requestsPerOperationMap);
+    Collection<MockRequest> recordedRequests = fetchRecordedRequests(operationId, requestsPerOperationMap);
 
-		MockRequest request = new MockRequest(requestBody, queryString, resourceId, headers);
+    MockRequest request = new MockRequest(requestBody, queryString, resourceId, headers);
         recordedRequests.add(request);
-	}
+  }
 
-	private Collection<MockRequest> fetchRecordedRequests(String operationId,
-			ConcurrentMap<String, Collection<MockRequest>> requestsPerOperationMap) {
-		requestsPerOperationMap.putIfAbsent(operationId, synchronizedList(new ArrayList<MockRequest>()));
-		return requestsPerOperationMap.get(operationId);
-	}
+  private Collection<MockRequest> fetchRecordedRequests(String operationId,
+      ConcurrentMap<String, Collection<MockRequest>> requestsPerOperationMap) {
+    requestsPerOperationMap.putIfAbsent(operationId, synchronizedList(new ArrayList<MockRequest>()));
+    return requestsPerOperationMap.get(operationId);
+  }
 
-	private ConcurrentMap<String, Collection<MockRequest>> fetchRequestsPerOperationMap(String serviceName) {
-		recordedRequestsMap.putIfAbsent(serviceName, new ConcurrentHashMap<String, Collection<MockRequest>>());
-		return recordedRequestsMap.get(serviceName);
-	}
+  private ConcurrentMap<String, Collection<MockRequest>> fetchRequestsPerOperationMap(String serviceName) {
+    recordedRequestsMap.putIfAbsent(serviceName, new ConcurrentHashMap<String, Collection<MockRequest>>());
+    return recordedRequestsMap.get(serviceName);
+  }
 
-	public Collection<String> getRecordedRequestBodies(String serviceName, String operationId) {
-		Collection<MockRequest> recordedRequests = getRecordedRequests(serviceName, operationId);
+  public Collection<String> getRecordedRequestBodies(String serviceName, String operationId) {
+    Collection<MockRequest> recordedRequests = getRecordedRequests(serviceName, operationId);
 
-		Collection<String> recordedRequestBodies = new ArrayList<String>();
-		for (MockRequest request : recordedRequests) {
-			recordedRequestBodies.add(request.getBody());
-		}
-		return recordedRequestBodies;
+    Collection<String> recordedRequestBodies = new ArrayList<String>();
+    for (MockRequest request : recordedRequests) {
+      recordedRequestBodies.add(request.getBody());
+    }
+    return recordedRequestBodies;
 
-	}
+  }
 
-	public Collection<String> getRecordedUrlParams(String serviceName, String operationId) {
-		Collection<MockRequest> recordedRequests = getRecordedRequests(serviceName, operationId);
+  public Collection<String> getRecordedUrlParams(String serviceName, String operationId) {
+    Collection<MockRequest> recordedRequests = getRecordedRequests(serviceName, operationId);
 
-		Collection<String> recordedRequestParams = new ArrayList<String>();
-		for (MockRequest request : recordedRequests) {
-			recordedRequestParams.add(request.getQueryString());
-		}
-		return recordedRequestParams;
-	}
+    Collection<String> recordedRequestParams = new ArrayList<String>();
+    for (MockRequest request : recordedRequests) {
+      recordedRequestParams.add(request.getQueryString());
+    }
+    return recordedRequestParams;
+  }
 
-	public Collection<MockRequest> getRecordedRequests(String serviceName, String operationId) {
-		configurationHolder.getWebServiceOperation(serviceName, operationId);
-		Map<String, Collection<MockRequest>> requestsPerOperationMap = recordedRequestsMap.get(serviceName);
-		if (requestsPerOperationMap == null) {
-			return Collections.emptyList();
-		}
-		Collection<MockRequest> recordedRequests = requestsPerOperationMap.get(operationId);
-		if (recordedRequests == null) {
-			return Collections.emptyList();
-		}
-		return recordedRequests;
-	}
+  public Collection<MockRequest> getRecordedRequests(String serviceName, String operationId) {
+    configurationHolder.getWebServiceOperation(serviceName, operationId);
+    Map<String, Collection<MockRequest>> requestsPerOperationMap = recordedRequestsMap.get(serviceName);
+    if (requestsPerOperationMap == null) {
+      return Collections.emptyList();
+    }
+    Collection<MockRequest> recordedRequests = requestsPerOperationMap.get(operationId);
+    if (recordedRequests == null) {
+      return Collections.emptyList();
+    }
+    return recordedRequests;
+  }
 
-	public Collection<String> getRecordedResourceIds(String serviceName, String operationId) {
-		Collection<MockRequest> recordedRequests = getRecordedRequests(serviceName, operationId);
+  public Collection<String> getRecordedResourceIds(String serviceName, String operationId) {
+    Collection<MockRequest> recordedRequests = getRecordedRequests(serviceName, operationId);
 
-		Collection<String> recordedResourceIds = new ArrayList<String>();
-		synchronized (recordedRequests) {
-			for (MockRequest request : recordedRequests) {
-				recordedResourceIds.add(request.getResourceId());
-			}
-		}
-		return recordedResourceIds;
-	}
+    Collection<String> recordedResourceIds = new ArrayList<String>();
+    synchronized (recordedRequests) {
+      for (MockRequest request : recordedRequests) {
+        recordedResourceIds.add(request.getResourceId());
+      }
+    }
+    return recordedResourceIds;
+  }
 
-	public void clearRecordedRequests(String serviceName, String operationId) {
-		getRecordedRequests(serviceName, operationId).clear();
-	}
+  public void clearRecordedRequests(String serviceName, String operationId) {
+    getRecordedRequests(serviceName, operationId).clear();
+  }
 
-	public void setMockserviceConfiguration(MockConfigurationHolder configurationHolder) {
-		this.configurationHolder = configurationHolder;
-	}
+  public void setMockserviceConfiguration(MockConfigurationHolder configurationHolder) {
+    this.configurationHolder = configurationHolder;
+  }
 
 }
