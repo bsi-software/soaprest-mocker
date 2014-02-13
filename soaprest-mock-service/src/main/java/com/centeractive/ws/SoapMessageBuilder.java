@@ -100,7 +100,7 @@ public class SoapMessageBuilder {
 	public SoapMessageBuilder(Definition definition, String xml) {
 		super();
 		this.definition = definition;
-		this.definitionWrapper = new SchemaDefinitionWrapper(definition, "http://localhost:8080/mock", xml);
+		this.definitionWrapper = new SchemaDefinitionWrapper(definition, "http://localhost:8088/mock", xml);
 	}
 
 	// ----------------------------------------------------------

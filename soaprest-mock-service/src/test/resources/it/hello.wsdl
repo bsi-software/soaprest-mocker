@@ -43,7 +43,7 @@
       <documentation>Service that says hello</documentation>
       <port binding="tns:Hello_Binding" name="Hello_Port">
          <soap:address
-            location="http://localhost:8080/mock/services/SOAP/dummy-soap-withwsdl/endpoint"/>
+            location="http://localhost:8088/mock/services/SOAP/dummy-soap-withwsdl/endpoint"/>
       </port>
    </service>
 </definitions>

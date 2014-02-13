@@ -24,11 +24,11 @@ import static org.junit.Assert.assertThat;
 public class SoapMockIntegrationTest {
 
 	// mocked endpoints configured in ws-mock.properties
-	private static final String SOAP_MOCK_ENDPOINT = "http://localhost:8080/mock/services/SOAP/hello-soap/endpoint";
+	private static final String SOAP_MOCK_ENDPOINT = "http://localhost:8088/mock/services/SOAP/hello-soap/endpoint";
 
-	private static final String SOAP_MOCK_INIT = "http://localhost:8080/mock/services/SOAP/hello-soap/operations/sayHello/init";
-	private static final String SOAP_MOCK_RESPONSES = "http://localhost:8080/mock/services/SOAP/hello-soap/operations/sayHello/responses";
-	private static final String SOAP_MOCK_RECORDED_REQUESTS = "http://localhost:8080/mock/services/SOAP/hello-soap/operations/sayHello/recorded-requests";
+	private static final String SOAP_MOCK_INIT = "http://localhost:8088/mock/services/SOAP/hello-soap/operations/sayHello/init";
+	private static final String SOAP_MOCK_RESPONSES = "http://localhost:8088/mock/services/SOAP/hello-soap/operations/sayHello/responses";
+	private static final String SOAP_MOCK_RECORDED_REQUESTS = "http://localhost:8088/mock/services/SOAP/hello-soap/operations/sayHello/recorded-requests";
 
 	private static final String REQUEST = "<soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:urn=\"urn:examples:helloservice\">\r\n"
 			+ "   <soapenv:Header/>\r\n"

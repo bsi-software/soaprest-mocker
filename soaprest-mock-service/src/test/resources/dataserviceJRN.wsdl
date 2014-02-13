@@ -165,7 +165,7 @@
  </wsdl:binding>
  <wsdl:service name="JRNWSIP">
   <wsdl:port binding="tns:JRNWSIPSoapBinding" name="JRNWSIPSoapPort">
-   <soap:address location="http://localhost:8080/mock/services/SOAP/dataserviceJRN/endpoint"/>
+   <soap:address location="http://localhost:8088/mock/services/SOAP/dataserviceJRN/endpoint"/>
   </wsdl:port>
  </wsdl:service>
 </wsdl:definitions>

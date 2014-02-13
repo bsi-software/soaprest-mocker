@@ -29,10 +29,10 @@ import org.xml.sax.SAXException;
 public class RestMockGETJsonIntegrationTest {
 
 	// mocked endpoints configured in ws-mock.properties
-	private static final String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/services/REST/dummy-rest-json/endpoint";
+	private static final String REST_MOCK_ENDPOINT = "http://localhost:8088/mock/services/REST/dummy-rest-json/endpoint";
 
-	private static final String REST_MOCK_GET_INIT = "http://localhost:8080/mock/services/REST/dummy-rest-json/operations/GET/init";
-	private static final String REST_MOCK_GET_RESPONSES = "http://localhost:8080/mock/services/REST/dummy-rest-json/operations/GET/responses";
+	private static final String REST_MOCK_GET_INIT = "http://localhost:8088/mock/services/REST/dummy-rest-json/operations/GET/init";
+	private static final String REST_MOCK_GET_RESPONSES = "http://localhost:8088/mock/services/REST/dummy-rest-json/operations/GET/responses";
 
 	HttpRequestSender requestSender = new HttpRequestSender();
 

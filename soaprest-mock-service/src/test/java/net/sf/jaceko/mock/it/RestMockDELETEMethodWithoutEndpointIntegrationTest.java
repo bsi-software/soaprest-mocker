@@ -29,12 +29,12 @@ import static org.junit.Assert.assertThat;
 public class RestMockDELETEMethodWithoutEndpointIntegrationTest {
 
 	//mocked endpoints configured in ws-mock.properties
-	private static String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/services/REST/dummy-rest";
+	private static String REST_MOCK_ENDPOINT = "http://localhost:8088/mock/services/REST/dummy-rest";
 	
 	
 	
-	private static final String REST_MOCK_DELETE_SETUP_INIT			 	= "http://localhost:8080/mock/services/REST/dummy-rest/operations/DELETE/init";
-	private static final String REST_MOCK_DELETE_RESPONSES 			 	= "http://localhost:8080/mock/services/REST/dummy-rest/operations/DELETE/responses";
+	private static final String REST_MOCK_DELETE_SETUP_INIT			 	= "http://localhost:8088/mock/services/REST/dummy-rest/operations/DELETE/init";
+	private static final String REST_MOCK_DELETE_RESPONSES 			 	= "http://localhost:8088/mock/services/REST/dummy-rest/operations/DELETE/responses";
 	
 	HttpRequestSender requestSender = new HttpRequestSender();
 	

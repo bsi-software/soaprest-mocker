@@ -220,6 +220,11 @@
         <artifactId>jetty-maven-plugin</artifactId>
         <version>${org.eclipse.jetty}</version>
         <configuration>
+          <httpConnector>
+            <port>8088</port>
+            <idleTimeout>60000</idleTimeout>
+          </httpConnector>
+
           <stopKey>STOP</stopKey>
           <stopPort>9992</stopPort>
           <scanIntervalSeconds>5</scanIntervalSeconds>
@@ -231,7 +236,7 @@
 
           <connectors>
             <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-              <port>8080</port>
+              <port>8088</port>
               <maxIdleTime>60000</maxIdleTime>
             </connector>
           </connectors>

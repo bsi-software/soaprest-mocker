@@ -34,12 +34,12 @@ import org.xml.sax.SAXException;
 public class RestMockDELETEMethodIntegrationTest {
 
 	//mocked endpoints configured in ws-mock.properties
-	private static String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/services/REST/dummy-rest/endpoint";
+	private static String REST_MOCK_ENDPOINT = "http://localhost:8088/mock/services/REST/dummy-rest/endpoint";
 
-	private static final String REST_MOCK_DELETE_SETUP_INIT			 	= "http://localhost:8080/mock/services/REST/dummy-rest/operations/DELETE/init";
-	private static final String REST_MOCK_DELETE_RESPONSES 			 	= "http://localhost:8080/mock/services/REST/dummy-rest/operations/DELETE/responses";
+	private static final String REST_MOCK_DELETE_SETUP_INIT			 	= "http://localhost:8088/mock/services/REST/dummy-rest/operations/DELETE/init";
+	private static final String REST_MOCK_DELETE_RESPONSES 			 	= "http://localhost:8088/mock/services/REST/dummy-rest/operations/DELETE/responses";
 
-    private static final String REST_MOCK_DELETE_RECORDED_REQUESTS_HEADERS = "http://localhost:8080/mock/services/REST/dummy-rest/operations/DELETE/recorded-request-headers";
+    private static final String REST_MOCK_DELETE_RECORDED_REQUESTS_HEADERS = "http://localhost:8088/mock/services/REST/dummy-rest/operations/DELETE/recorded-request-headers";
 	
 	HttpRequestSender requestSender = new HttpRequestSender();
 	

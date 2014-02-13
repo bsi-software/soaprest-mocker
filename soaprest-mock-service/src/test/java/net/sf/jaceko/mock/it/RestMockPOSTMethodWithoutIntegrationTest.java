@@ -33,13 +33,13 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 public class RestMockPOSTMethodWithoutIntegrationTest {
 
 	// mocked endpoints configured in ws-mock.properties
-	private static final String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/services/REST/dummy-rest";
+	private static final String REST_MOCK_ENDPOINT = "http://localhost:8088/mock/services/REST/dummy-rest";
 
-	private static final String REST_MOCK_POST_INIT = "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/init";
-	private static final String REST_MOCK_POST_RESPONSES = "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/responses";
-	private static final String REST_MOCK_POST_RECORDED_REQUESTS = "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/recorded-requests";
-	private static final String REST_MOCK_POST_RECORDED_REQUESTS_WITH_REQUEST_ELEMENT = "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/recorded-requests?requestElement=request";
-	private static final String REST_MOCK_POST_RECORDED_REQUEST_PARAMS = "http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/recorded-request-params";
+	private static final String REST_MOCK_POST_INIT = "http://localhost:8088/mock/services/REST/dummy-rest/operations/POST/init";
+	private static final String REST_MOCK_POST_RESPONSES = "http://localhost:8088/mock/services/REST/dummy-rest/operations/POST/responses";
+	private static final String REST_MOCK_POST_RECORDED_REQUESTS = "http://localhost:8088/mock/services/REST/dummy-rest/operations/POST/recorded-requests";
+	private static final String REST_MOCK_POST_RECORDED_REQUESTS_WITH_REQUEST_ELEMENT = "http://localhost:8088/mock/services/REST/dummy-rest/operations/POST/recorded-requests?requestElement=request";
+	private static final String REST_MOCK_POST_RECORDED_REQUEST_PARAMS = "http://localhost:8088/mock/services/REST/dummy-rest/operations/POST/recorded-request-params";
 
 	HttpRequestSender requestSender = new HttpRequestSender();
 

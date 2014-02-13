@@ -32,9 +32,9 @@ import net.sf.jaceko.mock.model.request.MockResponse;
 public class WsdlProcessingIntegrationTest {
 
 	// mocked endpoints configured in ws-mock.properties
-	private static final String SERVICES = "http://localhost:8080/mock/services";
+	private static final String SERVICES = "http://localhost:8088/mock/services";
 
-	private static final String HELLO_MOCK_ENDPOINT = "http://localhost:8080/mock/services/SOAP/hello-soap-withwsdl/endpoint";
+	private static final String HELLO_MOCK_ENDPOINT = "http://localhost:8088/mock/services/SOAP/hello-soap-withwsdl/endpoint";
 
 	private static final String HELLO_REQUEST = "<soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:urn=\"urn:examples:helloservice\">\r\n"
 			+ "   <soapenv:Header/>\r\n"
@@ -44,7 +44,7 @@ public class WsdlProcessingIntegrationTest {
 			+ "      </urn:sayHello>\r\n"
 			+ "   </soapenv:Body>\r\n" + "</soapenv:Envelope>";
 
-	private static final String CONVERSION_RATE_ENDPOINT = "http://localhost:8080/mock/services/SOAP/webservicex-rate-convertor/endpoint";
+	private static final String CONVERSION_RATE_ENDPOINT = "http://localhost:8088/mock/services/SOAP/webservicex-rate-convertor/endpoint";
 	private static final String CONVERSION_RATE_REQUEST = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:web=\"http://www.webserviceX.NET/\">\r\n"
 			+ "   <soapenv:Header/>\r\n"
 			+ "   <soapenv:Body>\r\n"

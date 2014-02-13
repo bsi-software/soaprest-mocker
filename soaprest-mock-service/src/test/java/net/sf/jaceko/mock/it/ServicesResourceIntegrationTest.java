@@ -28,9 +28,9 @@ import org.xml.sax.SAXException;
  *
  */
 public class ServicesResourceIntegrationTest {
-	private static final String SERVICES = "http://localhost:8080/mock/services";
+	private static final String SERVICES = "http://localhost:8088/mock/services";
 
-	private static final String OPERATIONS = "http://localhost:8080/mock/services/{0}/{1}/operations/{2}";
+	private static final String OPERATIONS = "http://localhost:8088/mock/services/{0}/{1}/operations/{2}";
 	HttpRequestSender requestSender = new HttpRequestSender();
 
 	@Test
@@ -53,23 +53,23 @@ public class ServicesResourceIntegrationTest {
 		assertThat(
 				serviceResponseDoc,
 				hasXPath("//services/service[@name='hello-soap']/operations/operation-ref/@uri",
-						equalTo("http://localhost:8080/mock/services/SOAP/hello-soap/operations/sayHello")));
+						equalTo("http://localhost:8088/mock/services/SOAP/hello-soap/operations/sayHello")));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//services/service[@name='dummy-rest']/operations/operation-ref[@name='GET' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/GET']"));
+				hasXPath("//services/service[@name='dummy-rest']/operations/operation-ref[@name='GET' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/GET']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//services/service[@name='dummy-rest']/operations/operation-ref[@name='PUT' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT']"));
+				hasXPath("//services/service[@name='dummy-rest']/operations/operation-ref[@name='PUT' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/PUT']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//services/service[@name='dummy-rest']/operations/operation-ref[@name='POST' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/POST']"));
+				hasXPath("//services/service[@name='dummy-rest']/operations/operation-ref[@name='POST' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/POST']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//services/service[@name='dummy-rest']/operations/operation-ref[@name='DELETE' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/DELETE']"));
+				hasXPath("//services/service[@name='dummy-rest']/operations/operation-ref[@name='DELETE' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/DELETE']"));
 
 	}
 
@@ -88,23 +88,23 @@ public class ServicesResourceIntegrationTest {
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='operation initialization' and @http-method='POST' and @uri='http://localhost:8080/mock/services/SOAP/hello-soap/operations/sayHello/init']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='operation initialization' and @http-method='POST' and @uri='http://localhost:8088/mock/services/SOAP/hello-soap/operations/sayHello/init']"));
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='add custom response' and @http-method='POST' and @uri='http://localhost:8080/mock/services/SOAP/hello-soap/operations/sayHello/responses']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='add custom response' and @http-method='POST' and @uri='http://localhost:8088/mock/services/SOAP/hello-soap/operations/sayHello/responses']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='set first custom response' and @http-method='PUT' and @uri='http://localhost:8080/mock/services/SOAP/hello-soap/operations/sayHello/responses/1']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='set first custom response' and @http-method='PUT' and @uri='http://localhost:8088/mock/services/SOAP/hello-soap/operations/sayHello/responses/1']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='set second custom response' and @http-method='PUT' and @uri='http://localhost:8080/mock/services/SOAP/hello-soap/operations/sayHello/responses/2']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='set second custom response' and @http-method='PUT' and @uri='http://localhost:8088/mock/services/SOAP/hello-soap/operations/sayHello/responses/2']"));
 		assertThat(serviceResponseDoc, hasXPath("count(//operation/setup-resources/resource-ref)", equalTo("4")));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/verification-resources/resource-ref[@description='recorded requests' and @http-method='GET' and @uri='http://localhost:8080/mock/services/SOAP/hello-soap/operations/sayHello/recorded-requests']"));
+				hasXPath("//operation/verification-resources/resource-ref[@description='recorded requests' and @http-method='GET' and @uri='http://localhost:8088/mock/services/SOAP/hello-soap/operations/sayHello/recorded-requests']"));
 
 		assertThat(serviceResponseDoc, hasXPath("count(//operation/verification-resources/resource-ref)", equalTo("1")));
 	}
@@ -124,35 +124,35 @@ public class ServicesResourceIntegrationTest {
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='operation initialization' and @http-method='POST' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/GET/init']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='operation initialization' and @http-method='POST' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/GET/init']"));
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='add custom response' and @http-method='POST' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/GET/responses']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='add custom response' and @http-method='POST' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/GET/responses']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='set first custom response' and @http-method='PUT' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/GET/responses/1']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='set first custom response' and @http-method='PUT' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/GET/responses/1']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='set second custom response' and @http-method='PUT' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/GET/responses/2']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='set second custom response' and @http-method='PUT' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/GET/responses/2']"));
 
 		assertThat(serviceResponseDoc, hasXPath("count(//operation/setup-resources/resource-ref)", equalTo("4")));
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/verification-resources/resource-ref[@description='recorded requests' and @http-method='GET' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/GET/recorded-requests']"));
+				hasXPath("//operation/verification-resources/resource-ref[@description='recorded requests' and @http-method='GET' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/GET/recorded-requests']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/verification-resources/resource-ref[@description='recorded resource ids' and @http-method='GET' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/GET/recorded-resource-ids']"));
+				hasXPath("//operation/verification-resources/resource-ref[@description='recorded resource ids' and @http-method='GET' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/GET/recorded-resource-ids']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/verification-resources/resource-ref[@description='recorded request parameters' and @http-method='GET' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/GET/recorded-request-params']"));
+				hasXPath("//operation/verification-resources/resource-ref[@description='recorded request parameters' and @http-method='GET' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/GET/recorded-request-params']"));
 
         assertThat(
                 serviceResponseDoc,
-                hasXPath("//operation/verification-resources/resource-ref[@description='recorded request headers' and @http-method='GET' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/GET/recorded-request-headers']"));
+                hasXPath("//operation/verification-resources/resource-ref[@description='recorded request headers' and @http-method='GET' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/GET/recorded-request-headers']"));
 
 		assertThat(serviceResponseDoc, hasXPath("count(//operation/verification-resources/resource-ref)", equalTo("4")));
 
@@ -173,36 +173,36 @@ public class ServicesResourceIntegrationTest {
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='operation initialization' and @http-method='POST' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/init']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='operation initialization' and @http-method='POST' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/PUT/init']"));
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='add custom response' and @http-method='POST' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/responses']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='add custom response' and @http-method='POST' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/PUT/responses']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='set first custom response' and @http-method='PUT' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/responses/1']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='set first custom response' and @http-method='PUT' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/PUT/responses/1']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='set second custom response' and @http-method='PUT' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/responses/2']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='set second custom response' and @http-method='PUT' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/PUT/responses/2']"));
 
 		assertThat(serviceResponseDoc, hasXPath("count(//operation/setup-resources/resource-ref)", equalTo("4")));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/verification-resources/resource-ref[@description='recorded requests' and @http-method='GET' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/recorded-requests']"));
+				hasXPath("//operation/verification-resources/resource-ref[@description='recorded requests' and @http-method='GET' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/PUT/recorded-requests']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/verification-resources/resource-ref[@description='recorded resource ids' and @http-method='GET' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/recorded-resource-ids']"));
+				hasXPath("//operation/verification-resources/resource-ref[@description='recorded resource ids' and @http-method='GET' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/PUT/recorded-resource-ids']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/verification-resources/resource-ref[@description='recorded request parameters' and @http-method='GET' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/recorded-request-params']"));
+				hasXPath("//operation/verification-resources/resource-ref[@description='recorded request parameters' and @http-method='GET' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/PUT/recorded-request-params']"));
 
         assertThat(
                 serviceResponseDoc,
-                hasXPath("//operation/verification-resources/resource-ref[@description='recorded request headers' and @http-method='GET' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/recorded-request-headers']"));
+                hasXPath("//operation/verification-resources/resource-ref[@description='recorded request headers' and @http-method='GET' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/PUT/recorded-request-headers']"));
 
         assertThat(serviceResponseDoc, hasXPath("count(//operation/verification-resources/resource-ref)", equalTo("4")));
 
@@ -223,36 +223,36 @@ public class ServicesResourceIntegrationTest {
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='operation initialization' and @http-method='POST' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/DELETE/init']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='operation initialization' and @http-method='POST' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/DELETE/init']"));
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='add custom response' and @http-method='POST' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/DELETE/responses']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='add custom response' and @http-method='POST' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/DELETE/responses']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='set first custom response' and @http-method='PUT' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/DELETE/responses/1']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='set first custom response' and @http-method='PUT' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/DELETE/responses/1']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='set second custom response' and @http-method='PUT' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/DELETE/responses/2']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='set second custom response' and @http-method='PUT' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/DELETE/responses/2']"));
 
 		assertThat(serviceResponseDoc, hasXPath("count(//operation/setup-resources/resource-ref)", equalTo("4")));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/verification-resources/resource-ref[@description='recorded requests' and @http-method='GET' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/DELETE/recorded-requests']"));
+				hasXPath("//operation/verification-resources/resource-ref[@description='recorded requests' and @http-method='GET' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/DELETE/recorded-requests']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/verification-resources/resource-ref[@description='recorded resource ids' and @http-method='GET' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/DELETE/recorded-resource-ids']"));
+				hasXPath("//operation/verification-resources/resource-ref[@description='recorded resource ids' and @http-method='GET' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/DELETE/recorded-resource-ids']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/verification-resources/resource-ref[@description='recorded request parameters' and @http-method='GET' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/DELETE/recorded-request-params']"));
+				hasXPath("//operation/verification-resources/resource-ref[@description='recorded request parameters' and @http-method='GET' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/DELETE/recorded-request-params']"));
 
         assertThat(
                 serviceResponseDoc,
-                hasXPath("//operation/verification-resources/resource-ref[@description='recorded request headers' and @http-method='GET' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/DELETE/recorded-request-headers']"));
+                hasXPath("//operation/verification-resources/resource-ref[@description='recorded request headers' and @http-method='GET' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/DELETE/recorded-request-headers']"));
 
         assertThat(serviceResponseDoc, hasXPath("count(//operation/verification-resources/resource-ref)", equalTo("4")));
 
@@ -273,32 +273,32 @@ public class ServicesResourceIntegrationTest {
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='operation initialization' and @http-method='POST' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/init']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='operation initialization' and @http-method='POST' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/POST/init']"));
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='add custom response' and @http-method='POST' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/responses']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='add custom response' and @http-method='POST' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/POST/responses']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='set first custom response' and @http-method='PUT' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/responses/1']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='set first custom response' and @http-method='PUT' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/POST/responses/1']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/setup-resources/resource-ref[@description='set second custom response' and @http-method='PUT' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/responses/2']"));
+				hasXPath("//operation/setup-resources/resource-ref[@description='set second custom response' and @http-method='PUT' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/POST/responses/2']"));
 
 		assertThat(serviceResponseDoc, hasXPath("count(//operation/setup-resources/resource-ref)", equalTo("4")));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/verification-resources/resource-ref[@description='recorded requests' and @http-method='GET' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/recorded-requests']"));
+				hasXPath("//operation/verification-resources/resource-ref[@description='recorded requests' and @http-method='GET' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/POST/recorded-requests']"));
 
 		assertThat(
 				serviceResponseDoc,
-				hasXPath("//operation/verification-resources/resource-ref[@description='recorded request parameters' and @http-method='GET' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/recorded-request-params']"));
+				hasXPath("//operation/verification-resources/resource-ref[@description='recorded request parameters' and @http-method='GET' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/POST/recorded-request-params']"));
 
         assertThat(
                 serviceResponseDoc,
-                hasXPath("//operation/verification-resources/resource-ref[@description='recorded request headers' and @http-method='GET' and @uri='http://localhost:8080/mock/services/REST/dummy-rest/operations/POST/recorded-request-headers']"));
+                hasXPath("//operation/verification-resources/resource-ref[@description='recorded request headers' and @http-method='GET' and @uri='http://localhost:8088/mock/services/REST/dummy-rest/operations/POST/recorded-request-headers']"));
 
 
         assertThat(serviceResponseDoc, hasXPath("count(//operation/verification-resources/resource-ref)", equalTo("3")));

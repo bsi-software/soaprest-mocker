@@ -32,15 +32,15 @@ import static org.junit.Assert.assertThat;
 public class RestMockPUTMethodIntegrationTest {
 
 	// mocked endpoints configured in ws-mock.properties
-	private static final String REST_MOCK_ENDPOINT = "http://localhost:8080/mock/services/REST/dummy-rest/endpoint";
+	private static final String REST_MOCK_ENDPOINT = "http://localhost:8088/mock/services/REST/dummy-rest/endpoint";
 
-	private static final String REST_MOCK_PUT_INIT 				 	= "http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/init";
-	private static final String REST_MOCK_PUT_RESPONSES 			 	= "http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/responses";
-	private static final String REST_MOCK_PUT_RECORDED_REQUESTS 	 	= "http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/recorded-requests";
-	private static final String REST_MOCK_PUT_RECORDED_REQUESTS_WITH_REQUEST_ELEMENT = "http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/recorded-requests?requestElement=req";
-	private static final String REST_MOCK_PUT_RECORDED_RESOURCE_IDS 	= "http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/recorded-resource-ids";
+	private static final String REST_MOCK_PUT_INIT 				 	= "http://localhost:8088/mock/services/REST/dummy-rest/operations/PUT/init";
+	private static final String REST_MOCK_PUT_RESPONSES 			 	= "http://localhost:8088/mock/services/REST/dummy-rest/operations/PUT/responses";
+	private static final String REST_MOCK_PUT_RECORDED_REQUESTS 	 	= "http://localhost:8088/mock/services/REST/dummy-rest/operations/PUT/recorded-requests";
+	private static final String REST_MOCK_PUT_RECORDED_REQUESTS_WITH_REQUEST_ELEMENT = "http://localhost:8088/mock/services/REST/dummy-rest/operations/PUT/recorded-requests?requestElement=req";
+	private static final String REST_MOCK_PUT_RECORDED_RESOURCE_IDS 	= "http://localhost:8088/mock/services/REST/dummy-rest/operations/PUT/recorded-resource-ids";
 
-    private static final String REST_MOCK_PUT_RECORDED_REQUESTS_HEADERS = "http://localhost:8080/mock/services/REST/dummy-rest/operations/PUT/recorded-request-headers";
+    private static final String REST_MOCK_PUT_RECORDED_REQUESTS_HEADERS = "http://localhost:8088/mock/services/REST/dummy-rest/operations/PUT/recorded-request-headers";
 
 	HttpRequestSender requestSender = new HttpRequestSender();
 
