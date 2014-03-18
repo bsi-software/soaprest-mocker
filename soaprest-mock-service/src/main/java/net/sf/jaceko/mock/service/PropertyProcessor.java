@@ -81,7 +81,7 @@ public class PropertyProcessor {
 	private static final String CUSTOM_RESPONSE_RESPONSE = "RESPONSE";
 
 	private static final String SEQUENCE_RESPONSE_RESPONSE = "RESPONSE";
-	
+
 	private static final String SERVICE_TYPE = "TYPE";
 
 	private static final String SERVICE_NAME = "NAME";
@@ -131,7 +131,7 @@ public class PropertyProcessor {
 						final int sequenceResponseIndex = getSequenceResponseIndex(operationProperty);
 						if (customResponseIndex >= 0) {
 							// custom response part
-							final WebserviceCustomResponse customResponse = getCustomResponseFromOperation(operation, operationIndex);
+							final WebserviceCustomResponse customResponse = getCustomResponseFromOperation(operation, customResponseIndex);
 
 							final String customResponseProperty = propertyKeyParts[3];
 							setCustomResponseProperties(customResponse, customResponseProperty, propertyValue);
@@ -261,11 +261,11 @@ public class PropertyProcessor {
 		return operation;
 	}
 
-	private WebserviceCustomResponse getCustomResponseFromOperation(WebserviceOperation operation, int operationIndex) {
-		WebserviceCustomResponse customResponse = operation.getCustomResponse(operationIndex);
+	private WebserviceCustomResponse getCustomResponseFromOperation(WebserviceOperation operation, int responseIndex) {
+		WebserviceCustomResponse customResponse = operation.getCustomResponse(responseIndex);
 		if (customResponse == null) {
 			customResponse = new WebserviceCustomResponse();
-			operation.addCustomResponse(operationIndex, customResponse);
+			operation.addCustomResponse(responseIndex, customResponse);
 		}
 		return customResponse;
 	}
@@ -289,7 +289,7 @@ public class PropertyProcessor {
 		final Pattern pattern = SEQUENCE_RESPONSE_PATTERN;
 		return extractIndex(keyPart, pattern);
 	}
-	
+
 	private int extractIndex(final String keyPart, final Pattern pattern) {
 		final Matcher matcher = pattern.matcher(keyPart);
 		if (matcher.find()) {
