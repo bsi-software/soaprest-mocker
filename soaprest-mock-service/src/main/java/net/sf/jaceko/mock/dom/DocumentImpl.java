@@ -77,7 +77,7 @@ public class DocumentImpl implements Document {
 		documentBuilderFactory.setNamespaceAware(namespaceAware);
 		DocumentBuilder documentBuilder;
 		documentBuilder = documentBuilderFactory.newDocumentBuilder();
-		document = documentBuilder.parse(new ByteArrayInputStream(xml.getBytes()));
+		document = documentBuilder.parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
 
 	}
 	
