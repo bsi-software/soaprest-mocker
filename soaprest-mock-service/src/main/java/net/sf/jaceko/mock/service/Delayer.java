@@ -24,19 +24,23 @@ import java.text.MessageFormat;
 import org.apache.log4j.Logger;
 
 public class Delayer {
-	private static final Logger LOG = Logger.getLogger(Delayer.class);
-	private static final int MILIS_IN_SEC = 1000;
+  private static final Logger LOG = Logger.getLogger(Delayer.class);
+  private static final int MILIS_IN_SEC = 1000;
 
-	public void delaySec(int sec) {
-		
-		if (sec == 0)
-			return;
-		LOG.debug(MessageFormat.format("Delaying request for {0} seconds.", sec));
-		try {
-			Thread.sleep(sec * MILIS_IN_SEC);
-		} catch (InterruptedException e) {
-			// do nothing
-		}
-	}
+  public void delaySec(int sec) {
+
+    if (sec == 0) {
+      return;
+    }
+    if (LOG.isDebugEnabled()) {
+      LOG.debug(MessageFormat.format("Delaying request for {0} seconds.", sec));
+    }
+    try {
+      Thread.sleep(sec * MILIS_IN_SEC);
+    }
+    catch (InterruptedException e) {
+      // do nothing
+    }
+  }
 
 }

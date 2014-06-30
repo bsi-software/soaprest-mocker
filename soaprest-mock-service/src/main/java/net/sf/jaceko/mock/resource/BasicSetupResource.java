@@ -19,108 +19,120 @@
  */
 package net.sf.jaceko.mock.resource;
 
-import net.sf.jaceko.mock.model.request.MockResponse;
-import net.sf.jaceko.mock.service.MockSetupExecutor;
-import org.apache.http.HttpStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import net.sf.jaceko.mock.model.request.MockResponse;
+import net.sf.jaceko.mock.service.MockSetupExecutor;
+
+import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class BasicSetupResource {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BasicSetupResource.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(BasicSetupResource.class);
 
-    private static final String HEADERS_DELIMITER = ",,";
-    private static final String HEADER_DELIMITER = "::";
-    private static final int HEADER_KEY_INDEX = 0;
-    private static final int HEADER_VALUE_INDEX = 1;
-    private MockSetupExecutor mockSetupExecutor;
+  private static final String HEADERS_DELIMITER = ",,";
+  private static final String HEADER_DELIMITER = "::";
+  private static final int HEADER_KEY_INDEX = 0;
+  private static final int HEADER_VALUE_INDEX = 1;
+  private MockSetupExecutor mockSetupExecutor;
 
-	public BasicSetupResource() {
-		super();
-	}
+  public BasicSetupResource() {
+    super();
+  }
 
-	@POST
-	@Path("/{operationId}/responses")
-	@Consumes({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response addResponse(@Context HttpHeaders headers, @PathParam("serviceName") String serviceName,
-			@PathParam("operationId") String operationId, @QueryParam("code") int customResponseCode,
-			@QueryParam("delay") int delaySec, @QueryParam("headers") String headersToPrime,
-            String customResponseBody) {
+  @POST
+  @Path("/{operationId}/responses")
+  @Consumes({MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+  public Response addResponse(@Context HttpHeaders headers, @PathParam("serviceName") String serviceName,
+      @PathParam("operationId") String operationId, @QueryParam("code") int customResponseCode,
+      @QueryParam("delay") int delaySec, @QueryParam("headers") String headersToPrime,
+      String customResponseBody) {
 
-        LOGGER.debug("Received Mocking request serviceName {}, operationId {}, code {}, customResponseCode {}, delay {}, header {}, customResponseBody {}",
-                serviceName,operationId,customResponseCode,customResponseCode,delaySec,headersToPrime);
-
-        Map<String, String> headersMap = parseHeadersToPrime(headersToPrime);
-
-        mockSetupExecutor.addCustomResponse(
-                serviceName,
-                operationId,
-                MockResponse.body(customResponseBody).code(customResponseCode).contentType(headers.getMediaType())
-                        .delaySec(delaySec).headers(headersMap).build());
-		return Response.status(HttpStatus.SC_OK).build();
-	}
-
-    private Map<String, String> parseHeadersToPrime(String headersToPrime) {
-        Map<String, String> headersMap = new HashMap<String, String>();
-
-        if (headersToPrime != null) {
-            Scanner headersScanner = new Scanner(headersToPrime).useDelimiter(HEADERS_DELIMITER);
-            while (headersScanner.hasNext()) {
-                String header = headersScanner.next();
-                String[] headerPart = header.split(HEADER_DELIMITER);
-                String headerName = headerPart[HEADER_KEY_INDEX];
-                String headerValue = headerPart[HEADER_VALUE_INDEX];
-                headersMap.put(headerName, headerValue);
-            }
-        }
-
-        return headersMap;
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Received Mocking request serviceName {}, operationId {}, code {}, customResponseCode {}, delay {}, header {}, customResponseBody {}",
+          serviceName, operationId, customResponseCode, customResponseCode, delaySec, headersToPrime);
     }
 
-    @PUT
-	@Path("/{operationId}/responses/{requestInOrder}")
-	@Consumes({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response setResponse(@Context HttpHeaders headers, @PathParam("serviceName") String serviceName,
-			@PathParam("operationId") String operationId, @PathParam("requestInOrder") int requestInOrder,
-			@QueryParam("code") int customResponseCode, @QueryParam("delay") int delaySec,  @QueryParam("headers") String headersToPrime, String customResponseBody) {
+    Map<String, String> headersMap = parseHeadersToPrime(headersToPrime);
 
-        LOGGER.debug("Received Mocking request requestOrder {}, serviceName {}, operationId {}, code {}, customResponseCode {}, delay {}, header {}, customResponseBody {}",
-                requestInOrder, serviceName,operationId,customResponseCode,customResponseCode,delaySec,headersToPrime);
+    mockSetupExecutor.addCustomResponse(
+        serviceName,
+        operationId,
+        MockResponse.body(customResponseBody).code(customResponseCode).contentType(headers.getMediaType())
+            .delaySec(delaySec).headers(headersMap).build());
+    return Response.status(HttpStatus.SC_OK).build();
+  }
 
-        Map<String, String> headersMap = parseHeadersToPrime(headersToPrime);
-		mockSetupExecutor.setCustomResponse(
-				serviceName,
-				operationId,
-				requestInOrder,
-				MockResponse.body(customResponseBody).code(customResponseCode).delaySec(delaySec)
-                        .headers(headersMap)
-						.contentType(headers.getMediaType()).build());
-		return Response.status(HttpStatus.SC_OK).build();
-	}
+  private Map<String, String> parseHeadersToPrime(String headersToPrime) {
+    Map<String, String> headersMap = new HashMap<String, String>();
 
-	@POST
-	@Path("/{operationId}/init")
-	public Response initMock(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
+    if (headersToPrime != null) {
+      Scanner headersScanner = new Scanner(headersToPrime).useDelimiter(HEADERS_DELIMITER);
+      while (headersScanner.hasNext()) {
+        String header = headersScanner.next();
+        String[] headerPart = header.split(HEADER_DELIMITER);
+        String headerName = headerPart[HEADER_KEY_INDEX];
+        String headerValue = headerPart[HEADER_VALUE_INDEX];
+        headersMap.put(headerName, headerValue);
+      }
+    }
 
-        LOGGER.debug("Received init request serviceName {}, operationId {}", serviceName, operationId);
+    return headersMap;
+  }
 
-		mockSetupExecutor.initMock(serviceName, operationId);
-		return Response.status(HttpStatus.SC_OK).build();
-	}
+  @PUT
+  @Path("/{operationId}/responses/{requestInOrder}")
+  @Consumes({MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+  public Response setResponse(@Context HttpHeaders headers, @PathParam("serviceName") String serviceName,
+      @PathParam("operationId") String operationId, @PathParam("requestInOrder") int requestInOrder,
+      @QueryParam("code") int customResponseCode, @QueryParam("delay") int delaySec, @QueryParam("headers") String headersToPrime, String customResponseBody) {
 
-	public void setMockSetupExecutor(MockSetupExecutor mockSetupExecutor) {
-		this.mockSetupExecutor = mockSetupExecutor;
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Received Mocking request requestOrder {}, serviceName {}, operationId {}, code {}, customResponseCode {}, delay {}, header {}, customResponseBody {}",
+          requestInOrder, serviceName, operationId, customResponseCode, customResponseCode, delaySec, headersToPrime);
+    }
 
-	}
+    Map<String, String> headersMap = parseHeadersToPrime(headersToPrime);
+    mockSetupExecutor.setCustomResponse(
+        serviceName,
+        operationId,
+        requestInOrder,
+        MockResponse.body(customResponseBody).code(customResponseCode).delaySec(delaySec)
+            .headers(headersMap)
+            .contentType(headers.getMediaType()).build());
+    return Response.status(HttpStatus.SC_OK).build();
+  }
+
+  @POST
+  @Path("/{operationId}/init")
+  public Response initMock(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
+
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Received init request serviceName {}, operationId {}", serviceName, operationId);
+    }
+
+    mockSetupExecutor.initMock(serviceName, operationId);
+    return Response.status(HttpStatus.SC_OK).build();
+  }
+
+  public void setMockSetupExecutor(MockSetupExecutor mockSetupExecutor) {
+    this.mockSetupExecutor = mockSetupExecutor;
+
+  }
 
 }

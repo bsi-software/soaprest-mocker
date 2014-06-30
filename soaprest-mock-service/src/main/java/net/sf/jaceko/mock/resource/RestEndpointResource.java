@@ -19,6 +19,8 @@
  */
 package net.sf.jaceko.mock.resource;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -28,100 +30,107 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.*;
-
-import org.apache.log4j.Logger;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import net.sf.jaceko.mock.application.enums.HttpMethod;
 import net.sf.jaceko.mock.model.request.MockResponse;
 import net.sf.jaceko.mock.service.RequestExecutor;
 
-import java.util.Map;
+import org.apache.log4j.Logger;
 
 @Path("/services/REST/{serviceName}/endpoint")
 public class RestEndpointResource {
-	private static final Logger LOG = Logger.getLogger(RestEndpointResource.class);
+  private static final Logger LOG = Logger.getLogger(RestEndpointResource.class);
 
-	private RequestExecutor svcLayer;
+  private RequestExecutor svcLayer;
 
-	@GET
-	@Produces({ MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response performGetRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest request, @Context HttpHeaders headers) {
+  @GET
+  @Produces({MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+  public Response performGetRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest request, @Context HttpHeaders headers) {
 
-		return performGetRequest(serviceName, request, null, headers);
-	}
+    return performGetRequest(serviceName, request, null, headers);
+  }
 
-	@GET
-	@Path("/{resourceId}")
-	public Response performGetRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest request,
-                                      @PathParam("resourceId") String resourceId, @Context HttpHeaders headers) {
-		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.GET.toString(), "", request.getQueryString(),
-				resourceId, headers.getRequestHeaders());
-		LOG.debug("serviceName: " + serviceName + ", response:" + mockResponse);
-		return buildWebserviceResponse(mockResponse);
-	}
-
-	@POST
-	@Consumes({"text/*", "application/*"  })
-	public Response performPostRequest(@PathParam("serviceName") String serviceName,
-                                       @Context HttpServletRequest httpServletRequest, @Context HttpHeaders headers, String request) {
-        LOG.debug("Http headers " + headers.getRequestHeader("aHeader"));
-		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.POST.toString(), request,
-				httpServletRequest.getQueryString(), null, headers.getRequestHeaders());
-		LOG.debug("serviceName: " + serviceName + ", response:" + mockResponse);
-		return buildWebserviceResponse(mockResponse);
-	}
-
-	@PUT
-	@Consumes({"text/*", "application/*"  })
-	public Response performPutRequest(@PathParam("serviceName") String serviceName, @Context HttpHeaders headers, String request) {
-		return performPutRequest(serviceName, null, headers, request);
-	}
-
-	@PUT
-	@Path("/{resourceId}")
-	@Consumes({"text/*", "application/*"  })
-	public Response performPutRequest(@PathParam("serviceName") String serviceName, @PathParam("resourceId") String resourceId,
-                                      @Context HttpHeaders headers, String request) {
-		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.PUT.toString(), request, null, resourceId, headers.getRequestHeaders());
-		LOG.debug("serviceName: " + serviceName + ", response:" + mockResponse);
-		return buildWebserviceResponse(mockResponse);
-	}
-
-	@DELETE
-	public Response performDeleteRequest(@PathParam("serviceName") String serviceName, @Context HttpHeaders headers) {
-		return performDeleteRequest(serviceName, null, headers);
-	}
-
-	@DELETE
-	@Path("/{resourceId}")
-	public Response performDeleteRequest(@PathParam("serviceName") String serviceName, @PathParam("resourceId") String resourceId, @Context HttpHeaders headers) {
-		MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.DELETE.toString(), "", null, resourceId, headers.getRequestHeaders());
-		LOG.debug("serviceName: " + serviceName + ", response:" + mockResponse);
-		return buildWebserviceResponse(mockResponse);
-
-	}
-
-	private Response buildWebserviceResponse(MockResponse mockResponse) {
-        Response.ResponseBuilder responseBuilder = Response.status(mockResponse.getCode()).entity(mockResponse.getBody()).type(mockResponse.getContentType());
-
-        addHeadersToResponse(mockResponse.getHeaders(), responseBuilder);
-
-        return responseBuilder.build();
-	}
-
-    private void addHeadersToResponse(Map<String, String> headersToReturn, Response.ResponseBuilder responseBuilder) {
-        if (headersToReturn != null) {
-
-            for (String headerKey : headersToReturn.keySet()) {
-                String headerValue = headersToReturn.get(headerKey);
-                responseBuilder.header(headerKey, headerValue);
-            }
-        }
+  @GET
+  @Path("/{resourceId}")
+  public Response performGetRequest(@PathParam("serviceName") String serviceName, @Context HttpServletRequest request, @PathParam("resourceId") String resourceId, @Context HttpHeaders headers) {
+    MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.GET.toString(), "", request.getQueryString(), resourceId, headers.getRequestHeaders());
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("serviceName: " + serviceName + ", response:" + mockResponse);
     }
+    return buildWebserviceResponse(mockResponse);
+  }
 
-    public void setWebserviceMockService(RequestExecutor svcLayer) {
-		this.svcLayer = svcLayer;
-	}
+  @POST
+  @Consumes({"text/*", "application/*"})
+  public Response performPostRequest(@PathParam("serviceName") String serviceName,
+      @Context HttpServletRequest httpServletRequest, @Context HttpHeaders headers, String request) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Http headers " + headers.getRequestHeader("aHeader"));
+    }
+    MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.POST.toString(), request, httpServletRequest.getQueryString(), null, headers.getRequestHeaders());
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("serviceName: " + serviceName + ", response:" + mockResponse);
+    }
+    return buildWebserviceResponse(mockResponse);
+  }
+
+  @PUT
+  @Consumes({"text/*", "application/*"})
+  public Response performPutRequest(@PathParam("serviceName") String serviceName, @Context HttpHeaders headers, String request) {
+    return performPutRequest(serviceName, null, headers, request);
+  }
+
+  @PUT
+  @Path("/{resourceId}")
+  @Consumes({"text/*", "application/*"})
+  public Response performPutRequest(@PathParam("serviceName") String serviceName, @PathParam("resourceId") String resourceId, @Context HttpHeaders headers, String request) {
+    MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.PUT.toString(), request, null, resourceId, headers.getRequestHeaders());
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("serviceName: " + serviceName + ", response:" + mockResponse);
+    }
+    return buildWebserviceResponse(mockResponse);
+  }
+
+  @DELETE
+  public Response performDeleteRequest(@PathParam("serviceName") String serviceName, @Context HttpHeaders headers) {
+    return performDeleteRequest(serviceName, null, headers);
+  }
+
+  @DELETE
+  @Path("/{resourceId}")
+  public Response performDeleteRequest(@PathParam("serviceName") String serviceName, @PathParam("resourceId") String resourceId, @Context HttpHeaders headers) {
+    MockResponse mockResponse = svcLayer.performRequest(serviceName, HttpMethod.DELETE.toString(), "", null, resourceId, headers.getRequestHeaders());
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("serviceName: " + serviceName + ", response:" + mockResponse);
+    }
+    return buildWebserviceResponse(mockResponse);
+
+  }
+
+  private Response buildWebserviceResponse(MockResponse mockResponse) {
+    Response.ResponseBuilder responseBuilder = Response.status(mockResponse.getCode()).entity(mockResponse.getBody()).type(mockResponse.getContentType());
+
+    addHeadersToResponse(mockResponse.getHeaders(), responseBuilder);
+
+    return responseBuilder.build();
+  }
+
+  private void addHeadersToResponse(Map<String, String> headersToReturn, Response.ResponseBuilder responseBuilder) {
+    if (headersToReturn != null) {
+
+      for (String headerKey : headersToReturn.keySet()) {
+        String headerValue = headersToReturn.get(headerKey);
+        responseBuilder.header(headerKey, headerValue);
+      }
+    }
+  }
+
+  public void setWebserviceMockService(RequestExecutor svcLayer) {
+    this.svcLayer = svcLayer;
+  }
 
 }

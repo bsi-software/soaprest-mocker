@@ -19,124 +19,131 @@
  */
 package net.sf.jaceko.mock.resource;
 
-import net.sf.jaceko.mock.model.request.MockRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.*;
+
+import net.sf.jaceko.mock.model.request.MockRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/services/REST/{serviceName}/operations/{operationId}")
 public class RestServiceMockVerificatonResource extends BasicVerificationResource {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BasicSetupResource.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(BasicSetupResource.class);
 
-	@GET
-	@Path("/recorded-resource-ids")
-	@Produces(MediaType.TEXT_XML)
-	public String getRecordedResourceIds(@PathParam("serviceName") String serviceName, @PathParam("operationId")  String operationId) {
-		Collection<String> recordedResourceIds = recordedRequestsHolder
-				.getRecordedResourceIds(serviceName, operationId);
-		String rootElementName = "recorded-resource-ids";
-		String elementName = "recorded-resource-id";
-        LOGGER.debug("recorded-resource-ids request: serviceName {} operationId {}", serviceName, operationId);
-		boolean surroundElementTextWithCdata = false;
-		return buildListXml(recordedResourceIds, rootElementName, elementName,
-				surroundElementTextWithCdata);
-	}
-	
-	@GET
-	@Path("/recorded-request-params")
-	@Produces(MediaType.TEXT_XML)
-	public String getRecordedUrlParams(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
-        LOGGER.debug("recorded-request-params request: serviceName {} operationId {}", serviceName, operationId);
-		Collection<String> recordedUrlParams = recordedRequestsHolder.getRecordedUrlParams(
-				serviceName, operationId);
-		return buildRequestParamsXml(recordedUrlParams);
-	}
+  @GET
+  @Path("/recorded-resource-ids")
+  @Produces(MediaType.TEXT_XML)
+  public String getRecordedResourceIds(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
+    Collection<String> recordedResourceIds = recordedRequestsHolder.getRecordedResourceIds(serviceName, operationId);
+    String rootElementName = "recorded-resource-ids";
+    String elementName = "recorded-resource-id";
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("recorded-resource-ids request: serviceName {} operationId {}", serviceName, operationId);
+    }
+    boolean surroundElementTextWithCdata = false;
+    return buildListXml(recordedResourceIds, rootElementName, elementName,
+        surroundElementTextWithCdata);
+  }
 
-	private String buildRequestParamsXml(Collection<String> recordedUrlParams) {
-		String rootElementName = "recorded-request-params";
-		String elementName = "recorded-request-param";
-		boolean surroundElementTextWithCdata = true;
-		return buildListXml(recordedUrlParams, rootElementName, elementName,
-				surroundElementTextWithCdata);
-	}
+  @GET
+  @Path("/recorded-request-params")
+  @Produces(MediaType.TEXT_XML)
+  public String getRecordedUrlParams(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("recorded-request-params request: serviceName {} operationId {}", serviceName, operationId);
+    }
+    Collection<String> recordedUrlParams = recordedRequestsHolder.getRecordedUrlParams(serviceName, operationId);
+    return buildRequestParamsXml(recordedUrlParams);
+  }
 
-    @GET
-    @Path("/recorded-request-headers")
-    @Produces(MediaType.TEXT_XML)
-    public RecordedRequestHeaders getRecordedRequestHeaders(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
+  private String buildRequestParamsXml(Collection<String> recordedUrlParams) {
+    String rootElementName = "recorded-request-params";
+    String elementName = "recorded-request-param";
+    boolean surroundElementTextWithCdata = true;
+    return buildListXml(recordedUrlParams, rootElementName, elementName, surroundElementTextWithCdata);
+  }
 
-        LOGGER.debug("recorded-request-headers request: serviceName {} operationId {}", serviceName, operationId);
-        Collection<MockRequest> recordedRequests = recordedRequestsHolder.getRecordedRequests(serviceName, operationId);
+  @GET
+  @Path("/recorded-request-headers")
+  @Produces(MediaType.TEXT_XML)
+  public RecordedRequestHeaders getRecordedRequestHeaders(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId) {
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("recorded-request-headers request: serviceName {} operationId {}", serviceName, operationId);
+    }
+    Collection<MockRequest> recordedRequests = recordedRequestsHolder.getRecordedRequests(serviceName, operationId);
 
-        RecordedRequestHeaders recordedRequestHeaders = new RecordedRequestHeaders();
-        for (MockRequest recordedRequest : recordedRequests) {
-            recordedRequestHeaders.addRequestHeaders(recordedRequest.getHeaders());
-        }
+    RecordedRequestHeaders recordedRequestHeaders = new RecordedRequestHeaders();
+    for (MockRequest recordedRequest : recordedRequests) {
+      recordedRequestHeaders.addRequestHeaders(recordedRequest.getHeaders());
+    }
+    return recordedRequestHeaders;
+  }
 
-        return recordedRequestHeaders;
+  @XmlRootElement(name = "recorded-request-headers")
+  static class RecordedRequestHeaders {
+
+    @XmlElement(name = "single-request-recorded-headers")
+    private List<SingleRequestHeaders> recordedRequestHeader = new ArrayList<SingleRequestHeaders>();
+
+    public List<SingleRequestHeaders> getHeaders() {
+      return recordedRequestHeader;
     }
 
-    @XmlRootElement(name = "recorded-request-headers")
-    static class RecordedRequestHeaders {
+    public void addRequestHeaders(MultivaluedMap<String, String> headers) {
 
-        @XmlElement(name = "single-request-recorded-headers")
-        private List<SingleRequestHeaders> recordedRequestHeader = new ArrayList<SingleRequestHeaders>();
+      SingleRequestHeaders singleRequestHeaders = new SingleRequestHeaders();
+      for (String headerName : headers.keySet()) {
+        RecordedHeader recordedHeader = new RecordedHeader(headerName, headers.getFirst(headerName));
+        singleRequestHeaders.addRecordedHeader(recordedHeader);
+      }
+      recordedRequestHeader.add(singleRequestHeaders);
+    }
+  }
 
-        public List<SingleRequestHeaders> getHeaders() {
-            return recordedRequestHeader;
-        }
+  static class SingleRequestHeaders {
+    @XmlElement(name = "header")
+    private List<RecordedHeader> recordedHeaders = new ArrayList<RecordedHeader>();
 
-        public void addRequestHeaders(MultivaluedMap<String, String> headers) {
-
-            SingleRequestHeaders singleRequestHeaders = new SingleRequestHeaders();
-            for (String headerName : headers.keySet()) {
-                RecordedHeader recordedHeader = new RecordedHeader(headerName, headers.getFirst(headerName));
-                singleRequestHeaders.addRecordedHeader(recordedHeader);
-            }
-            recordedRequestHeader.add(singleRequestHeaders);
-        }
+    List<RecordedHeader> getRecordedHeaders() {
+      return recordedHeaders;
     }
 
-    static class SingleRequestHeaders {
-        @XmlElement(name = "header")
-        private List<RecordedHeader> recordedHeaders = new ArrayList<RecordedHeader>();
+    public void addRecordedHeader(RecordedHeader recordedHeader) {
+      recordedHeaders.add(recordedHeader);
+    }
+  }
 
-        List<RecordedHeader> getRecordedHeaders() {
-            return recordedHeaders;
-        }
+  static class RecordedHeader {
+    @XmlElement
+    private String name;
+    @XmlElement
+    private String value;
 
-        public void addRecordedHeader(RecordedHeader recordedHeader) {
-            recordedHeaders.add(recordedHeader);
-        }
+    RecordedHeader() {
     }
 
-    static class RecordedHeader {
-        @XmlElement
-        private String name;
-        @XmlElement
-        private String value;
-
-        RecordedHeader() {
-        }
-
-        RecordedHeader(String name, String value) {
-            this.name = name;
-            this.value = value;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getValue() {
-            return value;
-        }
+    RecordedHeader(String name, String value) {
+      this.name = name;
+      this.value = value;
     }
 
+    public String getName() {
+      return name;
+    }
+
+    public String getValue() {
+      return value;
+    }
+  }
 }

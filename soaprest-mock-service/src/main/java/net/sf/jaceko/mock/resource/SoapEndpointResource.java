@@ -39,85 +39,90 @@ import org.w3c.dom.NodeList;
 
 @Path("/services/SOAP/{serviceName}/endpoint")
 public class SoapEndpointResource {
-	private static final Logger LOG = Logger.getLogger(SoapEndpointResource.class);
+  private static final Logger LOG = Logger.getLogger(SoapEndpointResource.class);
 
-	private static final String BODY = "Body";
-	private static final String ENVELOPE = "Envelope";
-	private static final String INVALID_SOAP_REQUEST = "Invalid SOAP request";
-	private static final String MALFORMED_XML = "Malformed Xml";
-	private RequestExecutor service;
+  private static final String BODY = "Body";
+  private static final String ENVELOPE = "Envelope";
+  private static final String INVALID_SOAP_REQUEST = "Invalid SOAP request";
+  private static final String MALFORMED_XML = "Malformed Xml";
+  private RequestExecutor service;
 
-	@POST
-	@Consumes(MediaType.TEXT_XML)
-	@Produces(MediaType.TEXT_XML)
-	public Response performRequest(@PathParam("serviceName") String serviceName,
-			String request) {
-		LOG.debug("serviceName: " + serviceName + ", request:" + request);
-		String requestMessgageName = extractRequestMessageName(request);
-		String responseBody = null;
-		int code = 200;
-		MockResponse response = service.performRequest(serviceName, requestMessgageName,
-				request, null, null, null);
-		if (response != null) {
-			responseBody = response.getBody();
-			code = response.getCode();
-		}
-		LOG.debug("serviceName: " + serviceName + ", response:" + responseBody + " ,code: " + code);
-		return Response.status(code).entity(responseBody).type(MediaType.TEXT_XML).build();
-	}
+  @POST
+  @Consumes(MediaType.TEXT_XML)
+  @Produces(MediaType.TEXT_XML)
+  public Response performRequest(@PathParam("serviceName") String serviceName,
+      String request) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("serviceName: " + serviceName + ", request:" + request);
+    }
+    String requestMessgageName = extractRequestMessageName(request);
+    String responseBody = null;
+    int code = 200;
+    MockResponse response = service.performRequest(serviceName, requestMessgageName,
+        request, null, null, null);
+    if (response != null) {
+      responseBody = response.getBody();
+      code = response.getCode();
+    }
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("serviceName: " + serviceName + ", response:" + responseBody + " ,code: " + code);
+    }
+    return Response.status(code).entity(responseBody).type(MediaType.TEXT_XML).build();
+  }
 
-	private String extractRequestMessageName(String request) {
-		Document reqDocument = null;
-		try {
-			reqDocument = new DocumentImpl(request, true);
-		} catch (Exception e) {
-			throw new ClientFaultException(MALFORMED_XML, e);
-		}
-		reqDocument.normalize();
-		Node envelope = getChildElement(reqDocument, ENVELOPE);
-		Node body = getChildElement(envelope, BODY);
-		Node requestMessage = getChildElement(body);
+  private String extractRequestMessageName(String request) {
+    Document reqDocument = null;
+    try {
+      reqDocument = new DocumentImpl(request, true);
+    }
+    catch (Exception e) {
+      throw new ClientFaultException(MALFORMED_XML, e);
+    }
+    reqDocument.normalize();
+    Node envelope = getChildElement(reqDocument, ENVELOPE);
+    Node body = getChildElement(envelope, BODY);
+    Node requestMessage = getChildElement(body);
 
-		if (requestMessage == null) {
-			throw new ClientFaultException(INVALID_SOAP_REQUEST);
-		}
-		return requestMessage.getLocalName();
+    if (requestMessage == null) {
+      throw new ClientFaultException(INVALID_SOAP_REQUEST);
+    }
+    return requestMessage.getLocalName();
 
-	}
+  }
 
-	private Node getChildElement(Node parent) {
-		NodeList childNodes = parent.getChildNodes();
+  private Node getChildElement(Node parent) {
+    NodeList childNodes = parent.getChildNodes();
 
-		Node foundNode = null;
-		for (int i = 0; i < childNodes.getLength(); i++) {
-			Node childNode = childNodes.item(i);
-			if (childNode.getNodeType() == Node.ELEMENT_NODE) {
-				foundNode = childNode;
-				break;
-			}
-		}
-		return foundNode;
-	}
+    Node foundNode = null;
+    for (int i = 0; i < childNodes.getLength(); i++) {
+      Node childNode = childNodes.item(i);
+      if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+        foundNode = childNode;
+        break;
+      }
+    }
+    return foundNode;
+  }
 
-	private Node getChildElement(Node parent, String elementName) {
-		NodeList childNodes = parent.getChildNodes();
+  private Node getChildElement(Node parent, String elementName) {
+    NodeList childNodes = parent.getChildNodes();
 
-		Node foundNode = null;
-		for (int i = 0; i < childNodes.getLength(); i++) {
-			Node childNode = childNodes.item(i);
-			if (elementName.equals(childNode.getLocalName())) {
-				foundNode = childNode;
-				break;
-			}
-		}
-		if (foundNode == null) {
-			throw new ClientFaultException(INVALID_SOAP_REQUEST);
-		}
-		return foundNode;
-	}
+    Node foundNode = null;
+    for (int i = 0; i < childNodes.getLength(); i++) {
+      Node childNode = childNodes.item(i);
+      if (elementName.equals(childNode.getLocalName())) {
+        foundNode = childNode;
+        break;
+      }
+    }
+    if (foundNode == null) {
+      throw new ClientFaultException(INVALID_SOAP_REQUEST);
+    }
+    return foundNode;
+  }
 
-	public void setWebserviceMockService(RequestExecutor service) {
-		this.service = service;
-	}
+  public void setWebserviceMockService(RequestExecutor service) {
+    this.service = service;
+  }
 
 }

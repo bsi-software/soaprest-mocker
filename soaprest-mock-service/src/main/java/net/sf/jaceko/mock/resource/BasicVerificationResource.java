@@ -19,68 +19,74 @@
  */
 package net.sf.jaceko.mock.resource;
 
+import static java.text.MessageFormat.format;
+
+import java.util.Collection;
+
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
 import net.sf.jaceko.mock.service.RecordedRequestsHolder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import java.util.Collection;
-
-import static java.text.MessageFormat.format;
-
 public class BasicVerificationResource {
 
-	protected RecordedRequestsHolder recordedRequestsHolder;
+  protected RecordedRequestsHolder recordedRequestsHolder;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BasicSetupResource.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(BasicSetupResource.class);
 
-	public BasicVerificationResource() {
-		super();
-	}
+  public BasicVerificationResource() {
+    super();
+  }
 
-    @GET
-	@Path("/recorded-requests")
-	@Produces(MediaType.TEXT_XML)
-	public String getRecordedRequests(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId, @DefaultValue("") @QueryParam("requestElement") String requestElement) {
+  @GET
+  @Path("/recorded-requests")
+  @Produces(MediaType.TEXT_XML)
+  public String getRecordedRequests(@PathParam("serviceName") String serviceName, @PathParam("operationId") String operationId, @DefaultValue("") @QueryParam("requestElement") String requestElement) {
 
-        LOGGER.debug("recorded-request: serviceName {} operationId {}, requestElement {}", serviceName, operationId, requestElement);
-		Collection<String> recordedRequests = recordedRequestsHolder.getRecordedRequestBodies(
-				serviceName, operationId);
-		return buildListXml(recordedRequests, "recorded-requests", requestElement, true);
-	}
-
-
-
-	protected String buildListXml(Collection<String> elementValuesList, String rootElementName, String elementName, boolean surroundElementTextWithCdata) {
-		StringBuilder builder = new StringBuilder();
-		builder.append(format("<{0}>\n", rootElementName));
-		for (String urlQueryString : elementValuesList) {
-			if (elementNameSpecified(elementName)) {
-				builder.append(format("<{0}>", elementName));
-			}
-			if (surroundElementTextWithCdata) {
-				builder.append("<![CDATA[");
-			}
-			builder.append(urlQueryString);
-			if (surroundElementTextWithCdata) {
-				builder.append("]]>");
-			}
-			if (elementNameSpecified(elementName)) {
-				builder.append(format("</{0}>\n", elementName));
-			}
-	
-		}
-		builder.append(format("</{0}>", rootElementName));
-		return builder.toString();
-	}
-
-    private boolean elementNameSpecified(String elementName) {
-        return elementName != null  && !elementName.isEmpty();
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("recorded-request: serviceName {} operationId {}, requestElement {}", serviceName, operationId, requestElement);
     }
+    Collection<String> recordedRequests = recordedRequestsHolder.getRecordedRequestBodies(serviceName, operationId);
+    return buildListXml(recordedRequests, "recorded-requests", requestElement, true);
+  }
 
-    public void setRecordedRequestsHolder(RecordedRequestsHolder recordedRequestsHolder) {
-		this.recordedRequestsHolder = recordedRequestsHolder;
-	}
+  protected String buildListXml(Collection<String> elementValuesList, String rootElementName, String elementName, boolean surroundElementTextWithCdata) {
+    StringBuilder builder = new StringBuilder();
+    builder.append(format("<{0}>\n", rootElementName));
+    for (String urlQueryString : elementValuesList) {
+      if (elementNameSpecified(elementName)) {
+        builder.append(format("<{0}>", elementName));
+      }
+      if (surroundElementTextWithCdata) {
+        builder.append("<![CDATA[");
+      }
+      builder.append(urlQueryString);
+      if (surroundElementTextWithCdata) {
+        builder.append("]]>");
+      }
+      if (elementNameSpecified(elementName)) {
+        builder.append(format("</{0}>\n", elementName));
+      }
+
+    }
+    builder.append(format("</{0}>", rootElementName));
+    return builder.toString();
+  }
+
+  private boolean elementNameSpecified(String elementName) {
+    return elementName != null && !elementName.isEmpty();
+  }
+
+  public void setRecordedRequestsHolder(RecordedRequestsHolder recordedRequestsHolder) {
+    this.recordedRequestsHolder = recordedRequestsHolder;
+  }
 
 }

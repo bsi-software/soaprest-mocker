@@ -25,34 +25,39 @@ import java.util.Scanner;
 import org.apache.log4j.Logger;
 
 public class FileReader {
-	private static final Logger LOG = Logger.getLogger(FileReader.class);
+  private static final Logger LOG = Logger.getLogger(FileReader.class);
 
-	public String readFileContents(final String fileName) {
-		final StringBuilder text = new StringBuilder();
-		final String newLine = System.getProperty("line.separator");
-		Scanner scanner = null;
-		try {
-			final InputStream resourceAsStream = FileReader.class.getClassLoader().getResourceAsStream(fileName);
-			if (resourceAsStream == null) {
-				LOG.error("File not found: " + fileName);
-				return null;
-			} else {
-				LOG.info(fileName + " found in classpath");
-			}
-			scanner = new Scanner(resourceAsStream);
-			while (scanner.hasNextLine()) {
-				text.append(scanner.nextLine() + newLine);
-			}
-		} catch (final Exception e) {
-			LOG.error("Problem reading file : " + fileName, e);
-			return null;
-		} finally {
-			if (scanner != null) {
-				scanner.close();
-			}
-		}
+  public String readFileContents(final String fileName) {
+    final StringBuilder text = new StringBuilder();
+    final String newLine = System.getProperty("line.separator");
+    Scanner scanner = null;
+    try {
+      final InputStream resourceAsStream = FileReader.class.getClassLoader().getResourceAsStream(fileName);
+      if (resourceAsStream == null) {
+        LOG.error("File not found: " + fileName);
+        return null;
+      }
+      else {
+        if (LOG.isInfoEnabled()) {
+          LOG.info(fileName + " found in classpath");
+        }
+      }
+      scanner = new Scanner(resourceAsStream);
+      while (scanner.hasNextLine()) {
+        text.append(scanner.nextLine() + newLine);
+      }
+    }
+    catch (final Exception e) {
+      LOG.error("Problem reading file : " + fileName, e);
+      return null;
+    }
+    finally {
+      if (scanner != null) {
+        scanner.close();
+      }
+    }
 
-		return text.toString();
-	}
+    return text.toString();
+  }
 
 }
