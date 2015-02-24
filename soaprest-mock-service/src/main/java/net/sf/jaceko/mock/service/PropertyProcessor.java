@@ -66,6 +66,8 @@ import org.apache.log4j.Logger;
 public class PropertyProcessor {
 	private static final Logger LOG = Logger.getLogger(PropertyProcessor.class);
 
+	private static final String FILE_CHARSET = "FILE_CHARSET";
+
 	private static final String INPUT_MESSAGE = "INPUT_MESSAGE";
 
 	private static final String HTTP_METHOD = "HTTP_METHOD";
@@ -146,6 +148,10 @@ public class PropertyProcessor {
 					}
 				}
 
+			} else {
+				if (propertyKey.equals(FILE_CHARSET)) {
+					fileReader.setCharsetName(propertyValue);
+				}
 			}
 		}
 

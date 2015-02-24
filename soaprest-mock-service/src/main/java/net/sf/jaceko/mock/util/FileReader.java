@@ -20,12 +20,15 @@
 package net.sf.jaceko.mock.util;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Scanner;
 
 import org.apache.log4j.Logger;
 
 public class FileReader {
   private static final Logger LOG = Logger.getLogger(FileReader.class);
+
+  private String charsetName = Charset.defaultCharset().name();
 
   public String readFileContents(final String fileName) {
     final StringBuilder text = new StringBuilder();
@@ -42,7 +45,7 @@ public class FileReader {
           LOG.info(fileName + " found in classpath");
         }
       }
-      scanner = new Scanner(resourceAsStream);
+      scanner = new Scanner(resourceAsStream, charsetName);
       while (scanner.hasNextLine()) {
         text.append(scanner.nextLine() + newLine);
       }
@@ -60,4 +63,7 @@ public class FileReader {
     return text.toString();
   }
 
+  public void setCharsetName(String charsetName) {
+    this.charsetName = charsetName;
+  }
 }
